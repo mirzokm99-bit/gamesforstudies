@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income Statement Tycoon Challenge - Level 2 (Educational)</title>
+    <style>
+        /* General Body and Container Styling - High Contrast & Color */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f7ff; /* Soft Blue */
+            margin: 0;
+            padding: 20px;
+            color: #2c3e50; /* Dark text */
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            color: #ff5733; /* Bright Orange/Red */
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Start & Results Screen Styles */
+        #start-screen, #results-screen {
+            text-align: center;
+            padding: 50px;
+        }
+        #results-screen h2 {
+            color: #3498db;
+            font-size: 2em;
+            margin-top: 0;
+        }
+        #results-screen p {
+            font-size: 1.2em;
+            margin: 15px 0;
+        }
+        #final-rank {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #1abc9c;
+            margin: 20px 0;
+            padding: 15px;
+            border: 3px solid #1abc9c;
+            display: inline-block;
+            border-radius: 10px;
+            background-color: #e8f8f5;
+        }
+
+        /* Game Screen Layout: Side-by-Side with Scrolling */
+        #game-screen {
+            display: none;
+        }
+        .game-area {
+            display: flex;
+            gap: 30px;
+        }
+        .item-list, .income-statement {
+            flex: 1;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .item-list {
+            background-color: #ecf0f1;
+            min-height: 650px; 
+        }
+        .income-statement {
+            background-color: #e8f8f5; 
+            max-height: 650px;
+            overflow-y: auto;
+            min-height: 650px;
+        }
+
+        /* Category Header Styling */
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin-top: 0;
+        }
+        .category-box h3 {
+            margin: 0;
+            color: #2980b9;
+            font-weight: 700;
+        }
+        .category-help-btn {
+            background: none;
+            border: none;
+            color: #1abc9c;
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 0 5px;
+        }
+
+        /* Item and Slot Styling */
+        .line-item {
+            cursor: pointer;
+            padding: 10px;
+            margin: 6px 0; 
+            background-color: #ff5733; 
+            color: white;
+            border-radius: 8px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-size: 0.95em;
+        }
+        .line-item .hint-btn {
+            display: inline;
+            background: none;
+            border: none;
+            color: #f1c40f; 
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 0 5px;
+        }
+        .explanation-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 4px 8px; 
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        .drop-zone {
+            min-height: 45px;
+            padding: 8px;
+            border: 2px dashed #3498db; 
+            margin-bottom: 6px;
+            border-radius: 8px;
+            background-color: #f4f6f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            font-style: italic;
+            transition: all 0.3s;
+        }
+        .unsorted-drop-zone {
+            min-height: 400px;
+            border-style: solid;
+            border-color: #95a5a6;
+            flex-direction: column;
+            align-items: stretch;
+            padding: 10px;
+        }
+        
+        /* Other styling remains the same... */
+        .category-box {margin-bottom: 15px;padding: 15px;border: 1px solid #bdc3c7;border-radius: 10px;background-color: #fcfcfc;}
+        .correct {background-color: #d4edda !important;border-color: #1abc9c !important;}
+        .incorrect {background-color: #f8d7da !important;border-color: #e74c3c !important;}
+        .incorrect-item {background-color: #c0392b !important;color: white !important;}
+        .controls {margin-top: 30px;display: flex;justify-content: center;gap: 25px;}
+        .controls button {padding: 12px 25px;font-size: 1.2em;border: none;border-radius: 8px;cursor: pointer;box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);}
+        .check-btn {background-color: #1abc9c;color: white;}
+        .finish-btn {background-color: #e74c3c;color: white;display: none;}
+        .reset-btn {background-color: #f1c40f;color: #2c3e50;}
+        @media (max-width: 768px) {
+            .game-area {flex-direction: column;gap: 15px;}
+            .item-list, .income-statement {min-height: auto;max-height: none;overflow-y: visible;padding: 15px;}
+            .controls {flex-direction: column;gap: 10px;}
+            .controls button {width: 100%;}
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <div id="start-screen">
+            <h1>Income Statement Tycoon Challenge 💰</h1>
+            <h2>Level 2: The CFO's Gauntlet (15 Items) 🚀</h2>
+            
+            <label for="player-name">Enter Your Tycoon Name:</label>
+            <input type="text" id="player-name" placeholder="E.g., Warren Buffett Jr." required>
+            
+            <button class="start-btn" onclick="startGame()">Start Level 2 Challenge</button>
+
+            <hr style="margin: 30px auto; width: 60%; border-top: 1px solid #ecf0f1;">
+
+            <div class="rules-section">
+                <h3>Game Rules (15 Items)</h3>
+                <ul class="rules-list">
+                    <li>Objective: Correctly sort all 15 financial line items into the 5 complex sections.</li>
+                    <li>Learning Tool: Click the ❓ button next to any item for a Hint (Concept help).</li>
+                    <li>Category Help: Click the ❓ button next to a category name for a Definition of that category.</li>
+                    <li>Usability: Use the scrollbar inside the Income Statement to easily reach lower categories.</li>
+                    <li>Explanation: After checking answers, click the 'Info 💡' button next to a correct item to see why it belongs there!</li>
+                    <li>Finish: Once all slots are filled, click Check Answers, and then Finish Challenge to see your final rank!</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="game-screen">
+            <div id="welcome-message" style="text-align:right;"></div>
+            <h1>Income Statement Tycoon Challenge 🏗️</h1>
+
+            <div class="game-area">
+                <div class="item-list" id="unsorted-items">
+                    <h2>Items to Sort (15) 🗃️</h2>
+                    <div class="drop-zone unsorted-drop-zone" id="dz-unsorted">
+                        <div class="unsorted-placeholder" id="unsorted-placeholder">Drag items here to return them, or they will stack here automatically.</div>
+                    </div>
+                </div>
+
+                <div class="income-statement">
+                    <h2>Income Statement Structure 📈</h2>
+                    
+                    <div class="category-box" data-correct-category="Revenue">
+                        <div class="category-header">
+                            <h3>1. Revenue (Sales)</h3>
+                            <button class="category-help-btn" onclick="showCategoryHelp('Revenue')">❓</button>
+                        </div>
+                        <div class="drop-zone statement-slot" id="dz-Revenue-1">Empty Slot</div>
+                        <div class="drop-zone statement-slot" id="dz-Revenue-2">Empty Slot</div>
+                    </div>
+
+                    <div class="category-box" data-correct-category="COGS">
+                        <div class="category-header">
+                            <h3>2. Cost of Goods Sold (COGS)</h3>
+                            <button class="category-help-btn" onclick="showCategoryHelp('COGS')">❓</button>
+                        </div>
+                        <div class="drop-zone statement-slot" id="dz-COGS-1">Empty Slot</div>
+                        <div class="drop-zone statement-slot" id="dz-COGS-2">Empty Slot</div>
+                    </div>
+
+                    <div class="category-box" data-correct-category="OpEx">
+                        <div class="category-header">
+                            <h3>3. Operating Expenses (SG&A)</h3>
+                            <button class="category-help-btn" onclick="showCategoryHelp('OpEx')">❓</button>
+                        </div>
+                        <div class="drop-zone statement-slot" id="dz-OpEx-1">Empty Slot</div>
+                        <div class="drop-zone statement-slot" id="dz-OpEx-2">Empty Slot</div>
+                        <div class="drop-zone statement-slot" id="dz-OpEx-3">Empty Slot</div>
+                        <div class="drop-zone statement-slot" id="dz-OpEx-4">Empty Slot</div>
+                        <div class="drop-zone statement-slot" id="dz-OpEx-5">Empty Slot</div>
+                    </div>
+                    
+                    <div class="category-box" data-correct-category="NonOp">
+                        <div class="category-header">
+                            <h3>4. Non-Operating/Finance Items</h3>
+                            <button class="category-help-btn" onclick="showCategoryHelp('NonOp')">❓</button>
+                        </div>
+                        <div class="drop-zone statement-slot" id="dz-NonOp-1">Empty Slot</div>
+                        <div class="drop-zone statement-slot" id="dz-NonOp-2">Empty Slot</div>
+                        <div class="drop-zone statement-slot" id="dz-NonOp-3">Empty Slot</div>
+                        <div class="drop-zone statement-slot" id="dz-NonOp-4">Empty Slot</div>
+                    </div>
+
+                    <div class="category-box" data-correct-category="Tax">
+                        <div class="category-header">
+                            <h3>5. Taxation (The Tax Man Cometh)</h3>
+                            <button class="category-help-btn" onclick="showCategoryHelp('Tax')">❓</button>
+                        </div>
+                        <div class="drop-zone statement-slot" id="dz-Tax-1">Empty Slot</div>
+                        <div class="drop-zone statement-slot" id="dz-Tax-2">Empty Slot</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="check-btn" onclick="checkAnswers()">Check Answers ✔️</button>
+                <button class="finish-btn" id="finish-btn" onclick="showResults()">Finish Challenge 🏆</button>
+                <button class="reset-btn" onclick="confirmReset()">Reset Game 🔄</button>
+            </div>
+            <div id="feedback" class="feedback">Click 'Check Answers' to see your score!</div>
+        </div>
+        
+        <div id="results-screen" style="display:none;">
+            <h1>Challenge Complete!</h1>
+            <h2>Final Performance Report</h2>
+            <p>Tycoon Name: <span id="results-name"></span></p>
+            <p>Final Score: <span id="results-score"></span> / 15</p>
+            <p>Your Financial Rank:</p>
+            <div id="final-rank"></div>
+            <p id="rank-description"></p>
+            
+            <button class="start-btn" onclick="window.location.reload()">Start New Challenge</button>
+        </div>
+    </div>
+
+    <script>
+        const CATEGORY_DEFINITIONS = {
+            "Revenue": "This section represents income derived from the company's core business activities.",
+            "COGS": "These are the direct costs (materials, labor, etc.) specifically tied to producing the goods or services sold.",
+            "OpEx": "These are the costs of running the business, not directly tied to production (SG&A, R&D, administrative costs).",
+            "NonOp": "This includes income or expenses from non-core activities, such as investments, financing costs, and unusual gains or losses.",
+            "Tax": "This final section includes all forms of corporate tax and related adjustments based on the calculated taxable income."
+        };
+
+        const ITEMS = [
+            // Revenue (2 items)
+            { name: "Sales Revenue", category: "Revenue", hint: "The 'Top Line' and income from core business activities (e.g., selling products)." },
+            { name: "Service Fees Earned", category: "Revenue", hint: "Income generated from providing services as the primary business activity." },
+            
+            // COGS (2 items)
+            { name: "Cost of Goods Sold (COGS)", category: "COGS", hint: "Direct costs of materials and labor for products/services sold." },
+            { name: "Freight-In (Cost of Acquisition)", category: "COGS", hint: "The cost of shipping goods to your business, which is part of inventory cost." },
+            
+            // Operating Expenses (5 items)
+            { name: "Rent Expense (Administrative HQ)", category: "OpEx", hint: "Day-to-day running cost (SG&A) for non-production offices." },
+            { name: "Salaries Expense (Sales Dept)", category: "OpEx", hint: "Personnel costs related to selling and distribution." },
+            { name: "Depreciation Expense (Equipment)", category: "OpEx", hint: "A non-cash cost allocating the value of a physical asset over its life." },
+            { name: "Amortization Expense (Intangibles)", category: "OpEx", hint: "A non-cash cost allocating the value of an intangible asset (like patents) over its life." },
+            { name: "Bad Debt Expense", category: "OpEx", hint: "An estimate of accounts receivable that will not be collected from customers." },
+            
+            // Non-Operating/Finance Items (4 items)
+            { name: "Dividend Income", category: "NonOp", hint: "Passive income from investments in other companies (non-core)." },
+            { name: "Foreign Exchange Gain", category: "NonOp", hint: "Profit made from fluctuating currency values (not the main business)." },
+            { name: "Loss on Sale of Assets", category: "NonOp", hint: "A loss incurred from selling old equipment or investments for less than their book value." },
+            { name: "Interest Expense", category: "NonOp", hint: "A 'Finance Cost' the cost of borrowing money." },
+
+            // Taxation (2 items)
+            { name: "Income Tax Expense", category: "Tax", hint: "The main corporate tax liability on the taxable profit for the period." },
+            { name: "Deferred Tax (Expense/Benefit)", category: "Tax", hint: "A non-cash adjustment that arises from temporary differences between accounting and tax rules." }
+        ];
+
+        // Tycoon Ranking System (15 total points)
+        const TYCOON_RANKS = [
+            { minScore: 0, maxScore: 5, rank: "Junior Accountant 👶", description: "You're just starting out! Review the core categories and try again." },
+            { minScore: 6, maxScore: 9, rank: "Financial Analyst Intern 📊", description: "A decent start! You have a grasp of core concepts but need to separate OpEx from Non-Op more clearly." },
+            { minScore: 10, maxScore: 12, rank: "CFO Candidate 📈", description: "Excellent performance! You understand the difference between core operations and financing/investing activities." },
+            { minScore: 13, maxScore: 14, rank: "Executive Controller 💼", description: "Near perfection! You have a robust understanding of the Income Statement structure." },
+            { minScore: 15, maxScore: 15, rank: "Master Tycoon 👑", description: "Flawless victory! Your financial acumen is unparalleled. Go build your empire!" }
+        ];
+        
+        let finalScore = 0;
+
+        // Global element references
+        const unsortedDropZone = document.getElementById('dz-unsorted');
+        const unsortedPlaceholder = document.getElementById('unsorted-placeholder');
+        const feedbackArea = document.getElementById('feedback');
+        const finishButton = document.getElementById('finish-btn');
+        let playerName = "Tycoon";
+
+
+        // --- HELP AND EXPLANATION FUNCTIONS ---
+
+        function showCategoryHelp(categoryKey) {
+            const definition = CATEGORY_DEFINITIONS[categoryKey] || "Definition not found.";
+            const categoryName = document.querySelector(`.category-box[data-correct-category="${categoryKey}"] h3`).textContent;
+            alert(`Category Definition for ${categoryName}:\n\n${definition}`);
+        }
+
+        function getHintByName(itemName) {
+            const item = ITEMS.find(i => i.name === itemName);
+            return item ? item.hint : "No specific explanation found.";
+        }
+        
+        function showExplanation(itemName) {
+            const hint = getHintByName(itemName);
+            alert(`Explanation for ${itemName}:\n\n${hint}`);
+        }
+
+
+        // --- GAME START & RESET FUNCTIONS ---
+
+        function startGame() {
+            const nameInput = document.getElementById('player-name').value.trim();
+            if (nameInput === "") {
+                alert("Please enter your Tycoon Name to start the game.");
+                return;
+            }
+            playerName = nameInput;
+            document.getElementById('welcome-message').textContent = `Welcome, Tycoon ${playerName}! Time to build a powerful statement.`;
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+            initializeGame();
+        }
+
+        function confirmReset() {
+            if (confirm("Are you sure you want to reset the game? You'll start fresh with new shuffled items.")) {
+                initializeGame();
+            }
+        }
+
+        function initializeGame() {
+            // Reset state
+            finalScore = 0;
+            finishButton.style.display = 'none';
+            feedbackArea.innerHTML = 'Click \'Check Answers\' to see your score!';
+            feedbackArea.style.backgroundColor = 'transparent';
+            document.querySelectorAll('.category-box').forEach(box => {
+                box.classList.remove('correct', 'incorrect');
+            });
+            
+            // Clear all drop zones and reset text
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.innerHTML = zone.id === 'dz-unsorted' ? '' : 'Empty Slot';
+                zone.classList.remove('correct', 'incorrect');
+                zone.classList.remove('incorrect-item');
+                zone.removeEventListener('click', returnToUnsorted); 
+            });
+            
+            unsortedDropZone.innerHTML = ''; 
+            unsortedDropZone.appendChild(unsortedPlaceholder);
+
+
+            // Populate items
+            const shuffledItems = [...ITEMS].sort(() => 0.5 - Math.random());
+            shuffledItems.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'line-item';
+                itemDiv.setAttribute('draggable', true);
+                itemDiv.setAttribute('data-category', item.category);
+                itemDiv.setAttribute('data-name', item.name); 
+                
+                itemDiv.innerHTML = `
+                    <span>${item.name}</span>
+                    <button class="hint-btn" type="button" onclick="event.stopPropagation(); alert('Hint: ${item.hint}');">❓</button>
+                `;
+                unsortedDropZone.appendChild(itemDiv);
+
+                itemDiv.addEventListener('click', moveItemToStatement);
+                itemDiv.addEventListener('dragstart', handleDragStart);
+                itemDiv.addEventListener('dragend', handleDragEnd);
+            });
+            
+            checkUnsortedPlaceholder();
+
+            // Set up drag/drop listeners
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.addEventListener('dragover', e => e.preventDefault());
+                zone.addEventListener('dragenter', e => { e.preventDefault(); zone.style.backgroundColor = '#d5e8f8'; });
+                zone.addEventListener('dragleave', () => zone.style.backgroundColor = '');
+                zone.addEventListener('drop', handleDrop);
+                
+                if (zone.classList.contains('statement-slot')) {
+                    zone.addEventListener('click', returnToUnsorted);
+                }
+            });
+        }
+
+
+        // --- INTERACTION HANDLERS (Drag, Drop, Click) ---
+
+        let draggedItem = null;
+
+        function handleDragStart(e) {
+            draggedItem = e.currentTarget;
+            e.dataTransfer.setData('text/plain', draggedItem.getAttribute('data-name'));
+            setTimeout(() => draggedItem.style.opacity = '0.5', 0);
+        }
+
+        function handleDragEnd() {
+            if (draggedItem) draggedItem.style.opacity = '1';
+            draggedItem = null;
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const zone = e.currentTarget;
+            zone.style.backgroundColor = '';
+
+            if (!draggedItem) return;
+
+            const previousParent = draggedItem.parentElement;
+            
+            const explanationBtn = draggedItem.querySelector('.explanation-btn');
+            if(explanationBtn) draggedItem.removeChild(explanationBtn);
+            
+            const hintBtn = draggedItem.querySelector('.hint-btn');
+
+            if (zone.classList.contains('statement-slot') && zone.children.length === 0) {
+                // Moving to statement
+                if (previousParent && previousParent.id === 'dz-unsorted') {
+                    previousParent.removeChild(draggedItem); 
+                    checkUnsortedPlaceholder();
+                } else if (previousParent && previousParent.classList.contains('statement-slot')) {
+                    previousParent.innerHTML = 'Empty Slot';
+                    previousParent.removeEventListener('click', returnToUnsorted);
+                }
+
+                zone.innerHTML = '';
+                zone.appendChild(draggedItem);
+                draggedItem.removeEventListener('click', moveItemToStatement);
+                zone.addEventListener('click', returnToUnsorted);
+                if (hintBtn) hintBtn.style.display = 'none'; // Hide hint once placed
+
+            } else if (zone.id === 'dz-unsorted') {
+                // Moving back to unsorted zone
+                
+                if (previousParent && previousParent.classList.contains('statement-slot')) {
+                    previousParent.innerHTML = 'Empty Slot';
+                    previousParent.removeEventListener('click', returnToUnsorted);
+                }
+                
+                if (draggedItem.parentElement !== zone) {
+                    zone.appendChild(draggedItem);
+                }
+                
+                draggedItem.addEventListener('click', moveItemToStatement);
+                if (hintBtn) hintBtn.style.display = 'inline'; // Show hint again
+                checkUnsortedPlaceholder(); 
+            }
+        }
+
+        function moveItemToStatement(e) {
+            const item = e.currentTarget;
+
+            const explanationBtn = item.querySelector('.explanation-btn');
+            if(explanationBtn) item.removeChild(explanationBtn);
+            
+            const hintBtn = item.querySelector('.hint-btn');
+            if (hintBtn) hintBtn.style.display = 'none'; // Hide hint once placed
+
+            unsortedDropZone.removeChild(item); 
+            checkUnsortedPlaceholder();
+
+            const targetZones = document.querySelectorAll('.statement-slot');
+            let moved = false;
+            
+            for (let zone of targetZones) {
+                if (zone.children.length === 0) {
+                    zone.innerHTML = ''; 
+                    zone.appendChild(item);
+                    item.removeEventListener('click', moveItemToStatement); 
+                    zone.addEventListener('click', returnToUnsorted); 
+                    moved = true;
+                    break;
+                }
+            }
+            if (!moved) {
+                // If it couldn't move, put it back
+                unsortedDropZone.appendChild(item);
+                item.addEventListener('click', moveItemToStatement);
+                if (hintBtn) hintBtn.style.display = 'inline'; // Show hint button again
+                checkUnsortedPlaceholder();
+                alert("All slots are currently full! Click an item in the Income Statement to move it back first.");
+            }
+        }
+        
+        function returnToUnsorted(e) {
+            const dropZone = e.currentTarget;
+            const item = dropZone.querySelector('.line-item');
+
+            if (item) {
+                dropZone.classList.remove('correct', 'incorrect');
+                item.classList.remove('incorrect-item');
+
+                const explanationBtn = item.querySelector('.explanation-btn');
+                if(explanationBtn) item.removeChild(explanationBtn);
+                
+                const hintBtn = item.querySelector('.hint-btn');
+                if (hintBtn) hintBtn.style.display = 'inline'; // Show hint button again
+
+                unsortedDropZone.appendChild(item);
+                dropZone.innerHTML = 'Empty Slot'; 
+                item.addEventListener('click', moveItemToStatement); 
+                dropZone.removeEventListener('click', returnToUnsorted); 
+                checkUnsortedPlaceholder(); 
+                
+                // If an item is moved back, hide the finish button
+                finishButton.style.display = 'none';
+            }
+        }
+
+        function checkUnsortedPlaceholder() {
+            const items = unsortedDropZone.querySelectorAll('.line-item');
+            unsortedPlaceholder.style.display = items.length === 0 ? 'block' : 'none';
+        }
+
+
+        // --- RESULTS AND SCORING ---
+
+        function checkAnswers() {
+            let correctCount = 0;
+            const totalItems = ITEMS.length; 
+            let placedItems = 0;
+            
+            document.querySelectorAll('.category-box').forEach(box => {
+                box.classList.remove('correct', 'incorrect');
+            });
+            document.querySelectorAll('.statement-slot').forEach(zone => {
+                zone.classList.remove('correct', 'incorrect');
+                const item = zone.querySelector('.line-item');
+                if (item) {
+                    item.classList.remove('incorrect-item');
+                    const oldBtn = item.querySelector('.explanation-btn');
+                    if (oldBtn) item.removeChild(oldBtn);
+                }
+            });
+
+
+            // Check all statement slots
+            document.querySelectorAll('.statement-slot').forEach(zone => {
+                const item = zone.querySelector('.line-item');
+                const categoryBox = zone.closest('.category-box');
+                
+                if (item) {
+                    placedItems++;
+                    const itemName = item.getAttribute('data-name');
+                    const itemCategory = item.getAttribute('data-category');
+                    const correctCategory = categoryBox.getAttribute('data-correct-category');
+                    
+                    if (itemCategory === correctCategory) {
+                        categoryBox.classList.add('correct');
+                        zone.classList.add('correct');
+                        correctCount++;
+
+                        const explanationBtn = document.createElement('button');
+                        explanationBtn.className = 'explanation-btn';
+                        explanationBtn.textContent = 'Info 💡';
+                        explanationBtn.onclick = (e) => {
+                            e.stopPropagation(); 
+                            showExplanation(itemName);
+                        };
+                        item.appendChild(explanationBtn);
+
+                    } else {
+                        categoryBox.classList.add('incorrect');
+                        zone.classList.add('incorrect');
+                        item.classList.add('incorrect-item'); 
+                    }
+                }
+            });
+            
+            finalScore = correctCount; // Store the score
+
+            // Display feedback and manage the Finish button
+            const scoreMessage = `${playerName}, your score is <strong>${correctCount} out of ${totalItems}</strong>.`;
+            const remaining = totalItems - placedItems;
+
+            if (remaining > 0) {
+                 feedbackArea.innerHTML = `<span style="color: #ff5733;">⚠️ You have ${remaining} items left!</span> ${scoreMessage} Fix the red marked items and complete the rest.`;
+                 feedbackArea.style.backgroundColor = '#fff3cd';
+                 finishButton.style.display = 'none';
+            } else if (correctCount === totalItems) {
+                feedbackArea.innerHTML = `<strong>🎉 PERFECT SCORE, ${playerName}!</strong> All items are placed. Click 'Finish Challenge' to see your rank!`;
+                feedbackArea.style.backgroundColor = '#d4edda';
+                finishButton.style.display = 'inline-block';
+            } else {
+                feedbackArea.innerHTML = `${scoreMessage} 🧐 Review the red sections and move those items back to the list to try again!`;
+                feedbackArea.style.backgroundColor = '#f8d7da';
+                finishButton.style.display = 'inline-block';
+            }
+        }
+        
+        function getRank(score) {
+            return TYCOON_RANKS.find(rank => score >= rank.minScore && score <= rank.maxScore);
+        }
+
+        function showResults() {
+            const rankData = getRank(finalScore);
+            
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('results-screen').style.display = 'block';
+
+            document.getElementById('results-name').textContent = playerName;
+            document.getElementById('results-score').textContent = finalScore;
+            document.getElementById('final-rank').innerHTML = rankData.rank;
+            document.getElementById('rank-description').textContent = rankData.description;
+        }
+
+        // Initialize the game's start screen when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+             document.getElementById('start-screen').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
