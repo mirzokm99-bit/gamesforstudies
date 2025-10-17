@@ -3,96 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVP Command: The Unit Challenge (Team Mode)</title>
+    <title>CVP Command: The Unit Challenge (Solo Mode)</title>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js" type="module"></script>
     <style>
-        /* --- General Styling --- */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f4f7f6; color: #333; line-height: 1.6; }
-        .container { max-width: 900px; margin: 30px auto; background-color: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); border-top: 5px solid #007bff; }
-        h1, h2, h3 { color: #007bff; text-align: center; margin-bottom: 25px; }
-        h1 { font-size: 2.8em; letter-spacing: 1px; }
+        /* --- General Styling (Cyber-Finance Theme) --- */
+        body { 
+            font-family: 'Consolas', 'Courier New', monospace; 
+            margin: 0; 
+            background-color: #1A1A2E; /* Deep dark background */
+            color: #E0FFFF; /* Neon Cyan for text */
+            line-height: 1.6; 
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 15px;
+        }
+        .container { 
+            max-width: 900px; 
+            width: 100%;
+            margin: 0;
+            background-color: #0F0F1A; /* Slightly lighter inner background */
+            padding: 40px; 
+            border-radius: 12px; 
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4); /* Cyan glow */
+            border: 3px solid #00FFFF;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        h1, h2, h3 { 
+            color: #39FF14; /* Neon Green */
+            text-align: center; 
+            margin-bottom: 25px; 
+            text-shadow: 0 0 5px #39FF14;
+        }
+        h1 { 
+            font-size: 3em; 
+            letter-spacing: 3px; 
+            border-bottom: 2px solid #00FFFF;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
 
         /* --- Input and Control Layout --- */
-        .input-group { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; justify-content: center; }
-        .input-item { flex: 1 1 200px; padding: 10px; border-radius: 6px; background-color: #e9f5ff; border: 1px solid #cceeff; }
-        .input-item label { display: block; margin-bottom: 5px; font-weight: bold; color: #004085; font-size: 0.9em; }
-        .input-item input[type="number"] { width: calc(100% - 10px); padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 1.1em; box-sizing: border-box; }
+        .input-group { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 20px; 
+            margin-bottom: 35px; 
+            justify-content: center; 
+        }
+        .input-item { 
+            flex: 1 1 200px; 
+            padding: 15px; 
+            border-radius: 8px; 
+            background-color: #1a1a2e;
+            border: 1px solid #00FFFF;
+            box-shadow: inset 0 0 8px rgba(0, 255, 255, 0.5);
+        }
+        .input-item label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: bold; 
+            color: #39FF14; 
+            font-size: 1em; 
+        }
+        .input-item input[type="number"] { 
+            width: 100%; 
+            padding: 10px; 
+            border: none; 
+            border-radius: 4px; 
+            font-size: 1.2em; 
+            box-sizing: border-box; 
+            background-color: #0F0F1A;
+            color: #E0FFFF;
+            box-shadow: 0 0 5px #00FFFF;
+            text-align: center;
+        }
         
-        /* --- Challenge Panel --- */
+        /* --- Challenge Panel (Warning/Alert Style) --- */
         #challengePanel {
-            background: #ffe6e6; /* Light red for urgency */
-            border: 3px solid #ff0000;
-            padding: 25px;
+            background: #4a1515; /* Dark red for urgency */
+            border: 3px solid #FF0077; /* Neon Magenta border */
+            padding: 30px;
             border-radius: 10px;
             text-align: center;
             margin-bottom: 30px;
+            box-shadow: 0 0 15px rgba(255, 0, 119, 0.7);
         }
-        #challengeText { font-size: 1.5em; color: #cc0000; font-weight: bold; margin-bottom: 15px; }
-        #answerInputContainer { display: flex; justify-content: center; align-items: center; gap: 10px; }
-        #answerInput { padding: 10px; font-size: 1.2em; width: 150px; border: 2px solid #ff0000; border-radius: 5px; }
+        #challengeText { 
+            font-size: 1.6em; 
+            color: #FF0077; 
+            font-weight: bold; 
+            margin-bottom: 20px; 
+            text-shadow: 0 0 5px #FF0077;
+        }
+        #answerInputContainer { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 15px; 
+        }
+        #answerInput { 
+            padding: 12px; 
+            font-size: 1.3em; 
+            width: 180px; 
+            border: 2px solid #FF0077; 
+            border-radius: 5px; 
+            background-color: #0F0F1A;
+            color: #E0FFFF;
+        }
         
-        /* --- Buttons --- */
+        /* --- Buttons (Neon/Gradient) --- */
         .button-group { display: flex; justify-content: space-around; max-width: 800px; margin: 20px auto; }
         .button-group button { 
-            width: 100%; margin: 0 10px; padding: 12px 15px; font-size: 1.1em; 
+            width: 100%; margin: 0 10px; padding: 15px 15px; font-size: 1.2em; 
             border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
-            transition: transform 0.2s; 
+            transition: all 0.3s ease; 
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
         }
-        .button-group button:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        .button-group button:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 15px rgba(0, 255, 255, 0.6); 
+        }
 
-        #submitButton { background-color: #28a745; color: white; }
-        #nextButton { background-color: #007bff; color: white; display: none; }
-        #restartButton { background-color: #ffc107; color: #333; }
-        #finishButton { background-color: #dc3545; color: white; }
+        #submitButton { 
+            background: linear-gradient(45deg, #39FF14, #00CC00); 
+            color: #1A1A2E; 
+        }
+        #submitButton:hover { box-shadow: 0 8px 15px rgba(57, 255, 20, 0.8); }
+
+        #nextButton { 
+            background: linear-gradient(45deg, #00FFFF, #0077FF); 
+            color: #1A1A2E; 
+            display: none; 
+        }
+        #nextButton:hover { box-shadow: 0 8px 15px rgba(0, 255, 255, 0.8); }
+
+        #restartButton { 
+            background: linear-gradient(45deg, #FFC107, #FF9900); 
+            color: #1A1A2E; 
+        }
+        #restartButton:hover { box-shadow: 0 8px 15px rgba(255, 193, 7, 0.8); }
+
+        #finishButton { 
+            background: linear-gradient(45deg, #DC3545, #990000); 
+            color: #E0FFFF; 
+            border: 1px solid #FF0077;
+        }
+        #finishButton:hover { box-shadow: 0 8px 15px rgba(220, 53, 69, 0.8); }
 
         /* --- Status and Score --- */
-        #scoreDisplay { text-align: center; font-size: 2.2em; color: #28a745; font-weight: bold; margin-bottom: 20px; }
-        #teamScoreDisplay { text-align: center; font-size: 1.5em; color: #007bff; font-weight: bold; margin-bottom: 10px; }
-        #feedbackMessage { margin-top: 15px; padding: 10px; border-radius: 6px; font-weight: bold; display: none; }
-        .feedback-correct { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .feedback-incorrect { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-
-        /* --- Help Button and Player List (Team Sync) --- */
-        .help-button { 
-            background: #007bff; color: white; border: none; border-radius: 50%; 
-            width: 18px; height: 18px; text-align: center; line-height: 18px; 
-            font-size: 0.7em; font-weight: 900; cursor: pointer; margin-left: 5px; 
-            display: inline-block; vertical-align: middle; 
+        #scoreDisplay { 
+            text-align: center; 
+            font-size: 2.5em; 
+            color: #FF0077; /* Neon Magenta */
+            font-weight: bold; 
+            margin-bottom: 25px; 
+            text-shadow: 0 0 10px #FF0077;
         }
-        .info-box { background-color: #e6f7ff; border-left: 5px solid #007bff; padding: 15px; margin-top: 25px; border-radius: 5px; color: #004085; }
-        #playerSetup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 1000; display: flex; justify-content: center; align-items: center; }
-        #playerSetup div { background-color: white; padding: 40px; border-radius: 10px; text-align: center; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        .team-id-display { font-size: 1.2em; font-weight: bold; color: #dc3545; margin: 10px 0; }
-        
-        /* Partner Progress */
-        #partnerProgress { margin-top: 15px; padding: 10px; background-color: #fff8e1; border: 1px dashed #ffc107; border-radius: 6px;}
-        #partnerProgress ul { list-style: none; padding: 0; }
-        #partnerProgress li { margin-bottom: 8px; font-size: 0.95em; }
-        
-        /* --- Custom Modal Styling --- */
+        #feedbackMessage { 
+            margin-top: 20px; 
+            padding: 12px; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            display: none; 
+            text-shadow: none;
+        }
+        .feedback-correct { 
+            background-color: #0A3D2A; /* Dark green background */
+            color: #39FF14; /* Bright green text */
+            border: 1px solid #39FF14; 
+        }
+        .feedback-incorrect { 
+            background-color: #3A1515; /* Dark red background */
+            color: #FF0077; /* Bright magenta text */
+            border: 1px solid #FF0077; 
+        }
+
+        /* --- Help Button and Info Box --- */
+        .help-button { 
+            background: #00FFFF; 
+            color: #1A1A2E; 
+            border: none; 
+            border-radius: 50%; 
+            width: 20px; 
+            height: 20px; 
+            text-align: center; 
+            line-height: 20px; 
+            font-size: 0.8em; 
+            font-weight: 900; 
+            cursor: pointer; 
+            margin-left: 8px; 
+            display: inline-block; 
+            vertical-align: middle; 
+            box-shadow: 0 0 5px #00FFFF;
+        }
+        .info-box { 
+            background-color: #1a1a2e; 
+            border-left: 5px solid #00FFFF; 
+            padding: 15px; 
+            margin-top: 25px; 
+            margin-bottom: 25px;
+            border-radius: 5px; 
+            color: #E0FFFF; 
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            text-align: center;
+        }
+        .info-box strong { color: #39FF14; }
+
+        /* --- Setup & Modal Styling --- */
+        #playerSetup { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: rgba(0, 0, 0, 0.95); z-index: 1000; display: flex; 
+            justify-content: center; align-items: center; 
+        }
+        #playerSetup div { 
+            background-color: #0F0F1A; 
+            padding: 50px; 
+            border-radius: 15px; 
+            text-align: center; 
+            box-shadow: 0 0 30px rgba(0,255,255,0.7); 
+            border: 2px solid #00FFFF;
+        }
+        #playerNameInput {
+            padding: 10px; font-size: 1.2em; border: 2px solid #39FF14; border-radius: 5px; 
+            background-color: #1A1A2E; color: #E0FFFF; text-align: center;
+            width: 80%; max-width: 300px;
+        }
+        #playerSetup button {
+            background-color: #39FF14; color: #1A1A2E; padding: 12px 25px; font-weight: bold;
+            border-radius: 8px; margin-top: 20px; cursor: pointer; transition: transform 0.2s;
+        }
+
         #customModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background-color: rgba(0, 0, 0, 0.7); z-index: 2000; justify-content: center; 
+            background-color: rgba(0, 0, 0, 0.85); z-index: 2000; justify-content: center; 
             align-items: center; opacity: 0; transition: opacity 0.2s;
         }
         #customModal > div {
-            background-color: white; padding: 30px; border-radius: 10px; max-width: 400px; 
-            text-align: center; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            background-color: #0F0F1A; padding: 30px; border-radius: 10px; max-width: 400px; 
+            text-align: center; box-shadow: 0 0 20px rgba(255, 0, 119, 0.7);
+            border: 2px solid #FF0077;
+            color: #E0FFFF;
         }
+        #modalTitle { color: #39FF14 !important; text-shadow: 0 0 5px #39FF14; }
         #modalButtons button {
             padding: 10px 20px; border-radius: 6px; font-weight: bold; margin: 0 5px;
-            cursor: pointer; transition: background-color 0.2s;
+            cursor: pointer; transition: background-color 0.2s; color: #1A1A2E;
         }
+        #modalButtons button:nth-child(1) { background-color: #FF0077; color: #E0FFFF;}
+        #modalButtons button:nth-child(2) { background-color: #00FFFF; }
+
 
         /* --- Responsive Adjustments --- */
         @media (max-width: 600px) {
-            .container { margin: 15px; padding: 15px; }
+            body { padding: 15px; }
+            .container { padding: 20px; }
+            h1 { font-size: 2em; letter-spacing: 2px; }
             .input-group { flex-direction: column; }
             .button-group { flex-direction: column; gap: 10px; }
             .button-group button { margin: 5px 0; }
-            h1 { font-size: 2em; }
+            #challengeText { font-size: 1.3em; }
+            #scoreDisplay { font-size: 1.8em; }
         }
     </style>
 </head>
@@ -100,7 +275,7 @@
         <!-- Custom Modal/Dialog for Alerts and Confirmations -->
     <div id="customModal">
         <div>
-            <h3 id="modalTitle" style="color: #007bff; margin-top: 0;">Notification</h3>
+            <h3 id="modalTitle">Notification</h3>
             <p id="modalMessage" style="margin-bottom: 20px; white-space: pre-wrap;"></p>
             <div id="modalButtons">
             </div>
@@ -110,16 +285,15 @@
         <!-- Player Name Setup Screen (Modal) -->
     <div id="playerSetup">
         <div>
-            <h2>CVP Command: Team Challenge Setup</h2>
-            <p>1. Enter your Name/Role:</p>
-            <input type="text" id="playerNameInput" placeholder="Your Name and Role" />
-            <p style="margin-top: 20px;">2. Enter or Share your Team ID:</p>
-            <input type="text" id="teamIdInput" placeholder="Enter partner's ID or leave blank" />
-            <div id="generatedTeamId" class="team-id-display" style="display: none;"></div>
-            <button onclick="startGame()" style="width: 200px; margin: 20px auto 0; background-color: #007bff;">
-                Join or Create Team
+            <h2>CVP COMMAND:  SOLO CHALLENGE SETUP</h2>
+            <p>1. Enter your Name/Role (Your progress will be encrypted):</p>
+            <input type="text" id="playerNameInput" placeholder="Agent Name/Role" />
+            <button onclick="startGame()">
+                EXECUTE CHALLENGE
             </button>
-            <p style="margin-top: 10px; font-size: 0.8em; color: #555;">(If blank, a new ID will be created for you to share.)</p>
+            <p style="margin-top: 15px; font-size: 0.9em; color: #00FFFF;">
+                <span style="font-size: 1.5em;">&#9658;</span> Prepare for Profitability Analysis.
+            </p>
         </div>
     </div>
 
@@ -127,22 +301,16 @@
         <h1>CVP Command: The Unit Challenge</h1>
 
         <!-- Score and Player Info -->
-        <div id="teamScoreDisplay">Team Average Score: 0 Points</div>
-        <div id="scoreDisplay">Your Score: 0 Points (Level 1, Round 1/16)</div>
+        <div id="scoreDisplay">SYNCHRONIZING DATA...</div>
 
         <div id="onlinePlayers" class="info-box">
-            <strong>Current Level:</strong> <span id="levelTitle" style="color:#007bff;"></span>
-            <hr style="border-top: 1px dashed #00408544;">
-            <strong>Team ID: </strong> <span id="currentTeamId" style="color:#dc3545;"></span>
-            <hr style="border-top: 1px dashed #00408544;">
-            <div id="partnerProgress">
-                <strong>Team Progress:</strong>
-                <ul id="playerList"></ul>
-            </div>
+            <strong>AGENT ID:</strong> <span id="currentPlayerName" style="color:#FF0077;"></span>
+            <hr style="border-top: 1px dashed #00FFFF44;">
+            <strong>CURRENT MISSION LEVEL:</strong> <span id="levelTitle" style="color:#00FFFF;"></span>
         </div>
 
         <!-- Input Data Board -->
-        <h2>Challenge Data Set (P, V, F, S)</h2>
+        <h2>DATA INPUT MODULE (P, V, F, S)</h2>
         <div class="input-group">
             <div class="input-item">
                 <label>Selling Price (P):
@@ -172,24 +340,24 @@
 
         <!-- Challenge Panel -->
         <div id="challengePanel">
-            <h2>Current Challenge: <span id="roundTitle"></span></h2>
-            <p id="challengeText">Loading challenge...</p>
+            <h2>CURRENT CHALLENGE: <span id="roundTitle"></span></h2>
+            <p id="challengeText">System Initializing...</p>
 
             <div id="answerInputContainer">
-                <input type="number" id="answerInput" placeholder="Your Answer (Rounded)" step="0.01">
+                <input type="number" id="answerInput" placeholder="INPUT RESPONSE (Numeric)" step="0.01">
                 <span class="help-button" onclick="showHelp('Current')">?</span>
             </div>
 
             <div id="feedbackMessage"></div>
         </div>
         <div class="button-group">
-            <button id="submitButton" onclick="submitAnswer()">Submit Answer</button>
-            <button id="nextButton" onclick="nextRound()">Next Challenge</button>
+            <button id="submitButton" onclick="submitAnswer()">SUBMIT RESPONSE</button>
+            <button id="nextButton" onclick="nextRound()">NEXT CHALLENGE</button>
         </div>
 
         <div class="button-group" style="margin-top: 5px;">
-            <button id="restartButton" onclick="restartGame()">Restart Game (Local)</button>
-            <button id="finishButton" onclick="finishGame()">Finish & Grade</button>
+            <button id="restartButton" onclick="restartGame()">REINITIALIZE SYSTEM (Restart)</button>
+            <button id="finishButton" onclick="finishGame()">COMPLETE MISSION & GRADE</button>
         </div>
     </div>
     <script type="module">
@@ -202,12 +370,13 @@
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        let db, auth, currentUserId, currentTeamId;
+        let db, auth, currentUserId;
         let myPlayerName = '';
         let currentScore = 0;
-        let currentRound = 0; // Total rounds completed (1 to 16)
+        let currentRound = 0; // 1-indexed number of the current active round. 0 means game hasn't started.
         let currentLevelIndex = 0; // 0-indexed reference to gameLevels
         let unsubscribeSnapshot = null; // Listener reference
+        const SOLO_DOC_ID = 'solo_session'; // Fixed document ID for solo play
 
         // --- CVP Definitions ---
         const cvpDefinitions = {
@@ -224,7 +393,6 @@
             { title: "Break-Even Point in Units", text: "How many units must the company sell to cover all Fixed Costs (BEP)? Round up to the nearest whole unit.", calculate: (P, V, F, S) => Math.ceil(F / (P - V)), unit: " units", difficulty: 75, hint: "Formula: BEP (Units) = Fixed Costs (F) / Contribution Margin (CM)." },
             { title: "Current Total Profit (TP)", text: "What is the total profit/loss at the current Target Sales (S)? Round to 2 decimal places.", calculate: (P, V, F, S) => ((S * (P - V)) - F).toFixed(2), unit: "$", difficulty: 100, hint: "Formula: Profit = (Sales Units * CM) - Fixed Costs." },
             { title: "Margin of Safety Percentage", text: "Calculate the Margin of Safety Percentage (MoS%) at current Target Sales (S). Round to 2 decimal places.", calculate: (P, V, F, S) => { const CM = P - V; const BEP_units = F / CM; const MoS_units = S - BEP_units; return ((MoS_units / S) * 100).toFixed(2); }, unit: "%", difficulty: 125, hint: "Formula: MoS% = ((Target Sales - BEP Sales) / Target Sales) * 100." },
-            // Removed ** from the following challenges
             { title: "Required Sales Units (Target Profit $8k)", text: "What sales units (S) are needed to hit a Target Profit of $8,000? Round up to the nearest whole unit.", calculate: (P, V, F, S) => Math.ceil((F + 8000) / (P - V)), unit: " units", difficulty: 150, hint: "Formula: Required Sales = (Fixed Costs + Target Profit) / CM." },
             { title: "Required Selling Price (Target Profit $6k)", text: "To hit a Target Profit of $6,000, what must the Selling Price (P) be? Round to 2 decimal places.", calculate: (P, V, F, S) => { const requiredCM = (F + 6000) / S; return (requiredCM + V).toFixed(2); }, unit: "$", difficulty: 175, hint: "Solve for P in the Target Profit formula." },
             { title: "CM Ratio (CM%)", text: "Calculate the Contribution Margin Ratio (CM/P). Round to 3 decimal places (e.g., 0.600).", calculate: (P, V, F, S) => ((P - V) / P).toFixed(3), unit: " Ratio", difficulty: 100, hint: "CM Ratio = Contribution Margin / Selling Price. This is useful for CVP analysis in dollars." },
@@ -268,13 +436,13 @@
             if (isConfirm) {
                 // Confirm buttons (Yes/No)
                 const yesBtn = document.createElement('button');
-                yesBtn.textContent = 'Yes, Restart';
-                yesBtn.style.cssText = 'background-color: #dc3545; color: white; padding: 8px 15px; border: none; border-radius: 6px; margin-right: 10px; cursor: pointer;';
+                yesBtn.textContent = 'Yes, Proceed';
+                yesBtn.style.cssText = 'background-color: #FF0077; color: #E0FFFF; padding: 10px 20px; border: none; border-radius: 6px; margin-right: 10px; cursor: pointer;';
                 yesBtn.onclick = () => { closeModal(); callback(true); };
                                 
                 const noBtn = document.createElement('button');
                 noBtn.textContent = 'Cancel';
-                noBtn.style.cssText = 'background-color: #6c757d; color: white; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;';
+                noBtn.style.cssText = 'background-color: #00FFFF; color: #1A1A2E; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer;';
                 noBtn.onclick = () => { closeModal(); callback(false); };
 
                 modalButtons.appendChild(yesBtn);
@@ -283,8 +451,8 @@
             } else {
                 // Alert button (OK)
                 const okBtn = document.createElement('button');
-                okBtn.textContent = 'OK';
-                okBtn.style.cssText = 'background-color: #007bff; color: white; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer;';
+                okBtn.textContent = 'ACKNOWLEDGE';
+                okBtn.style.cssText = 'background-color: #39FF14; color: #1A1A2E; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer;';
                 okBtn.onclick = () => { closeModal(); if(callback) callback(); };
                                 
                 modalButtons.appendChild(okBtn);
@@ -307,14 +475,10 @@
                     await signInAnonymously(auth);
                 }
                 currentUserId = auth.currentUser.uid;
-                                
-                // Set a unique identifier for the game path
-                document.getElementById('generatedTeamId').textContent = `Share this ID: ${currentUserId.substring(0, 8)}`;
-                document.getElementById('generatedTeamId').style.display = 'block';
 
             } catch (error) {
                 console.error("Error initializing Firebase or signing in:", error);
-                showModal("Connection Error", "Error connecting to Firebase. Check console for details.", false);
+                showModal("SYSTEM ERROR", "Error connecting to secure system. Check console for details.", false);
             }
         }
 
@@ -324,183 +488,186 @@
 
             const nameInput = document.getElementById('playerNameInput');
             myPlayerName = nameInput.value.trim();
-            let teamIdInput = document.getElementById('teamIdInput').value.trim();
 
             if (myPlayerName.length < 2) {
-                showModal("Input Required", "Please enter a valid team name/role.", false);
+                showModal("ACCESS DENIED", "Agent Name/Role must be at least 2 characters.", false);
                 return;
             }
 
-            // Determine Team ID: Use input if provided, otherwise use current user's ID
-            currentTeamId = teamIdInput.length > 0 ? teamIdInput : currentUserId;
+            document.getElementById('currentPlayerName').textContent = myPlayerName;
 
-            // Set up the game session and real-time listener
-            await setupGameSession(currentTeamId);
+            // Set up the game session and real-time listener (using fixed solo path)
+            await setupGameSession();
 
             // Hide setup and show game
             document.getElementById('playerSetup').style.display = 'none';
             document.getElementById('gameContainer').style.display = 'block';
-            document.getElementById('currentTeamId').textContent = currentTeamId.substring(0, 8);
                         
-            // Start the first round
+            // Start the first round or resume from loaded progress
             restartGame(true); 
          }
 
-        async function setupGameSession(teamId) {
-            const teamRef = doc(db, `artifacts/${appId}/public/data/cvp_challenges`, teamId);
+        async function setupGameSession() {
+            // Path for private, solo data: /artifacts/{appId}/users/{userId}/cvp_solo_game/solo_session
+            const soloRef = doc(db, `artifacts/${appId}/users/${currentUserId}/cvp_solo_game`, SOLO_DOC_ID);
 
-            // 1. Update the team document with the current player's initial data using a transaction
+            // 1. Update the solo document with the player's initial data or load existing data
             try {
                 await runTransaction(db, async (transaction) => {
-                    const teamDoc = await transaction.get(teamRef);
+                    const soloDoc = await transaction.get(soloRef);
 
-                    let data = {};
-                    if (teamDoc.exists()) {
-                        data = teamDoc.data();
-                    }
-
-                    // Check which slot is available or if this user is already in a slot
-                    let playerSlot;
-                    if (data.player1Id === currentUserId) {
-                        playerSlot = 'player1';
-                    } else if (data.player2Id === currentUserId) {
-                        playerSlot = 'player2';
-                    } else if (!data.player1Id) {
-                        playerSlot = 'player1';
-                    } else if (!data.player2Id) {
-                        playerSlot = 'player2';
+                    if (soloDoc.exists()) {
+                        // Load existing data
+                        const data = soloDoc.data();
+                        myPlayerName = data.playerName || myPlayerName;
+                        currentScore = data.score || 0;
+                        currentRound = data.round || 0;
+                        currentLevelIndex = data.levelIndex || 0;
+                        
+                        // Update UI with loaded player name
+                        document.getElementById('playerNameInput').value = myPlayerName;
+                        document.getElementById('currentPlayerName').textContent = myPlayerName;
                     } else {
-                        // Max two players allowed
-                        if (data.player1Id && data.player2Id) {
-                            showModal("Team Full", "This team is currently full (max 2 players). Cannot join.", false);
-                            throw new Error("Team Full"); 
-                         }
-                        // Fallback use existing slot if somehow missed above (shouldn't happen with transaction)
-                        playerSlot = data.player1Id === currentUserId ? 'player1' : 'player2';
+                        // Set initial data if document doesn't exist
+                        transaction.set(soloRef, {
+                            playerName: myPlayerName,
+                            score: currentScore,
+                            round: currentRound,
+                            levelIndex: currentLevelIndex,
+                            lastUpdated: new Date().toISOString()
+                        });
                     }
-
-                    // Update the player's slot
-                    data[`${playerSlot}Id`] = currentUserId;
-                    data[`${playerSlot}Name`] = myPlayerName;
-                    data[`${playerSlot}Score`] = currentScore;
-                    data[`${playerSlot}Round`] = currentRound;
-                    data.teamId = teamId; // Ensure teamId is stored
-
-                    transaction.set(teamRef, data);
                 });
 
-                // 2. Set up the real-time listener *after* the initial data is committed
+                // 2. Set up the real-time listener
                 if (unsubscribeSnapshot) {
                     unsubscribeSnapshot(); // Stop any previous listener
                 }
 
-                unsubscribeSnapshot = onSnapshot(teamRef, (docSnapshot) => {
+                unsubscribeSnapshot = onSnapshot(soloRef, (docSnapshot) => {
                     if (docSnapshot.exists()) {
-                        handleTeamUpdate(docSnapshot.data());
+                        handleSoloUpdate(docSnapshot.data());
                     } else {
-                        console.log("Team session deleted or not found.");
+                        console.log("Solo session data not found.");
                     }
                 });
 
             } catch (error) {
-                console.error("Transaction failed or team is full:", error);
-                if (error.message !== "Team Full") {
-                    showModal("Transaction Failed", "Failed to join/create team session. Check console.", false);
-                }
+                console.error("Transaction failed during setup:", error);
+                showModal("DATA INITIATION ERROR", "Failed to start solo session. Check console.", false);
             }
         }
 
-        // Listener Handler
-        function handleTeamUpdate(data) {
-            let totalScore = 0;
-            let playerCount = 0;
-            const playerListUl = document.getElementById('playerList');
-            playerListUl.innerHTML = '';
+        // Listener Handler - Updates local state with persisted data
+        function handleSoloUpdate(data) {
+            currentScore = data.score || 0;
+            currentRound = data.round || 0;
+            currentLevelIndex = data.levelIndex || 0;
 
-            // Collect player data and calculate total score
-            const players = [];
-            if (data.player1Id) {
-                players.push({ id: data.player1Id, name: data.player1Name, score: data.player1Score || 0, round: data.player1Round || 0 });
-            }
-            if (data.player2Id) {
-                players.push({ id: data.player2Id, name: data.player2Name, score: data.player2Score || 0, round: data.player2Round || 0 });
-            }
-
-            // Update UI and calculate team score
-            players.forEach(p => {
-                totalScore += p.score;
-                playerCount++;
-                                
-                const status = p.id === currentUserId ? ' (You)' : '';
-                const currentLevel = Math.min(gameLevels.length, Math.floor((p.round - 1) / roundsPerLevel) + 1);
-                const li = document.createElement('li');
-                li.innerHTML = `<strong>${p.name}${status}:</strong> Score ${p.score} | Round ${p.round}/${totalGameRounds} (Level ${currentLevel})`;
-                playerListUl.appendChild(li);
-            });
-
-            // Calculate Team Score (Average)
-            const teamScore = playerCount > 0 ? (totalScore / playerCount) : 0;
-            document.getElementById('teamScoreDisplay').textContent = `Team Average Score: ${teamScore.toFixed(0)} Points`;
+            const currentLevel = gameLevels[currentLevelIndex]?.level || 1;
+            document.getElementById('scoreDisplay').textContent = `SCORE: ${currentScore} PTS (Lvl ${currentLevel}, Rnd ${currentRound}/${totalGameRounds})`;
+            
+            // Re-initialize inputs and next round state based on loaded data
+            initializeInputs(); 
         }
 
         // --- DATA UPDATE ---
-        async function updateTeamState() {
-            if (!currentTeamId || !db) return;
+        async function updateSoloState() {
+            if (!currentUserId || !db) return;
 
-            const teamRef = doc(db, `artifacts/${appId}/public/data/cvp_challenges`, currentTeamId);
+            const soloRef = doc(db, `artifacts/${appId}/users/${currentUserId}/cvp_solo_game`, SOLO_DOC_ID);
             try {
                 await runTransaction(db, async (transaction) => {
-                    const teamDoc = await transaction.get(teamRef);
+                    const soloDoc = await transaction.get(soloRef);
                                         
-                    if (teamDoc.exists()) {
-                        const data = teamDoc.data();
-                                                
-                        let playerSlot = data.player1Id === currentUserId ? 'player1' :
-                                          data.player2Id === currentUserId ? 'player2' : null;
-                                                
-                        if (playerSlot) {
-                            transaction.update(teamRef, {
-                                [`${playerSlot}Score`]: currentScore,
-                                [`${playerSlot}Round`]: currentRound
-                            });
-                        } else {
-                            console.error("Current user not found in the team document!");
-                        }
-                    }
+                    // Update score, round, and level index
+                    transaction.set(soloRef, {
+                        playerName: myPlayerName,
+                        score: currentScore,
+                        round: currentRound,
+                        levelIndex: currentLevelIndex,
+                        lastUpdated: new Date().toISOString()
+                    }, { merge: true }); // Use merge to ensure only these fields are updated
                 });
             } catch (error) {
-                console.error("Error updating team state:", error);
+                console.error("Error updating solo state:", error);
             }
         }
 
         // --- INPUT & LEVEL MANAGEMENT ---
         function initializeInputs() {
+            // Guard against index out of bounds if game data is corrupted
+            if (currentLevelIndex >= gameLevels.length || currentLevelIndex < 0) {
+                 currentLevelIndex = 0;
+            }
+
             const data = gameLevels[currentLevelIndex].data;
             document.getElementById('sellingPrice').value = data.P;
             document.getElementById('variableCost').value = data.V;
             document.getElementById('fixedCosts').value = data.F;
             document.getElementById('salesUnits').value = data.S;
-            document.getElementById('levelTitle').textContent = gameLevels[currentLevelIndex].title;
+            document.getElementById('levelTitle').textContent = gameLevels[currentLevelIndex].title.toUpperCase();
         }
+        
+        // Helper function to update all UI elements for the current round (index)
+        function updateRoundUI() {
+            // currentRound is the 1-indexed number of the active round.
+            if (currentRound === 0 || currentRound > totalGameRounds) return;
+            
+            const currentChallengeIndex = (currentRound - 1) % roundsPerLevel;
+            const challenge = challenges[currentChallengeIndex];
+            
+            const currentLevel = gameLevels[currentLevelIndex].level;
+            const roundInLevel = currentChallengeIndex + 1;
+                        
+            // Reset UI for the new round
+            document.getElementById('roundTitle').textContent = `RND ${roundInLevel}/${roundsPerLevel}`;
+            document.getElementById('challengeText').textContent = challenge.text;
+            document.getElementById('answerInput').value = '';
+            document.getElementById('answerInput').disabled = false;
+            document.getElementById('submitButton').style.display = 'block';
+            document.getElementById('nextButton').style.display = 'none';
+            document.getElementById('feedbackMessage').style.display = 'none';
+            document.getElementById('scoreDisplay').textContent = `SCORE: ${currentScore} PTS (Lvl ${currentLevel}, Rnd ${currentRound}/${totalGameRounds})`;
+
+            // Push local progress to Firebase (since we are updating state/UI)
+            updateSoloState(); 
+        }
+
+        function goToRound(targetRound) {
+            // targetRound is the 1-indexed round the player is currently on (e.g., 5)
+            currentRound = targetRound; 
+            
+            // Calculate level index based on the 1-indexed round number
+            currentLevelIndex = Math.floor((currentRound - 1) / roundsPerLevel);
+            
+            // Ensure inputs are correctly set for the target level
+            initializeInputs();
+            
+            // Update UI for the current round (which is targetRound)
+            updateRoundUI();
+        }
+
 
         // --- GAME LOGIC ---
         function showHelp(conceptKey) {
             const definitions = cvpDefinitions[conceptKey];
 
             if (conceptKey === 'Current') {
-                const currentChallengeIndex = (currentRound - 1) % roundsPerLevel;
+                // If round is 0, default to index 0 (Round 1 challenge) for the hint text
+                const currentChallengeIndex = currentRound === 0 ? 0 : (currentRound - 1) % roundsPerLevel;
                 const challenge = challenges[currentChallengeIndex];
-                showModal(`Challenge Hint: ${challenge.title}`, challenge.hint, false);
+                showModal(`CHALLENGE HINT: ${challenge.title.toUpperCase()}`, challenge.hint, false);
             } else if (definitions) {
-                showModal(definitions.title, definitions.definition, false);
+                showModal(definitions.title.toUpperCase(), definitions.definition, false);
             } else {
-                showModal("CVP Help", "Use the provided data (P, V, F, S) to solve the business math problem.", false);
+                showModal("DATA INQUIRY", "Use the provided data (P, V, F, S) to solve the business math problem.", false);
             }
         }
 
         function performRestart() {
             currentScore = 0;
-            currentRound = 0;
+            currentRound = 0; // Reset to 0 (game not started)
             currentLevelIndex = 0; // Reset level
             document.getElementById('feedbackMessage').style.display = 'none';
             document.getElementById('submitButton').style.display = 'block';
@@ -510,27 +677,36 @@
             initializeInputs(); 
                          
             // Update local UI
-            document.getElementById('scoreDisplay').textContent = `Your Score: 0 Points (Level 1, Round 1/${totalGameRounds})`;
+            document.getElementById('scoreDisplay').textContent = `SCORE: 0 PTS (Lvl 1, Rnd 0/${totalGameRounds})`;
 
-            // Push reset to Firebase
-            updateTeamState(); 
-            nextRound(); 
+            // Push reset to Firebase (updateSoloState is called by nextRound)
+            nextRound(); // Start Round 1
         }
 
         function restartGame(isInitialStart = false) {
             if (!isInitialStart) {
-                showModal("Confirm Restart", `Are you sure you want to restart your local progress? This will reset your score and level back to Level 1, Round 1, and sync this change with your partner.`, true, (confirmed) => {
+                showModal("CONFIRM REINITIALIZATION", `WARNING: Restarting will erase all current progress and score, resetting your challenge to Level 1, Round 1. Proceed?`, true, (confirmed) => {
                     if (confirmed) {
                         performRestart();
                     }
                 });
             } else {
+                // If this is the initial start, check if we need to resume
+                if (currentRound > 0) {
+                     showModal("DATA SYNCHRONIZED", `Welcome back, ${myPlayerName}! Resuming challenge from Level ${gameLevels[currentLevelIndex].level}, Round ${currentRound}/${totalGameRounds}.`, false, () => {
+                        goToRound(currentRound); // Load the round we were on
+                     });
+                     return;
+                }
+                
                 performRestart();
             }
         }
 
-        function nextRound() {
-            currentRound++;
+        function nextRound(doIncrement = true) {
+            if (doIncrement) {
+                currentRound++;
+            }
 
             if (currentRound > totalGameRounds) {
                 finishGame();
@@ -544,35 +720,26 @@
                 currentLevelIndex++;
                 initializeInputs(); // Load new level data
                 // Show a quick modal for level transition
-                showModal(`Level ${gameLevels[currentLevelIndex].level} Activated!`, gameLevels[currentLevelIndex].title, false);
+                showModal(`ACCESS GRANTED`, `LEVEL ${gameLevels[currentLevelIndex].level} ACTIVATED: ${gameLevels[currentLevelIndex].title.toUpperCase()}`, false);
             }
-
-            const currentLevel = gameLevels[currentLevelIndex].level;
-            const challenge = challenges[currentChallengeIndex];
-            const roundInLevel = currentChallengeIndex + 1;
-                        
-            // Reset UI for the new round
-            document.getElementById('roundTitle').textContent = `Round ${roundInLevel}/${roundsPerLevel}`;
-            document.getElementById('challengeText').textContent = challenge.text;
-            document.getElementById('answerInput').value = '';
-            document.getElementById('answerInput').disabled = false;
-            document.getElementById('submitButton').style.display = 'block';
-            document.getElementById('nextButton').style.display = 'none';
-            document.getElementById('feedbackMessage').style.display = 'none';
-            document.getElementById('scoreDisplay').textContent = `Your Score: ${currentScore} Points (Level ${currentLevel}, Round ${currentRound}/${totalGameRounds})`;
-
-            // Push local progress to Firebase
-            updateTeamState(); 
+            
+            updateRoundUI();
         }
 
         function submitAnswer() {
+            if (currentRound === 0) {
+                 // Guard clause for the initial state before any round has started
+                 showModal("SYSTEM ALERT", "Challenge not active. Press 'NEXT CHALLENGE' or 'REINITIALIZE SYSTEM' to begin.", false);
+                 return;
+            }
+
             const playerAnswer = parseFloat(document.getElementById('answerInput').value);
-            // Index is (currentRound - 1) % roundsPerLevel because currentRound is 1-indexed after nextRound()
+            // Index is (currentRound - 1) % roundsPerLevel because currentRound is 1-indexed
             const currentChallengeIndex = (currentRound - 1) % roundsPerLevel; 
             const challenge = challenges[currentChallengeIndex];
 
             if (isNaN(playerAnswer)) {
-                showModal("Invalid Input", "Please enter a numerical answer.", false);
+                showModal("INVALID INPUT", "Please enter a valid numerical response.", false);
                 return;
             }
 
@@ -592,7 +759,7 @@
                 const points = challenge.difficulty;
                 currentScore += points;
                 feedbackDiv.className = 'feedback-correct';
-                feedbackDiv.textContent = `✅ CORRECT! You earned ${points} points. The correct answer was ${challenge.unit} ${correctAnswer}.`;
+                feedbackDiv.textContent = `✅ SUCCESS! TARGET ACQUIRED. You earned ${points} points. Correct value: ${challenge.unit} ${correctAnswer}.`;
                                 
                 document.getElementById('submitButton').style.display = 'none';
                 document.getElementById('nextButton').style.display = 'block';
@@ -601,7 +768,7 @@
                 const penalty = 10; // Simple fixed penalty
                 currentScore = Math.max(0, currentScore - penalty);
                 feedbackDiv.className = 'feedback-incorrect';
-                feedbackDiv.textContent = `❌ INCORRECT. The correct answer was ${challenge.unit} ${correctAnswer}. You lost ${penalty} points. Try again next round!`;
+                feedbackDiv.textContent = `❌ FAILURE. INACCURATE DATA. Correct value: ${challenge.unit} ${correctAnswer}. Score penalty: ${penalty} points.`;
 
                 document.getElementById('submitButton').style.display = 'none';
                 document.getElementById('nextButton').style.display = 'block';
@@ -609,18 +776,18 @@
 
             // Update local score display
             const currentLevel = gameLevels[currentLevelIndex].level;
-            document.getElementById('scoreDisplay').textContent = `Your Score: ${currentScore} Points (Level ${currentLevel}, Round ${currentRound}/${totalGameRounds})`;
+            document.getElementById('scoreDisplay').textContent = `SCORE: ${currentScore} PTS (Lvl ${currentLevel}, Rnd ${currentRound}/${totalGameRounds})`;
 
             // Push the score update to Firebase regardless of correctness
-            updateTeamState();
+            updateSoloState();
         }
 
         function finishGame() {
             const finalLevel = Math.floor((currentRound - 1) / roundsPerLevel) + 1;
-            showModal("Challenge Complete!",
-                      `Congratulations, ${myPlayerName}! You reached the end of the challenge (Level ${finalLevel}, Round ${currentRound}/${totalGameRounds}). Your final score is ${currentScore} points.`,
+            showModal("MISSION COMPLETE",
+                      `MISSION ACCOMPLISHED, AGENT ${myPlayerName}!\n\nFinal Status: Level ${finalLevel}, Round ${currentRound}/${totalGameRounds}\nFinal Score: ${currentScore} points.`,
                       false,
-                      () => restartGame(true) // Offer immediate restart
+                      () => performRestart() // Offer immediate restart without modal confirmation
             );
             // Hide all action buttons after finishing
             document.getElementById('submitButton').style.display = 'none';
