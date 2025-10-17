@@ -176,18 +176,30 @@
     <script>
         // Use a simple state object to manage the game's progress
         const gameState = {
-            location: 'start',
+            location: 'rules_screen', // Start at the rules screen
             investigated_desk: false,
             investigated_books: false,
             investigated_window: false,
             investigated_door: false,
             has_keycard: false,
-            final_reveal: false,
-            dread_level: 0, // NEW: Tracks player's exposure to strange events
+            final_reveal: false, // True if an ending has been triggered
+            dread_level: 0, // Tracks player's exposure to strange events (Max 6, Threshold 4 for Madness)
         };
 
         // Game data: descriptions and available actions for each state
         const gameData = {
+            'rules_screen': {
+                description: 
+                    "RULES OF THE GAME\n" +
+                    "Your goal is simple: Escape the building and survive the night (Ending 1/3).\n\n" +
+                    "1. Interaction: Click the action buttons to move, investigate, and interact with the environment.\n\n" +
+                    "2. Dread Level: Investigating strange clues and encountering chilling events will increase your DREAD LEVEL. If Dread reaches 4 or higher, you risk descending into madness (Ending 3/3).\n\n" +
+                    "3. Room B-12: The study hall has clues, but lingering too long and checking every clue before leaving will trigger a passive, terrible ending (Ending 2/3). Speed is crucial.\n\n" +
+                    "4. Escape: You need to find a way to unlock the main entrance to achieve the Survivor Ending. Look for the Janitor's Keycard.",
+                actions: [
+                    { text: "Start the Study Session...", nextState: 'start', requiredState: null, icon: 'fa-arrow-right' }
+                ]
+            },
             'start': {
                 description: "It's 2:17 AM. You're the last person in the campus study hall (Room B-12). The air is stale, and the low hum of the fluorescent lights is now punctuated by a faint, wet scraping sound from the hallway. You need to gather your things and leave. The door rattles slightly.",
                 actions: [
@@ -280,14 +292,14 @@
             },
             'escape_success': {
                 description: "You slam the heavy oak door open and run out onto the quad. The cool night air hits your face. You don't look back. You escape the campus. It was just a strange, late night. The feeling of dread slowly fades.\n\n[Ending 1/3: The Survivor]",
-                actions: [{ text: "Start New Session (Go back to studying)", nextState: 'start', requiredState: null, icon: 'fa-arrow-rotate-left' }]
+                actions: [{ text: "Start New Session (Go back to studying)", nextState: 'rules_screen', requiredState: null, icon: 'fa-arrow-rotate-left' }]
             },
 
             // BAD ENDING 1 (Triggered by checking all four items and returning to start)
             'end_reveal': {
                 description: "You've checked everything in the study hall. You stand in the center, and the low hum of the lights stops. Silence. Absolute, oppressive silence. You realize you have exhausted all investigation points but have not solved the problem of the door. The low, grating whisper that seems to come from the floor itself says: 'Y O U  N E V E R  L E F T.'\n\nYou look down at your hands. The notes you've been reviewing? They are transcripts of emergency services calls from 1998 about an incident in this very study hall, and the feather, the eye, the fast-moving shape—they were never external. You were here the whole time, and the light just flickered out.\n\n[Ending 2/3: The Transcribed]",
                 actions: [
-                    { text: "Start New Session (Reset Game)", nextState: 'start', requiredState: null, icon: 'fa-arrow-rotate-left' }
+                    { text: "Start New Session (Reset Game)", nextState: 'rules_screen', requiredState: null, icon: 'fa-arrow-rotate-left' }
                 ]
             },
 
@@ -295,7 +307,7 @@
             'madness_ending': {
                 description: "The shadows are moving. The fluorescent lights are screaming. The scraping sound becomes deafening. You try to focus on the door, but your body won't obey. A million whispers, all speaking your name, overwhelm your thoughts. You fall to your knees, and the last thing you see is the room reforming around you, becoming a cage of endless study and silence. Reality breaks. You didn't escape the building. You never left your own mind.\n\n[Ending 3/3: The Madness]",
                 actions: [
-                    { text: "Start New Session (Reset Game)", nextState: 'start', requiredState: null, icon: 'fa-arrow-rotate-left' }
+                    { text: "Start New Session (Reset Game)", nextState: 'rules_screen', requiredState: null, icon: 'fa-arrow-rotate-left' }
                 ]
             }
         };
@@ -323,49 +335,52 @@
         function updateGame(newStateKey) {
             let stateKey = newStateKey;
 
-            // 1. Check for the forced bad ending upon returning to start
-            if (stateKey === 'start' && checkGameEnd() && !gameState.final_reveal) {
-                // If the player has investigated everything in B-12 and not yet escaped/failed, they fail now (Transcribed Ending).
-                stateKey = 'end_reveal';
-                gameState.final_reveal = true;
-            } else if (stateKey === 'start' && gameState.final_reveal) {
-                 // Reset game state after final reveal (via button click)
+            // If user clicks START NEW SESSION button from an ending screen, we route to resetGame
+            if (stateKey === 'rules_screen' && gameState.final_reveal) {
                 resetGame();
                 return;
             }
 
             const currentState = gameData[stateKey];
-            gameState.location = stateKey;
+            gameState.location = stateKey; // Update location immediately
 
-            // 2. Update internal state flags and DREAD level
+            // 1. DREAD LEVEL INCREASE & STATE UPDATE (Only if not already ending and not the rules screen)
+            if (!gameState.final_reveal && stateKey !== 'rules_screen') {
+                
+                // Handle Dread Increase
+                if (currentState.dreadIncrease) {
+                    gameState.dread_level += currentState.dreadIncrease;
+                }
+
+                // Handle State Update (Clues, Keycard)
+                if (typeof currentState.updateState === 'function') {
+                    const flagToSet = currentState.updateState(gameState);
+                    if (flagToSet) {
+                        gameState[flagToSet] = true;
+                    }
+                } else if (currentState.updateState) {
+                    gameState[currentState.updateState] = true;
+                }
+            }
+
+
+            // 2. CHECK FOR ENDINGS (MUST be done after state/dread update)
             
-            // Handle function-based updateState (like in janitor_closet)
-            let stateUpdateFlag = null;
-            if (typeof currentState.updateState === 'function') {
-                stateUpdateFlag = currentState.updateState(gameState);
-            } else if (currentState.updateState) {
-                stateUpdateFlag = currentState.updateState;
-            }
-
-            if (stateUpdateFlag) {
-                gameState[stateUpdateFlag] = true;
-            }
-
-            // DREAD LEVEL INCREASE
-            if (currentState.dreadIncrease) {
-                gameState.dread_level += currentState.dreadIncrease;
-            }
-            
-            // 3. Check for Madness Ending (Dread too high) - Triggered BEFORE UI updates for the current state
-            // Max 6 dread possible (4 in B-12, 1 in bathroom, 1 in closet). Threshold is 4.
-            if (gameState.dread_level >= 4 && !gameState.final_reveal && stateKey !== 'escape_success' && stateKey !== 'end_reveal') {
+            // Check for Bad End 2 (Madness - Dread too high)
+            if (gameState.dread_level >= 4 && !gameState.final_reveal && stateKey !== 'escape_success' && stateKey !== 'end_reveal' && stateKey !== 'rules_screen') {
                 stateKey = 'madness_ending';
                 gameState.final_reveal = true;
             }
-
-            const finalState = gameData[stateKey]; // Re-reference in case stateKey changed to an ending
             
-            // 4. Update the UI components
+            // Check for Bad End 1 (Transcribed - All B-12 clues found, player returns to start)
+            if (stateKey === 'start' && checkGameEnd() && !gameState.final_reveal) {
+                stateKey = 'end_reveal';
+                gameState.final_reveal = true;
+            }
+
+            const finalState = gameData[stateKey]; // Re-reference the state after all potential ending checks
+            
+            // 3. Update the UI components
             
             // Handle dynamic descriptions
             if (typeof finalState.description === 'function') {
@@ -377,19 +392,21 @@
             actionsContainer.innerHTML = ''; // Clear old buttons
             messageBox.textContent = ''; // Clear message
 
-            // Update Inventory Display (removed **)
-            inventoryDisplay.innerHTML = gameState.has_keycard 
-                ? '<i class="fas fa-key"></i> INVENTORY: Janitor\'s Keycard' 
-                : '<i class="fas fa-lock"></i> INVENTORY: None';
-
-            // Update Dread Level Display
-            if (stateKey.includes('ending') || stateKey.includes('escape')) {
-                dreadDisplay.innerHTML = ''; // Hide dread level on end screen
+            // Inventory and Dread only show when NOT on the rules or ending screen
+            if (stateKey === 'rules_screen' || gameState.final_reveal) {
+                inventoryDisplay.innerHTML = '';
+                dreadDisplay.innerHTML = '';
             } else {
+                // Update Inventory Display 
+                inventoryDisplay.innerHTML = gameState.has_keycard 
+                    ? '<i class="fas fa-key"></i> INVENTORY: Janitor\'s Keycard' 
+                    : '<i class="fas fa-lock"></i> INVENTORY: None';
+                
+                // Update Dread Level Display
                 dreadDisplay.innerHTML = `<i class="fas fa-skull"></i> DREAD LEVEL: ${gameState.dread_level} / 4 (DANGER)`;
             }
 
-            // 5. Generate new buttons
+            // 4. Generate new buttons
             const actions = typeof finalState.actions === 'function' 
                             ? finalState.actions(gameState) 
                             : finalState.actions;
@@ -414,7 +431,7 @@
                 actionsContainer.appendChild(button);
             });
 
-            // 6. Simple transition effect
+            // 5. Simple transition effect
             descriptionBox.style.opacity = 0;
             setTimeout(() => {
                 descriptionBox.style.opacity = 1;
@@ -425,7 +442,7 @@
          * Resets the game to the initial state.
          */
         function resetGame() {
-            gameState.location = 'start';
+            gameState.location = 'rules_screen';
             gameState.investigated_desk = false;
             gameState.investigated_books = false;
             gameState.investigated_window = false;
@@ -433,12 +450,12 @@
             gameState.has_keycard = false;
             gameState.final_reveal = false;
             gameState.dread_level = 0;
-            updateGame('start');
+            updateGame('rules_screen'); // Start at rules screen
         }
 
         // Initialize the game on load
         window.onload = () => {
-             updateGame('start');
+             resetGame(); // Ensure a clean start at the rules screen
         };
 
     </script>
