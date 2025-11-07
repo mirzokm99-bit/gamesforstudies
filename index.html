@@ -3,461 +3,760 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Late Study Session</title>
-    <!-- Load Font Awesome for simple icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Advanced Financial Ratios Quiz</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
-
-        :root {
-            --color-darkest: #0A0A0A;
-            --color-eerie: #1A0A1A;
-            --color-text: #D4D4D4;
-            --color-accent: #880000;
-            --color-accent-light: #FF5555;
-            --glitch-shadow: 0 0 5px var(--color-accent);
-        }
-
+        /* Base Styling */
         body {
-            background-color: var(--color-eerie);
-            color: var(--color-text);
-            font-family: 'Roboto Mono', monospace;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e6eef5; /* Light blue background */
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            overflow: auto;
-            box-sizing: border-box;
-            line-height: 1.6;
         }
 
-        #game-container {
+        .quiz-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 750px;
             width: 100%;
-            max-width: 600px;
-            background-color: var(--color-darkest);
-            border: 2px solid var(--color-accent);
-            border-radius: 12px;
-            box-shadow: 0 0 20px var(--color-accent), inset 0 0 10px var(--color-accent);
-            padding: 25px;
-            text-align: center;
-            animation: pulse-border 5s infinite alternate;
-        }
-
-        @keyframes pulse-border {
-            0% { border-color: var(--color-accent); box-shadow: 0 0 20px var(--color-accent), inset 0 0 10px var(--color-accent); }
-            100% { border-color: #550000; box-shadow: 0 0 10px #550000, inset 0 0 5px #550000; }
+            transition: all 0.5s ease-in-out;
         }
 
         h1 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: var(--color-accent-light);
-            text-shadow: var(--glitch-shadow);
+            color: #1a73e8; /* Google Blue */
+            text-align: center;
+            border-bottom: 3px solid #f0f0f0;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
         }
         
-        #inventory {
-            font-size: 0.9em;
-            color: #39FF14; /* Green for key status */
-            margin-bottom: 10px;
-            min-height: 18px;
-            text-shadow: 0 0 3px #39FF14;
+        /* Start Screen Styling */
+        #start-screen, #scoreboard {
+            text-align: center;
+            padding: 40px 20px;
         }
 
-        #dread-level {
-            font-size: 0.9em;
-            color: #FF5555; /* Red for dread */
-            margin-bottom: 15px;
-            min-height: 18px;
-            text-shadow: 0 0 3px #880000;
-            font-weight: bold;
-        }
-
-        #description-box {
-            background-color: #1a1a1a;
-            border: 1px dashed var(--color-text);
-            padding: 15px;
-            min-height: 150px;
+        #start-screen input[type="text"] {
+            padding: 12px;
+            margin: 20px 0;
+            width: 70%;
+            border: 2px solid #ccc;
             border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: left;
-            white-space: pre-wrap;
-            box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.1);
-            transition: opacity 0.3s;
+            font-size: 1.1em;
+            transition: border-color 0.3s;
         }
 
-        #actions-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        #start-screen input[type="text"]:focus {
+            border-color: #1a73e8;
+            outline: none;
         }
 
-        .game-button {
-            background-color: var(--color-accent);
-            color: var(--color-text);
-            border: 2px solid var(--color-accent-light);
-            padding: 12px 20px;
-            border-radius: 6px;
+        #start-button {
+            padding: 15px 30px;
+            background-color: #00a859; /* Vibrant Green */
+            color: white;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
-            font-family: 'Roboto Mono', monospace;
-            text-transform: uppercase;
-            transition: all 0.2s ease-in-out;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            animation: button-glow 3s infinite alternate;
+            font-size: 1.2em;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        
+        #start-button:hover {
+            background-color: #008a48;
+            transform: scale(1.02);
         }
 
-        .game-button:hover:not(:disabled) {
-            background-color: var(--color-accent-light);
-            color: var(--color-darkest);
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 6px 15px rgba(255, 85, 85, 0.4);
+        /* Quiz Area Styling */
+        #score-display {
+            text-align: right;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 10px;
+        }
+        
+        /* Progress Bar */
+        #progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            height: 15px;
+            overflow: hidden;
+        }
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #fbbc05; /* Google Yellow */
+            transition: width 0.4s ease-in-out;
+            border-radius: 5px;
         }
 
-        .game-button:disabled {
-            background-color: #333;
-            border-color: #555;
-            color: #777;
-            cursor: not-allowed;
-            box-shadow: none;
-            animation: none;
+        .question-box {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            background-color: #f7f9fc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
-        @keyframes button-glow {
-            0% { box-shadow: 0 0 5px var(--color-accent); }
-            100% { box-shadow: 0 0 15px var(--color-accent-light); }
+        .question-text {
+            font-size: 1.25em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.4;
         }
 
-        .icon {
-            margin-right: 8px;
+        .answer-option {
+            display: block;
+            margin: 12px 0;
+            padding: 15px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s, border-color 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
-        #message-box {
+        .answer-option:hover {
+            background-color: #f0f8ff;
+            transform: translateY(-2px);
+            border-color: #1a73e8;
+        }
+
+        .answer-option.correct {
+            background-color: #e6ffed; /* Light Green */
+            border-color: #00a859;
+            color: #00723a;
+            font-weight: 600;
+            animation: correct-flash 0.5s ease-in-out;
+            pointer-events: none;
+        }
+
+        .answer-option.incorrect {
+            background-color: #ffe6e6; /* Light Red */
+            border-color: #d93025;
+            color: #b31412;
+            animation: incorrect-shake 0.5s ease-in-out;
+            pointer-events: none;
+        }
+        
+        @keyframes correct-flash {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes incorrect-shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .answer-option input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            accent-color: #1a73e8;
+        }
+
+        #next-button {
+            display: none;
+            padding: 12px 25px;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin-top: 20px;
+            float: right;
+            transition: background-color 0.3s;
+        }
+
+        #next-button:hover {
+            background-color: #0c61d3;
+        }
+        
+        #rationale-text {
             margin-top: 15px;
-            font-size: 0.9rem;
-            color: #f0f0f0;
-            min-height: 20px;
-            text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            background-color: #fff8e1;
+            border: 1px solid #fbbc05;
+            border-left: 5px solid #fbbc05;
+            border-radius: 8px;
+            color: #614d05;
+            display: none;
+            line-height: 1.4;
         }
 
-        /* Mobile responsiveness */
-        @media (max-width: 650px) {
-            #game-container {
-                margin: 10px;
-                padding: 15px;
-            }
-            h1 {
-                font-size: 1.2rem;
-            }
-            .game-button {
-                font-size: 0.9rem;
-                padding: 10px 15px;
-            }
+        /* Scoreboard Styling */
+        .final-score {
+            font-size: 2.5em;
+            color: #1a73e8;
+            margin: 20px 0;
+            font-weight: bold;
+            animation: score-drop 1s ease-out;
+        }
+        .final-message {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            color: #333;
+        }
+        .player-name {
+            color: #00a859;
+            font-style: italic;
+            font-weight: 700;
+        }
+
+        @keyframes score-drop {
+            0% { transform: translateY(-50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <h1>The Late Study Session // Room B-12</h1>
-        <div id="inventory"></div>
-        <div id="dread-level"></div>
-        <div id="description-box"></div>
-        <div id="message-box"></div>
-        <div id="actions-container">
-            <!-- Buttons will be generated here by JavaScript -->
-        </div>
+
+<div class="quiz-container">
+    <h1>Advanced Financial Ratios Quiz</h1>
+    
+    <div id="start-screen">
+        <h2>Welcome, Financial Analyst!</h2>
+        <p>Test your knowledge of complex financial ratio analysis. (15 Random Questions)</p>
+        <input type="text" id="player-name-input" placeholder="Enter Your Name">
+        <button id="start-button" onclick="startGame()">Start Quiz &rarr;</button>
     </div>
 
-    <!-- Audio tags kept as placeholders -->
-    <audio id="ambient-sound" loop></audio>
-    <audio id="scare-sound"></audio>
-
-    <script>
-        // Use a simple state object to manage the game's progress
-        const gameState = {
-            location: 'rules_screen', // Start at the rules screen
-            investigated_desk: false,
-            investigated_books: false,
-            investigated_window: false,
-            investigated_door: false,
-            has_keycard: false,
-            final_reveal: false, // True if an ending has been triggered
-            dread_level: 0, // Tracks player's exposure to strange events (Max 6, Threshold 4 for Madness)
-        };
-
-        // Game data: descriptions and available actions for each state
-        const gameData = {
-            'rules_screen': {
-                description: 
-                    "RULES OF THE GAME\n" +
-                    "Your goal is simple: Escape the building and survive the night (Ending 1/3).\n\n" +
-                    "1. Interaction: Click the action buttons to move, investigate, and interact with the environment.\n\n" +
-                    "2. Dread Level: Investigating strange clues and encountering chilling events will increase your DREAD LEVEL. If Dread reaches 4 or higher, you risk descending into madness (Ending 3/3).\n\n" +
-                    "3. Room B-12: The study hall has clues, but lingering too long and checking every clue before leaving will trigger a passive, terrible ending (Ending 2/3). Speed is crucial.\n\n" +
-                    "4. Escape: You need to find a way to unlock the main entrance to achieve the Survivor Ending. Look for the Janitor's Keycard.",
-                actions: [
-                    { text: "Start the Study Session...", nextState: 'start', requiredState: null, icon: 'fa-arrow-right' }
-                ]
-            },
-            'start': {
-                description: "It's 2:17 AM. You're the last person in the campus study hall (Room B-12). The air is stale, and the low hum of the fluorescent lights is now punctuated by a faint, wet scraping sound from the hallway. You need to gather your things and leave. The door rattles slightly.",
-                actions: [
-                    { text: "Check your desk (Clue)", nextState: 'desk_investigate', requiredState: 'investigated_desk', icon: 'fa-book' },
-                    { text: "Look at the stacks of books (Clue)", nextState: 'books_investigate', requiredState: 'investigated_books', icon: 'fa-layer-group' },
-                    { text: "Glance out the window (Clue)", nextState: 'window_investigate', requiredState: 'investigated_window', icon: 'fa-window-maximize' },
-                    { text: "Try the exit door (in B-12)", nextState: 'door_attempt', requiredState: 'investigated_door', icon: 'fa-lock' },
-                    { text: "Open the study hall door to the hallway", nextState: 'hallway', requiredState: null, icon: 'fa-arrow-right-to-bracket' }
-                ]
-            },
-            'desk_investigate': {
-                description: "You check your desk. The notes are scattered. You find a tiny, black feather stuck to your textbook—odd, as there are no birds inside. Your hands feel cold, and you could swear your chair just rocked slightly.",
-                updateState: 'investigated_desk',
-                dreadIncrease: 1,
-                actions: [{ text: "Go back to the room", nextState: 'start', requiredState: null, icon: 'fa-reply' }]
-            },
-            'books_investigate': {
-                description: "The shelves loom over you. As you reach for a book, you feel a faint, cool breath on the back of your neck. You whirl around—nothing. A single book on a high shelf is open to a page with a crudely drawn, repeating eye pattern.",
-                updateState: 'investigated_books',
-                dreadIncrease: 1,
-                actions: [{ text: "Go back to the room", nextState: 'start', requiredState: null, icon: 'fa-reply' }]
-            },
-            'window_investigate': {
-                description: "You peer out the rain-streaked window. The streetlights are foggy. You see a shape, fleeting, moving unnaturally fast between the trees. It stops. You realize... it's looking *up* at you, and you think you see a flicker of red in its reflection.",
-                updateState: 'investigated_window',
-                dreadIncrease: 1,
-                actions: [{ text: "Go back to the room", nextState: 'start', requiredState: null, icon: 'fa-reply' }]
-            },
-            'door_attempt': {
-                description: "The study hall's main door is locked. As you pull the handle, the safety chain rattles *from the inside*. You know the chain wasn't on before. A slow, metallic scrape echoes down the hall, much closer now. You need to escape the building entirely.",
-                updateState: 'investigated_door',
-                dreadIncrease: 1,
-                actions: [{ text: "Go back to the room", nextState: 'start', requiredState: null, icon: 'fa-reply' }]
-            },
-            
-            // NEW LOCATIONS
-            'hallway': {
-                description: "You step out into the long, dark hallway. Only the emergency lights are on, casting long, unsettling shadows. The wet scraping sound is definitely from this floor. There's a set of stairs down to the main entrance, a door marked 'Restroom', and a small, unmarked door that looks like a Janitor's Closet.",
-                actions: [
-                    { text: "Go back into the study hall (B-12)", nextState: 'start', requiredState: null, icon: 'fa-reply' },
-                    { text: "Investigate the restroom", nextState: 'bathroom_investigate', requiredState: null, icon: 'fa-restroom' },
-                    { text: "Pry open the Janitor's Closet door", nextState: 'janitor_closet', requiredState: null, icon: 'fa-broom' },
-                    { text: "Proceed to the main entrance (Downstairs)", nextState: 'main_entrance_attempt', requiredState: null, icon: 'fa-stairs' }
-                ]
-            },
-            'bathroom_investigate': {
-                description: "The restroom is cleaner than you expected, but the air is heavy with the smell of ozone. The lights flicker rapidly. You look in the mirror and a fleeting image flashes—not your own face, but a blurred, desperate face staring back from the darkness behind you. When you turn, the hall is empty. Your heart is pounding.",
-                dreadIncrease: 1,
-                actions: [{ text: "Go back to the Hallway", nextState: 'hallway', requiredState: null, icon: 'fa-reply' }]
-            },
-
-            // New Location with item logic
-            'janitor_closet': {
-                // Dynamic content for description and state update
-                description: (state) => {
-                    if (state.has_keycard) {
-                        return "The closet is cramped and smells faintly of bleach and something metallic. You already took the keycard. The only thing left here is an old, rusted mop bucket that seems to shift slightly in the gloom.";
-                    } else {
-                        return "The closet is cramped. Among the stacked boxes of paper towels and industrial cleaner, a cheap, plastic Janitor's Keycard is hanging on a hook next to a dirty yellow vest. You quickly pocket it. The scraping sound outside stops.";
-                    }
-                },
-                updateState: (state) => {
-                    if (!state.has_keycard) {
-                        return 'has_keycard'; // Sets the flag if not already set
-                    }
-                    return null;
-                },
-                dreadIncrease: 1,
-                actions: [{ text: "Return to the Hallway", nextState: 'hallway', requiredState: null, icon: 'fa-reply' }]
-            },
-
-            // ENDING PATHS
-            'main_entrance_attempt': {
-                // Description and actions are handled dynamically in updateGame
-                description: (state) => {
-                    if (state.has_keycard) {
-                        return "You reach the main entrance doors. They are solid oak and secured by a multi-bolt electronic lock. You swipe the Janitor's Keycard. The lights on the panel flicker GREEN. You can now leave.";
-                    } else {
-                        return "You reach the main entrance doors. They are solid oak and secured by a multi-bolt electronic lock. You realize you need a keycard or code to activate the release. The door clicks and the safety chain rattles on the *inside* of these doors too. You cannot proceed.";
-                    }
-                },
-                actions: (state) => {
-                    let actions = [];
-                    actions.push({ text: "Go back to the hallway", nextState: 'hallway', requiredState: null, icon: 'fa-reply' });
-                    if (state.has_keycard) {
-                        actions.push({ text: "EXIT BUILDING (FINALE)", nextState: 'escape_success', requiredState: null, icon: 'fa-walkie-talkie' });
-                    }
-                    return actions;
-                }
-            },
-            'escape_success': {
-                description: "You slam the heavy oak door open and run out onto the quad. The cool night air hits your face. You don't look back. You escape the campus. It was just a strange, late night. The feeling of dread slowly fades.\n\n[Ending 1/3: The Survivor]",
-                actions: [{ text: "Start New Session (Go back to studying)", nextState: 'rules_screen', requiredState: null, icon: 'fa-arrow-rotate-left' }]
-            },
-
-            // BAD ENDING 1 (Triggered by checking all four items and returning to start)
-            'end_reveal': {
-                description: "You've checked everything in the study hall. You stand in the center, and the low hum of the lights stops. Silence. Absolute, oppressive silence. You realize you have exhausted all investigation points but have not solved the problem of the door. The low, grating whisper that seems to come from the floor itself says: 'Y O U  N E V E R  L E F T.'\n\nYou look down at your hands. The notes you've been reviewing? They are transcripts of emergency services calls from 1998 about an incident in this very study hall, and the feather, the eye, the fast-moving shape—they were never external. You were here the whole time, and the light just flickered out.\n\n[Ending 2/3: The Transcribed]",
-                actions: [
-                    { text: "Start New Session (Reset Game)", nextState: 'rules_screen', requiredState: null, icon: 'fa-arrow-rotate-left' }
-                ]
-            },
-
-            // BAD ENDING 2 (Triggered by high dread level)
-            'madness_ending': {
-                description: "The shadows are moving. The fluorescent lights are screaming. The scraping sound becomes deafening. You try to focus on the door, but your body won't obey. A million whispers, all speaking your name, overwhelm your thoughts. You fall to your knees, and the last thing you see is the room reforming around you, becoming a cage of endless study and silence. Reality breaks. You didn't escape the building. You never left your own mind.\n\n[Ending 3/3: The Madness]",
-                actions: [
-                    { text: "Start New Session (Reset Game)", nextState: 'rules_screen', requiredState: null, icon: 'fa-arrow-rotate-left' }
-                ]
-            }
-        };
-
-        const descriptionBox = document.getElementById('description-box');
-        const actionsContainer = document.getElementById('actions-container');
-        const inventoryDisplay = document.getElementById('inventory');
-        const dreadDisplay = document.getElementById('dread-level');
-        const messageBox = document.getElementById('message-box');
+    <div id="quiz-area" style="display: none;">
+        <div id="score-display">Score: 0 / 0</div>
         
-        /**
-         * Checks if the player has investigated all four initial points in the starting room.
-         */
-        function checkGameEnd() {
-            return gameState.investigated_desk &&
-                   gameState.investigated_books &&
-                   gameState.investigated_window &&
-                   gameState.investigated_door;
+        <div id="progress-bar-container">
+            <div id="progress-bar"></div>
+        </div>
+
+        <div id="question-content">
+            </div>
+        
+        <div id="rationale-text"></div>
+        
+        <button id="next-button" onclick="loadNextQuestion()">Next Question &rarr;</button>
+    </div>
+
+    <div id="scoreboard" style="display: none;">
+        </div>
+</div>
+
+<script>
+    // ----------------------------------------------------------------------
+    // FISHER-YATES SHUFFLE ALGORITHM
+    // ----------------------------------------------------------------------
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+    
+    // ----------------------------------------------------------------------
+    // QUIZ DATA (Base of 50 Questions - Repeating/Modifying the core 15 for volume)
+    // ----------------------------------------------------------------------
+    
+    const baseQuizData = [
+        // Q1: ROCE vs. Cost of Debt (Leverage Principle)
+        {
+            question: "A company has a Return on Capital Employed (ROCE) of 12%. If the company’s average cost of borrowing (interest rate) is 8%, which of the following is the most accurate interpretation of this result?",
+            options: [
+                { text: "The company is generating value, as ROCE is higher than the borrowing cost.", isCorrect: true, rationale: "The company is generating a positive economic return because the returns generated from its total capital (12%) exceed the cost of the debt used to finance some of that capital (8%)." },
+                { text: "The company is underperforming because it is below the healthy target of 15-20%.", isCorrect: false, rationale: "While the ratio is below the target, the critical immediate comparison is against the cost of capital, which the company is successfully exceeding." },
+                { text: "The company is at a high risk of default because its debt is expensive.", isCorrect: false, rationale: "ROCE measures profitability, not direct debt-servicing ability, and the returns exceed the borrowing cost, suggesting value is being created, not destroyed." },
+                { text: "The operating profit is insufficient to cover the interest expense.", isCorrect: false, rationale: "This conclusion is drawn from the Interest Cover Ratio, not the Return on Capital Employed (ROCE)." }
+            ]
+        },
+        // Q2: Current vs. Acid Test (Inventory Reliance)
+        {
+            question: "A retailer has an Acid Test (Quick) Ratio of 0.8:1 and a Current Ratio of 2.5:1. What does this specific combination most strongly suggest about the company's financial position?",
+            options: [
+                { text: "The company relies heavily on inventory to cover its short-term debts.", isCorrect: true, rationale: "The large gap between the two ratios (2.5 minus 0.8) indicates that a significant portion of the current assets is composed of inventory, which is slow to convert to cash." },
+                { text: "The company has poor liquidity and is at risk of short-term default.", isCorrect: false, rationale: "The Current Ratio of 2.5:1 indicates strong overall liquidity, contradicting the idea of poor liquidity or immediate default risk." },
+                { text: "The company is overly conservative, holding too many idle liquid assets.", isCorrect: false, rationale: "The Acid Test Ratio below 1:1 suggests the company does not have enough highly liquid assets (excluding inventory) to cover its liabilities, indicating a reliance on inventory, not excess liquidity." },
+                { text: "The company is struggling to collect its receivables.", isCorrect: false, rationale: "The Acid Test Ratio includes receivables, so a poor result suggests issues with current assets, but the Inventory Turnover Period is a more direct indicator of collection issues." }
+            ]
+        },
+        // Q3: Inventory Turnover Period Calculation
+        {
+            question: "A manufacturer is analyzing its efficiency. Given: Average Inventory: $75,000; Cost of Sales: $900,000. What is the Inventory Turnover Period in days, and what does it suggest?",
+            options: [
+                { text: "30.4 days, suggesting the company is efficient at converting stock into sales.", isCorrect: true, rationale: "The calculation is (75,000 / 900,000) * 365 = 30.4 days, which is a relatively short holding period, indicating high inventory efficiency." },
+                { text: "12 times, which is the Inventory Turnover Ratio, not the period in days.", isCorrect: false, rationale: "The value of 12 is the Turnover Ratio (900k/75k), but the question asks for the 'Turnover Period' in days." },
+                { text: "45.6 days, indicating the company should shorten its stock holding time.", isCorrect: false, rationale: "The calculation is incorrect; the correct value is 30.4 days, and this period is already indicative of good efficiency." },
+                { text: "30.4 days, suggesting the company holds stock for an inefficiently long time.", isCorrect: false, rationale: "The calculation is (75,000 / 900,000) * 365 = 30.4 days. For a manufacturer, holding stock for 30 days is generally efficient, making the interpretation incorrect." }
+            ]
+        },
+        // Q4: High P/E Ratio Interpretation
+        {
+            question: "An investor sees that Company A has a Price/Earnings (P/E) Ratio of 45, while the industry average is 15. What is the most common interpretation of Company A's high P/E ratio?",
+            options: [
+                { text: "The market expects high future earnings growth from Company A.", isCorrect: true, rationale: "A significantly higher P/E ratio than the industry average often means the market is willing to pay a premium for the company's shares based on high future growth expectations." },
+                { text: "The stock is currently undervalued and a good buying opportunity.", isCorrect: false, rationale: "A low P/E ratio, not a high one, typically suggests a stock may be undervalued relative to its earnings." },
+                { text: "The company's Earnings Per Share (EPS) is abnormally low.", isCorrect: false, rationale: "While a low EPS can raise the P/E, a P/E of 45 usually reflects high investor confidence and expectations, which is less about current poor performance." },
+                { text: "The company is over-geared and carries excessive financial risk.", isCorrect: false, rationale: "The P/E Ratio is an Investor/Market ratio and does not directly measure financial risk from debt; the Gearing Ratio addresses leverage." }
+            ]
+        },
+        // Q5: Operating vs. Gross Profit Margin Difference
+        {
+            question: "What is the primary information revealed by the Operating Profit Margin that is *not* captured by the Gross Profit Margin?",
+            options: [
+                { text: "The efficiency of managing overheads and administrative costs.", isCorrect: true, rationale: "The difference between the two margins is due to the subtraction of operating expenses (overheads), revealing management's ability to control non-production costs." },
+                { text: "The profitability generated by the core production process before all expenses.", isCorrect: false, rationale: "This describes the Gross Profit Margin, which only considers Cost of Sales, not operating expenses." },
+                { text: "The portion of profit that belongs to the ordinary shareholders.", isCorrect: false, rationale: "This information is captured by the Return on Shareholders' Funds (ROSF) or Earnings Per Share (EPS), which use Profit After Tax." },
+                { text: "The return generated on all capital invested in the business.", isCorrect: false, rationale: "This is primarily measured by the Return on Capital Employed (ROCE)." }
+            ]
+        },
+        // Q6: Interest Cover Calculation & Stability
+        {
+            question: "A company has Operating Profit of $300,000 and Interest Expense of $150,000. Calculate the Interest Cover Ratio and assess the company's financial stability in relation to its debt.",
+            options: [
+                { text: "2 times, indicating an acceptable but less comfortable capacity to service debt.", isCorrect: true, rationale: "The calculation is 300,000 / 150,000 = 2 times. While 2 times is greater than 1, it is at the low end of the suggested healthy range (>2-3 times), making it less comfortable." },
+                { text: "0.5 times, indicating a high risk of default.", isCorrect: false, rationale: "The calculation is Operating Profit / Interest Expense (300k / 150k) = 2 times. The calculation and assessment are both incorrect." },
+                { text: "3 times, indicating comfortable debt servicing.", isCorrect: false, rationale: "The calculation is Operating Profit / Interest Expense (300k / 150k) = 2 times, not 3 times. The assessment of 'comfortable' is subjective but the calculation is wrong." },
+                { text: "2 times, indicating the company is over-geared.", isCorrect: false, rationale: "The calculation is correct, but the Interest Cover Ratio measures service capacity, not overall leverage (which is the Gearing Ratio)." }
+            ]
+        },
+        // Q7: Sale of Inventory (Liquidity Impact)
+        {
+            question: "A company sells inventory for $150,000 on credit (cost $100,000). What is the immediate effect on the Current Ratio and the Acid Test Ratio, assuming Current Liabilities remain constant?",
+            options: [
+                { text: "Both the Current Ratio and the Acid Test Ratio increase.", isCorrect: true, rationale: "The sale replaces Inventory (cost $100k) with Trade Receivables ($150k). Current Assets increase by the profit ($50k), raising the Current Ratio. The Acid Test numerator also increases by $50k (Receivables increase, Inventory removed), causing it to increase." },
+                { text: "Current Ratio increases, and Acid Test Ratio remains unchanged.", isCorrect: false, rationale: "Since the sales price is greater than the cost, the Current Assets increase, causing the Current Ratio to increase. The Acid Test Ratio also increases because its numerator (which excludes inventory) increases by the profit margin." },
+                { text: "Current Ratio remains unchanged, and Acid Test Ratio decreases.", isCorrect: false, rationale: "The Current Assets increase because Receivables are added at a higher value than the Inventory is removed, and the Acid Test numerator increases by the profit margin." },
+                { text: "Both ratios remain unchanged.", isCorrect: false, rationale: "Since the sales price ($150,000) is greater than the cost ($100,000), the total Current Assets increase by the profit, affecting both ratios." }
+            ]
+        },
+        // Q8: Shortening Payables Period (Cash Flow Impact)
+        {
+            question: "A company's Payables Settlement Period suddenly shortens from 90 days to 30 days. Which of the following is the most direct and negative consequence of this change?",
+            options: [
+                { text: "Decreased cash reserves and reduced short-term liquidity.", isCorrect: true, rationale: "Paying suppliers 60 days sooner requires a significant, immediate outflow of cash, directly depleting cash and cash equivalents, which negatively impacts liquidity ratios." },
+                { text: "Reduced Gross Profit Margin due to higher supplier prices.", isCorrect: false, rationale: "While possible, this is an indirect consequence. The direct impact is on the company's immediate cash management." },
+                { text: "Increased Gearing Ratio as the company needs to take on more long-term debt.", isCorrect: false, rationale: "This addresses long-term financing (Gearing) and is a potential solution, not the direct, immediate negative consequence on operations." },
+                { text: "Lower Asset Turnover due to inefficient capital utilization.", isCorrect: false, rationale: "Asset Turnover measures revenue generation from long-term capital and is not directly affected by changes in the short-term payables policy." }
+            ]
+        },
+        // Q9: Stock Split (EPS/P.E Impact)
+        {
+            question: "Company Z executes a 2-for-1 stock split. Assuming the total market capitalization and Profit After Tax remain stable, what is the immediate effect on its Earnings Per Share (EPS) and Price/Earnings (P/E) Ratio?",
+            options: [
+                { text: "EPS is halved, and P/E Ratio remains unchanged.", isCorrect: true, rationale: "The number of shares doubles, halving the EPS. Since the Market Price per Share also halves, the P/E ratio (Market Price / EPS) remains constant." },
+                { text: "EPS is halved, and P/E Ratio doubles.", isCorrect: false, rationale: "A stock split doubles the number of shares, which halves the EPS. However, the share price is also halved, meaning the P/E ratio remains mathematically unchanged." },
+                { text: "EPS doubles, and P/E Ratio is halved.", isCorrect: false, rationale: "A stock split increases the number of shares, which decreases (halves) the EPS, not doubles it." },
+                { text: "Both EPS and P/E Ratio remain unchanged.", isCorrect: false, rationale: "Only the P/E Ratio is unchanged; the EPS is explicitly halved because the number of shares outstanding has doubled." }
+            ]
+        },
+        // Q10: Debt Reduction via Equity (Gearing/Interest Cover Impact)
+        {
+            question: "A highly geared company decides to issue new equity and use the funds to pay down its long-term bank loans. What is the expected simultaneous effect on its Gearing Ratio and Interest Cover Ratio?",
+            options: [
+                { text: "Gearing Ratio decreases, and Interest Cover Ratio increases.", isCorrect: true, rationale: "The Gearing Ratio will decrease because Long-term Debt is reduced and Equity is increased. The Interest Cover Ratio will increase because the Interest Expense (denominator) is reduced due to the debt payoff." },
+                { text: "Gearing Ratio increases, and Interest Cover Ratio decreases.", isCorrect: false, rationale: "Incorrect. Replacing debt with equity will decrease the Gearing Ratio and the resulting lower interest expense will increase the Interest Cover Ratio." },
+                { text: "Both ratios remain unchanged.", isCorrect: false, rationale: "Incorrect. This transaction is a fundamental shift in the company's long-term financing structure, directly affecting both ratios." },
+                { text: "Gearing Ratio decreases, and Interest Cover Ratio decreases.", isCorrect: false, rationale: "Incorrect. Less debt means less interest, which increases the company's capacity to cover that interest (Interest Cover Ratio)." }
+            ]
+        },
+        // Q11: Receivables Collection Period Impact
+        {
+            question: "A retailer increases its Receivables Collection Period from 30 days to 60 days. What is the likely trade-off this decision reflects?",
+            options: [
+                { text: "Increased sales revenue at the cost of reduced cash flow.", isCorrect: true, rationale: "Offering longer credit terms (60 days) often boosts sales by attracting customers, but it delays cash inflow, negatively impacting liquidity and cash flow." },
+                { text: "Improved efficiency at the cost of higher interest expense.", isCorrect: false, rationale: "This change decreases efficiency (longer collection) and is not directly tied to interest expense unless the company needs a new loan." },
+                { text: "Reduced bad debt expense at the cost of lower profitability.", isCorrect: false, rationale: "Longer collection periods usually *increase* the risk of bad debt, not reduce it." },
+                { text: "Higher Asset Turnover at the cost of reduced Gearing.", isCorrect: false, rationale: "Asset Turnover is largely driven by revenue and total assets, not solely collection policy." }
+            ]
+        },
+        // Q12: Working Capital Cycle Interpretation
+        {
+            question: "A company's Working Capital Cycle (Operating Cycle) is 120 days. This means that:",
+            options: [
+                { text: "It takes 120 days for the company to convert cash back into cash.", isCorrect: true, rationale: "The working capital cycle measures the time between paying cash for inventory/expenses and receiving cash from the customer (cash-to-cash cycle)." },
+                { text: "Its inventory is held for 120 days before being sold.", isCorrect: false, rationale: "This describes the Inventory Holding Period, which is only one component of the full cycle." },
+                { text: "The company takes 120 days to pay its suppliers.", isCorrect: false, rationale: "This describes the Payables Settlement Period, which *reduces* the overall cycle time." },
+                { text: "The company must borrow funds every 120 days to remain solvent.", isCorrect: false, rationale: "The cycle length indicates efficiency, not necessarily the timing of borrowing requirements." }
+            ]
+        },
+        // Q13: Effect of Purchasing Fixed Assets with a Long-Term Loan
+        {
+            question: "A company uses a new 10-year bank loan to purchase a new piece of machinery (Fixed Asset). What is the immediate effect on its Current Ratio and Gearing Ratio?",
+            options: [
+                { text: "Current Ratio remains unchanged; Gearing Ratio increases.", isCorrect: true, rationale: "The loan is long-term (Non-Current Liability), so Current Liabilities are unchanged (Current Ratio stays the same). Gearing increases because long-term debt has increased." },
+                { text: "Current Ratio decreases; Gearing Ratio increases.", isCorrect: false, rationale: "The fixed asset purchase does not involve current assets or current liabilities in the *immediate* transaction." },
+                { text: "Both ratios remain unchanged.", isCorrect: false, rationale: "The Gearing Ratio is definitely affected by the new long-term loan." },
+                { text: "Current Ratio increases; Gearing Ratio decreases.", isCorrect: false, rationale: "The loan increases debt, which increases Gearing, and the Current Ratio is unaffected." }
+            ]
+        },
+        // Q14: DuPont Analysis (ROCE breakdown)
+        {
+            question: "The DuPont analysis breaks down ROCE into two key components: Net Profit Margin and Asset Turnover. Why is this breakdown useful?",
+            options: [
+                { text: "It isolates whether profitability issues stem from poor cost control or inefficient asset usage.", isCorrect: true, rationale: "Profit Margin reflects cost control (profitability), and Asset Turnover reflects how efficiently assets generate sales (efficiency). The breakdown pinpoints the weak area." },
+                { text: "It determines the company's reliance on debt financing.", isCorrect: false, rationale: "Leverage (debt reliance) is added in the full 3-step DuPont model to calculate Return on Equity (ROE), but not the standard ROCE breakdown." },
+                { text: "It directly compares a company's liquidity with its solvency.", isCorrect: false, rationale: "Liquidity and solvency ratios are separate categories." },
+                { text: "It measures the market value of the company's intellectual property.", isCorrect: false, rationale: "Market ratios like P/E address market value, not DuPont analysis." }
+            ]
+        },
+        // Q15: High Acid Test Ratio Danger
+        {
+            question: "A company's Acid Test Ratio is 3.5:1. While indicating strong liquidity, what financial management issue might this extremely high ratio suggest?",
+            options: [
+                { text: "The company is holding too much idle cash or inefficiently managed liquid assets.", isCorrect: true, rationale: "An extremely high quick ratio suggests a business is not fully utilizing its most liquid assets, potentially holding excessive cash or having too many receivables, leading to low returns on those assets." },
+                { text: "The company is struggling to manage its long-term debt (Gearing).", isCorrect: false, rationale: "The Acid Test Ratio is a short-term liquidity measure, unrelated to long-term Gearing." },
+                { text: "The company has low sales volume and a declining Gross Profit Margin.", isCorrect: false, rationale: "Low sales might *cause* poor liquidity, but an *excessive* ratio indicates the opposite problem: too many liquid assets." },
+                { text: "It indicates a failure to convert inventory into receivables efficiently.", isCorrect: false, rationale: "This ratio *excludes* inventory; it's the Current Ratio that would signal a problem with inventory conversion." }
+            ]
+        },
+        // -- Start Repetition/Modification for Base of 50 --
+        // (To ensure 15 questions are always selected from a pool of 50)
+        // Note: Question numbers (Q1-Q50) will be assigned by the code later.
+
+        // Q16 (MOD of Q1): ROCE vs. Cost of Debt (Negative scenario)
+        {
+            question: "A company has a Return on Capital Employed (ROCE) of 6%. If the cost of borrowing is 9%, which of the following is the most accurate interpretation?",
+            options: [
+                { text: "The company is destroying value and suffering from negative financial leverage.", isCorrect: true, rationale: "Since ROCE (6%) is lower than the cost of debt (9%), the company is earning less from the borrowed capital than it is paying out in interest, which reduces the return to shareholders (negative leverage)." },
+                { text: "The company's liquidity is too low, indicating potential short-term default.", isCorrect: false, rationale: "This deals with long-term profitability (ROCE), not short-term liquidity." },
+                { text: "The low ROCE is offset by a strong Asset Turnover.", isCorrect: false, rationale: "ROCE is the product of Profit Margin and Asset Turnover; if ROCE is low, at least one of the components must be weak." },
+                { text: "The Interest Cover Ratio must be greater than 1, so the situation is acceptable.", isCorrect: false, rationale: "Interest Cover may be acceptable, but the company is still economically destroying value from the debt." }
+            ]
+        },
+        // Q17 (MOD of Q2): Current vs. Acid Test (Poor Liquidity Scenario)
+        {
+            question: "A service company (no inventory) has an Acid Test Ratio of 0.6:1. What does this indicate?",
+            options: [
+                { text: "The company does not have enough highly liquid assets (cash/receivables) to cover its current debts.", isCorrect: true, rationale: "Since there is no inventory, the Acid Test = Current Ratio. A ratio below 1 means Current Assets are insufficient to cover Current Liabilities, signaling poor short-term liquidity." },
+                { text: "The company is highly geared and carries long-term risk.", isCorrect: false, rationale: "Liquidity ratios measure short-term risk, not long-term Gearing." },
+                { text: "The Gross Profit Margin is inadequate.", isCorrect: false, rationale: "Profitability is not directly measured by the Acid Test Ratio." },
+                { text: "The company has excessive cash reserves.", isCorrect: false, rationale: "A ratio below 1 suggests cash reserves are too *low*." }
+            ]
+        },
+        // Q18 (MOD of Q3): Inventory Turnover Calculation (High vs. Low)
+        {
+            question: "If a company's Inventory Turnover Period increases from 30 days to 90 days, what is the most likely consequence?",
+            options: [
+                { text: "Increased storage costs and increased risk of obsolescence.", isCorrect: true, rationale: "A longer holding period means inventory sits in storage longer, increasing costs and the chance of the stock becoming outdated (obsolete)." },
+                { text: "Improved cash flow due to slower payments to suppliers.", isCorrect: false, rationale: "Inventory Turnover relates to sales, not payments to suppliers (Payables Settlement Period)." },
+                { text: "A decrease in the Cost of Goods Sold.", isCorrect: false, rationale: "It does not directly decrease the cost of goods sold; it indicates efficiency issues." },
+                { text: "Improved efficiency in converting stock to sales.", isCorrect: false, rationale: "An increase in the period indicates a *decrease* in efficiency." }
+            ]
+        },
+        // Q19 (MOD of Q4): Low P/E Ratio Interpretation
+        {
+            question: "A cyclical industry company has a P/E Ratio of 6, while its competitors average 12. What does this low P/E ratio most commonly signal?",
+            options: [
+                { text: "The market is pessimistic about the company's future growth or profitability.", isCorrect: true, rationale: "A low P/E ratio typically indicates that investors believe the company's current earnings are unsustainable, or they expect very low future growth." },
+                { text: "The company must be suffering from very poor management.", isCorrect: false, rationale: "While possible, the most direct interpretation is market expectation, not necessarily management quality." },
+                { text: "The stock is highly overvalued.", isCorrect: false, rationale: "A low P/E ratio usually suggests the stock is undervalued or cheap relative to its earnings." },
+                { text: "The company has recently issued a large number of new shares.", isCorrect: false, rationale: "While new shares affect EPS, the P/E ratio's relative difference to the industry signals market expectation." }
+            ]
+        },
+        // Q20 (MOD of Q5): Net Profit Margin vs. Operating Profit Margin
+        {
+            question: "What information does the Net Profit Margin provide that the Operating Profit Margin does *not*?",
+            options: [
+                { text: "The impact of financing (interest) and tax costs on final profit.", isCorrect: true, rationale: "Net Profit is calculated *after* interest and tax, whereas Operating Profit is before those costs, making Net Profit Margin reflect the full cost structure." },
+                { text: "Control over Cost of Goods Sold.", isCorrect: false, rationale: "This is primarily measured by Gross Profit Margin." },
+                { text: "Control over administrative and selling costs.", isCorrect: false, rationale: "This is the difference between Gross and Operating Profit Margins." },
+                { text: "The company's return on total assets.", isCorrect: false, rationale: "This is measured by Asset Turnover." }
+            ]
+        },
+        // Q21 (MOD of Q6): Interest Cover - High Risk Scenario
+        {
+            question: "A company's Interest Cover Ratio falls from 4 times to 1.5 times. What is the most likely driver of this change?",
+            options: [
+                { text: "A significant increase in long-term debt or a decrease in operating profit.", isCorrect: true, rationale: "Interest cover is Operating Profit / Interest Expense. A drop is caused by the numerator decreasing (lower profit) or the denominator increasing (higher interest from more debt)." },
+                { text: "An increase in sales revenue.", isCorrect: false, rationale: "Increased sales usually leads to higher Operating Profit, which would *increase* the ratio." },
+                { text: "A lengthening of the Payables Settlement Period.", isCorrect: false, rationale: "This affects cash flow and liquidity, not the capacity to cover interest." },
+                { text: "A successful equity issuance.", isCorrect: false, rationale: "Equity issuance reduces reliance on debt, which would *increase* the ratio (lower interest)." }
+            ]
+        },
+        // Q22 (MOD of Q7): Purchase of Inventory on Credit (Liquidity Impact)
+        {
+            question: "A company purchases $50,000 of inventory on credit. What is the immediate effect on the Current Ratio and the Acid Test Ratio, assuming the ratio was initially > 1?",
+            options: [
+                { text: "Current Ratio decreases; Acid Test Ratio decreases.", isCorrect: true, rationale: "Current Assets (Inventory) and Current Liabilities (Payables) both increase by $50k. Since the initial ratio was > 1, adding equal amounts to the numerator and denominator decreases the ratio. Acid Test decreases because only the denominator increases." },
+                { text: "Current Ratio increases; Acid Test Ratio decreases.", isCorrect: false, rationale: "Adding equal amounts to numerator and denominator when the ratio > 1 causes a decrease, not an increase, in the Current Ratio." },
+                { text: "Current Ratio remains unchanged; Acid Test Ratio increases.", isCorrect: false, rationale: "Current Liabilities increase, which affects both ratios." },
+                { text: "Both ratios remain unchanged.", isCorrect: false, rationale: "The transaction increases both Current Assets (Inventory) and Current Liabilities (Payables)." }
+            ]
+        },
+        // Q23 (MOD of Q8): Lengthening Payables Period (Cash Flow Impact)
+        {
+            question: "Lengthening the Payables Settlement Period from 30 days to 60 days has which primary benefit?",
+            options: [
+                { text: "Increased cash flow and improved short-term liquidity.", isCorrect: true, rationale: "Delaying payments allows the company to hold onto its cash longer, improving its cash conversion cycle and boosting liquidity ratios in the short term." },
+                { text: "Increased Gross Profit Margin.", isCorrect: false, rationale: "This only affects working capital management, not the profitability of sales." },
+                { text: "Decreased inventory holding costs.", isCorrect: false, rationale: "This is related to Inventory Turnover, not Payables." },
+                { text: "Lower Asset Turnover.", isCorrect: false, rationale: "Asset Turnover is largely unaffected by short-term payment policies." }
+            ]
+        },
+        // Q24 (MOD of Q9): Share Buyback
+        {
+            question: "A company executes a significant share buyback. Assuming Profit After Tax remains stable, what is the immediate effect on its Earnings Per Share (EPS) and Return on Shareholders' Funds (ROSF)?",
+            options: [
+                { text: "EPS increases; ROSF increases.", isCorrect: true, rationale: "The number of shares decreases, which increases EPS (Profit/Shares). ROSF (Profit/Equity) also increases because the buyback reduces Equity (denominator)." },
+                { text: "EPS decreases; ROSF increases.", isCorrect: false, rationale: "EPS increases because the shares outstanding decrease." },
+                { text: "Both EPS and ROSF remain unchanged.", isCorrect: false, rationale: "Both ratios are directly affected by the reduction in shares/equity." },
+                { text: "EPS increases; ROSF decreases.", isCorrect: false, rationale: "ROSF increases because the denominator (Equity) decreases." }
+            ]
+        },
+        // Q25 (MOD of Q10): New Debt for Expansion
+        {
+            question: "A company takes out a new long-term loan to finance a new factory (Fixed Asset). What is the immediate effect on Gearing Ratio and ROCE?",
+            options: [
+                { text: "Gearing Ratio increases; ROCE is unchanged initially.", isCorrect: true, rationale: "The new long-term debt increases the Gearing Ratio. ROCE (Profit/Capital Employed) is unaffected until the new factory starts generating profit." },
+                { text: "Both Gearing Ratio and ROCE increase.", isCorrect: false, rationale: "ROCE is unaffected until the factory operates." },
+                { text: "Gearing Ratio decreases; ROCE is unchanged initially.", isCorrect: false, rationale: "The new debt increases Gearing." },
+                { text: "Both Gearing Ratio and ROCE decrease.", isCorrect: false, rationale: "New debt increases Gearing." }
+            ]
+        },
+        // Q26 (MOD of Q11): Receivables Collection Period Increase (Bad Debt Risk)
+        {
+            question: "If a company's Average Collection Period for Receivables increases significantly, the financial analyst should primarily be concerned about:",
+            options: [
+                { text: "Increased bad debt write-offs and reduced cash flow liquidity.", isCorrect: true, rationale: "Longer collection periods increase the risk that debts will never be collected (bad debt) and delay the conversion of sales into spendable cash." },
+                { text: "A potential overstatement of inventory value.", isCorrect: false, rationale: "This relates to the Inventory Turnover Ratio, not Receivables." },
+                { text: "The company's inability to cover interest payments.", isCorrect: false, rationale: "This relates to the Interest Cover Ratio." },
+                { text: "The possibility of a hostile takeover.", isCorrect: false, rationale: "This is a market/strategic issue, not a direct ratio concern." }
+            ]
+        },
+        // Q27 (MOD of Q12): Short Working Capital Cycle Interpretation
+        {
+            question: "A company in the fast-food industry reports a Working Capital Cycle (Operating Cycle) of -5 days. This most likely suggests:",
+            options: [
+                { text: "The company collects cash from customers before it pays its suppliers.", isCorrect: true, rationale: "A negative working capital cycle, common in retail/fast-food, means cash is received immediately (before payment to suppliers), allowing the company to use supplier financing." },
+                { text: "The company's inventory is rotting due to a low Inventory Turnover Period.", isCorrect: false, rationale: "Low/negative cycle implies very *fast* inventory movement." },
+                { text: "The company is experiencing severe liquidity issues.", isCorrect: false, rationale: "A negative cycle indicates *excellent* cash flow management." },
+                { text: "The company has excessive long-term debt.", isCorrect: false, rationale: "This relates to Gearing, not the short-term cash cycle." }
+            ]
+        },
+        // Q28 (MOD of Q13): Fixed Asset Sale
+        {
+            question: "A company sells a fully depreciated machine for cash. What is the effect on its Total Asset Turnover and Gross Profit Margin?",
+            options: [
+                { text: "Asset Turnover increases; Gross Profit Margin is unchanged.", isCorrect: true, rationale: "Total Assets (denominator of Asset Turnover) decrease, increasing the ratio. Gross Profit Margin is based on Sales/COGS and is unaffected by the sale of a fixed asset." },
+                { text: "Both ratios increase.", isCorrect: false, rationale: "Gross Profit Margin is not affected." },
+                { text: "Asset Turnover decreases; Gross Profit Margin increases.", isCorrect: false, rationale: "Asset Turnover increases because Total Assets decrease." },
+                { text: "Both ratios decrease.", isCorrect: false, rationale: "Asset Turnover increases." }
+            ]
+        },
+        // Q29 (MOD of Q14): ROSF and Financial Leverage
+        {
+            question: "What does the third step of the DuPont Analysis (multiplying by the Equity Multiplier or Financial Leverage) reveal?",
+            options: [
+                { text: "How effectively the company is using debt to boost the return on equity (ROE/ROSF).", isCorrect: true, rationale: "The final step introduces the leverage factor, showing the extent to which debt magnifies the base return (ROA or ROCE) into the return for shareholders (ROE/ROSF)." },
+                { text: "The firm's success in managing its sales volume.", isCorrect: false, rationale: "Sales volume is part of Asset Turnover." },
+                { text: "The company's short-term liquidity position.", isCorrect: false, rationale: "This analysis focuses on long-term profitability." },
+                { text: "The company's ability to minimize its tax obligations.", isCorrect: false, rationale: "Tax is addressed in the Net Profit Margin component." }
+            ]
+        },
+        // Q30 (MOD of Q15): Low Acid Test Ratio Danger
+        {
+            question: "A company's Acid Test Ratio is 0.4:1. This is a critical warning sign because it indicates:",
+            options: [
+                { text: "The company may be forced to liquidate inventory quickly to meet upcoming debts.", isCorrect: true, rationale: "A ratio this low means current liabilities significantly exceed highly liquid assets (cash/receivables). The company is highly reliant on selling its inventory immediately to avoid default." },
+                { text: "The company is overcapitalized and wasting shareholder funds.", isCorrect: false, rationale: "This suggests the opposite: undercapitalization for short-term needs." },
+                { text: "The Inventory Turnover Period is too slow.", isCorrect: false, rationale: "This is a secondary concern; the primary risk is liquidity." },
+                { text: "The Gearing Ratio is too high.", isCorrect: false, rationale: "This is a short-term liquidity issue, not a long-term solvency issue." }
+            ]
+        },
+        // -- Bulk Repetition of Core 15 (Q31-Q45) for variety and to reach the 50-question base --
+        // (The randomization logic will pick 15 distinct questions from this larger list)
+        // Note: The repetition helps fill the question bank volume with proven questions quickly.
+        { question: "If ROCE is 18% and the cost of debt is 10%, what is the effect on shareholders' return?", options: [{ text: "Positive financial leverage, increasing the Return on Shareholders' Funds (ROSF).", isCorrect: true, rationale: "Since ROCE > Cost of Debt, the return on total capital exceeds the interest cost, boosting the return to equity holders." }, { text: "Negative financial leverage, decreasing ROSF.", isCorrect: false, rationale: "The return is positive." }, { text: "No effect, as ROCE is not ROSF.", isCorrect: false, rationale: "ROCE is the base for ROSF, and leverage magnifies the difference." }, { text: "The P/E ratio will automatically decrease.", isCorrect: false, rationale: "Unrelated market ratio." }] },
+        { question: "A company's liquidity ratios are: Current Ratio 1.2:1, Acid Test Ratio 1.1:1. This suggests:", options: [{ text: "The company has very low reliance on inventory for liquidity.", isCorrect: true, rationale: "The small difference between the ratios means inventory is a small portion of Current Assets, indicating low reliance." }, { text: "The company is highly reliant on inventory.", isCorrect: false, rationale: "The gap is too small for high reliance." }, { text: "The company has dangerously low current assets.", isCorrect: false, rationale: "Ratios above 1:1 are generally acceptable." }, { text: "The Payables Settlement Period is too long.", isCorrect: false, rationale: "Ratios don't directly measure payables." }] },
+        { question: "A clothing retailer has an Inventory Turnover Period of 120 days. Is this efficient for their industry?", options: [{ text: "No, 120 days is too long, increasing the risk of fashion obsolescence.", isCorrect: true, rationale: "Fashion items have a short shelf life; 120 days (4 months) is usually inefficient and risky." }, { text: "Yes, this is normal for high-end luxury goods.", isCorrect: false, rationale: "Even luxury goods should aim for faster turnover to utilize capital." }, { text: "The calculation is (COGS/Inventory)*365 days.", isCorrect: false, rationale: "The formula is correct, but the question asks for interpretation." }, { text: "This indicates strong efficiency.", isCorrect: false, rationale: "It indicates poor efficiency." }] },
+        { question: "If a company's EPS doubles but its share price remains constant, the P/E Ratio will:", options: [{ text: "Be halved.", isCorrect: true, rationale: "P/E = Price / EPS. If Price is constant and EPS doubles, the ratio is halved." }, { text: "Double.", isCorrect: false, rationale: "It will be halved." }, { text: "Remain unchanged.", isCorrect: false, rationale: "It changes directly with EPS and inversely with Price." }, { text: "Increase by 50%.", isCorrect: false, rationale: "It will be halved." }] },
+        { question: "The difference between Operating Profit Margin and Net Profit Margin reflects the impact of:", options: [{ text: "Interest and tax.", isCorrect: true, rationale: "Operating Profit is before interest and tax; Net Profit is after. The difference is these two costs." }, { text: "Cost of Goods Sold and overheads.", isCorrect: false, rationale: "Overheads are included in Operating Profit." }, { text: "Inventory turnover and fixed asset usage.", isCorrect: false, rationale: "These are efficiency metrics, not margin components." }, { text: "Sales revenue and receivables.", isCorrect: false, rationale: "These are top-line items or balance sheet accounts." }] },
+        { question: "If a company's Operating Profit is $50,000 and Interest Expense is $25,000, what is the Interest Cover Ratio?", options: [{ text: "2.0 times.", isCorrect: true, rationale: "50,000 / 25,000 = 2.0 times." }, { text: "0.5 times.", isCorrect: false, rationale: "This is the inverse." }, { text: "2.5 times.", isCorrect: false, rationale: "Incorrect calculation." }, { text: "1.5 times.", isCorrect: false, rationale: "Incorrect calculation." }] },
+        { question: "A cash payment is made to a supplier (Payable). The immediate effect on the Acid Test Ratio (assuming it was > 1) is:", options: [{ text: "Increase.", isCorrect: true, rationale: "Cash (Current Asset/Numerator) and Payables (Current Liability/Denominator) both decrease by the same amount. When the ratio is > 1, decreasing the numerator and denominator by the same amount increases the ratio." }, { text: "Decrease.", isCorrect: false, rationale: "It increases." }, { text: "Remain unchanged.", isCorrect: false, rationale: "Both parts of the ratio change." }, { text: "Increase the Current Ratio only.", isCorrect: false, rationale: "It increases both ratios." }] },
+        { question: "A company starts delaying payments to suppliers. The immediate impact is a likely decrease in:", options: [{ text: "Current Ratio.", isCorrect: false, rationale: "Delaying payments increases Current Liabilities and therefore *decreases* the ratio." }, { text: "Payables Settlement Period.", isCorrect: false, rationale: "Delaying payments *increases* the settlement period." }, { text: "Cash reserves.", isCorrect: false, rationale: "Delaying payments *increases* cash reserves." }, { text: "Inventory turnover.", isCorrect: false, rationale: "Inventory turnover is unrelated to payables timing." }] },
+        { question: "A company issues new shares to the public. Assuming capital is immediately put to productive use, the likely immediate effect on EPS is:", options: [{ text: "Decrease (Dilution).", isCorrect: true, rationale: "The denominator (number of shares) increases immediately, diluting the EPS until the new capital generates sufficient profit to compensate." }, { text: "Increase.", isCorrect: false, rationale: "It decreases due to dilution." }, { text: "Remain unchanged.", isCorrect: false, rationale: "The share count changes, affecting EPS." }, { text: "Increase the P/E ratio.", isCorrect: false, rationale: "EPS drops, Price may be stable, which *increases* P/E." }] },
+        { question: "A reduction in the Gearing Ratio is achieved by:", options: [{ text: "Reducing long-term debt or issuing more equity.", isCorrect: true, rationale: "Gearing is Debt/Equity or Debt/(Debt+Equity). Reducing the numerator (Debt) or increasing the denominator (Equity) reduces the ratio." }, { text: "Reducing sales revenue.", isCorrect: false, rationale: "Sales revenue is unrelated to capital structure." }, { text: "Increasing inventory.", isCorrect: false, rationale: "Inventory is a current asset, unrelated to Gearing." }, { text: "Reducing the Interest Cover Ratio.", isCorrect: false, rationale: "Interest cover is the result of capital structure, not the means to change Gearing." }] },
+        { question: "If a company's Average Collection Period is 80 days and its Payables Period is 40 days, this cash flow gap is a major concern for which ratio?", options: [{ text: "The Acid Test Ratio (Liquidity).", isCorrect: true, rationale: "The 40-day cash gap means the company must find cash to cover expenses for 40 days between paying suppliers and receiving money, putting pressure on short-term liquidity." }, { text: "Gross Profit Margin.", isCorrect: false, rationale: "Profitability is not directly affected." }, { text: "Gearing Ratio.", isCorrect: false, rationale: "Long-term solvency is not affected." }, { text: "Asset Turnover.", isCorrect: false, rationale: "Efficiency ratio, not primary concern." }] },
+        { question: "A longer Working Capital Cycle generally necessitates:", options: [{ text: "Greater working capital financing (e.g., bank overdrafts).", isCorrect: true, rationale: "A longer cycle means cash is tied up longer, requiring more external short-term funding." }, { text: "Lower levels of inventory.", isCorrect: false, rationale: "A longer cycle often implies *higher* inventory." }, { text: "Lower Cost of Goods Sold.", isCorrect: false, rationale: "Unrelated." }, { text: "Decreased asset turnover.", isCorrect: false, rationale: "Working Capital Cycle is a different metric." }] },
+        { question: "A company has Total Assets of $500,000 and Sales of $1,000,000. What is the Asset Turnover and what does it indicate?", options: [{ text: "2.0 times, indicating that for every dollar of assets, $2.00 of sales is generated.", isCorrect: true, rationale: "1,000,000 / 500,000 = 2.0 times. This measures asset utilization efficiency." }, { text: "0.5 times, indicating poor asset utilization.", isCorrect: false, rationale: "Inverse calculation." }, { text: "2.0%, indicating a high profitability.", isCorrect: false, rationale: "This is an efficiency ratio, not a profitability margin." }, { text: "100 days, indicating a slow cash conversion cycle.", isCorrect: false, rationale: "This is not a time period." }] },
+        { question: "If the Net Profit Margin is 5% and the Asset Turnover is 4 times, the ROCE is:", options: [{ text: "20%.", isCorrect: true, rationale: "ROCE = Net Profit Margin * Asset Turnover (5% * 4 = 20%)." }, { text: "9%.", isCorrect: false, rationale: "Incorrect calculation." }, { text: "40%.", isCorrect: false, rationale: "Incorrect calculation." }, { text: "0.8%.", isCorrect: false, rationale: "Incorrect calculation." }] },
+        { question: "A high Gearing Ratio (Leverage) is acceptable if:", options: [{ text: "The company's ROCE significantly exceeds its cost of borrowing.", isCorrect: true, rationale: "High leverage is beneficial (positive financial leverage) only when the return generated on total capital (ROCE) is greater than the cost of servicing the debt." }, { text: "The Acid Test Ratio is below 1:1.", isCorrect: false, rationale: "Low liquidity is never acceptable with high debt." }, { text: "The P/E Ratio is low.", isCorrect: false, rationale: "Unrelated." }, { text: "The Inventory Turnover Period is very long.", isCorrect: false, rationale: "This indicates poor efficiency." }] },
+        // Q46-Q50: Final Repeats for the 50 base (using variations of core concepts)
+        { question: "If a company repays a long-term loan using cash, the Gearing Ratio will:", options: [{ text: "Decrease.", isCorrect: true, rationale: "Debt (numerator) decreases, and Equity (denominator) is unchanged, causing the ratio to decrease." }, { text: "Increase.", isCorrect: false, rationale: "Debt decreases." }, { text: "Remain unchanged.", isCorrect: false, rationale: "Debt changes." }, { text: "Decrease the Current Ratio.", isCorrect: false, rationale: "It decreases both Current Assets (cash) and Current Liabilities (current portion of loan), potentially increasing the current ratio if > 1." }] },
+        { question: "What is the primary concern if the Payables Settlement Period is much longer than the industry average?", options: [{ text: "Damage to supplier relationships and loss of early payment discounts.", isCorrect: true, rationale: "Excessive delays in payment can severely strain relationships with suppliers and lead to lost financial benefits." }, { text: "Increased risk of inventory obsolescence.", isCorrect: false, rationale: "This is an inventory issue." }, { text: "Lower Asset Turnover.", isCorrect: false, rationale: "Unrelated." }, { text: "A sudden increase in the Acid Test Ratio.", isCorrect: false, rationale: "Unrelated." }] },
+        { question: "A cash purchase of new inventory affects the Current Ratio (if initially > 1) by:", options: [{ text: "Remaining unchanged.", isCorrect: true, rationale: "Cash (Current Asset) decreases, and Inventory (Current Asset) increases by the same amount. Total Current Assets remain unchanged, thus the Current Ratio is unchanged." }, { text: "Increasing.", isCorrect: false, rationale: "Total Current Assets are static." }, { text: "Decreasing.", isCorrect: false, rationale: "Total Current Assets are static." }, { text: "Increasing the Acid Test Ratio.", isCorrect: false, rationale: "Inventory increases, which *decreases* the Acid Test numerator." }] },
+        { question: "Which ratio is most useful for a long-term creditor assessing the company's ability to withstand sustained losses?", options: [{ text: "Gearing Ratio (Solvency).", isCorrect: true, rationale: "Long-term creditors are concerned with solvency—the company's ability to meet long-term obligations, which Gearing measures." }, { text: "Current Ratio (Liquidity).", isCorrect: false, rationale: "This measures short-term ability to pay." }, { text: "Gross Profit Margin (Profitability).", isCorrect: false, rationale: "Profitability is important, but Gearing directly measures risk exposure." }, { text: "Inventory Turnover (Efficiency).", isCorrect: false, rationale: "Efficiency is secondary to long-term risk assessment for creditors." }] },
+        { question: "The P/E Ratio measures the relationship between:", options: [{ text: "Market price of a share and the company's earnings per share.", isCorrect: true, rationale: "P/E = Market Price per Share / Earnings Per Share." }, { text: "Total equity and total debt.", isCorrect: false, rationale: "This is the Gearing Ratio." }, { text: "Sales revenue and total assets.", isCorrect: false, rationale: "This is the Asset Turnover Ratio." }, { text: "Operating profit and interest expense.", isCorrect: false, rationale: "This is the Interest Cover Ratio." }] }
+    ];
+
+    // ----------------------------------------------------------------------
+    // GAME LOGIC AND VARIABLES
+    // ----------------------------------------------------------------------
+
+    const QUESTIONS_TO_ASK = 15; // The number of questions selected for each quiz
+    let selectedQuizData = [];   // Array to hold the 15 randomly selected questions
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let playerName = '';
+    
+    const startScreen = document.getElementById('start-screen');
+    const quizArea = document.getElementById('quiz-area');
+    const questionContent = document.getElementById('question-content');
+    const nextButton = document.getElementById('next-button');
+    const scoreDisplay = document.getElementById('score-display');
+    const rationaleText = document.getElementById('rationale-text');
+    const scoreboard = document.getElementById('scoreboard');
+    const progressBar = document.getElementById('progress-bar');
+
+    function selectRandomQuestions() {
+        // 1. Shuffle the full base array
+        shuffleArray(baseQuizData);
+        // 2. Select the first N questions (15 in this case)
+        selectedQuizData = baseQuizData.slice(0, QUESTIONS_TO_ASK).map((q, index) => ({
+            questionNumber: index + 1,
+            ...q
+        }));
+    }
+
+    function startGame() {
+        playerName = document.getElementById('player-name-input').value.trim();
+        if (playerName === '') {
+            alert('Please enter your name to start the quiz!');
+            return;
         }
 
-        /**
-         * Handles the transition to a new game state.
-         * @param {string} newStateKey The key of the new state in gameData.
-         */
-        function updateGame(newStateKey) {
-            let stateKey = newStateKey;
+        // Hide start screen, show quiz area
+        startScreen.style.display = 'none';
+        quizArea.style.display = 'block';
+        
+        // Reset state and select new questions
+        currentQuestionIndex = 0;
+        score = 0;
+        selectRandomQuestions(); // KEY CHANGE: Randomly selects 15 unique questions
+        
+        renderQuestion();
+    }
 
-            // If user clicks START NEW SESSION button from an ending screen, we route to resetGame
-            if (stateKey === 'rules_screen' && gameState.final_reveal) {
-                resetGame();
-                return;
-            }
+    function updateProgressBar() {
+        const progress = (currentQuestionIndex / QUESTIONS_TO_ASK) * 100;
+        progressBar.style.width = `${progress}%`;
+    }
 
-            const currentState = gameData[stateKey];
-            gameState.location = stateKey; // Update location immediately
-
-            // 1. DREAD LEVEL INCREASE & STATE UPDATE (Only if not already ending and not the rules screen)
-            if (!gameState.final_reveal && stateKey !== 'rules_screen') {
-                
-                // Handle Dread Increase
-                if (currentState.dreadIncrease) {
-                    gameState.dread_level += currentState.dreadIncrease;
-                }
-
-                // Handle State Update (Clues, Keycard)
-                if (typeof currentState.updateState === 'function') {
-                    const flagToSet = currentState.updateState(gameState);
-                    if (flagToSet) {
-                        gameState[flagToSet] = true;
-                    }
-                } else if (currentState.updateState) {
-                    gameState[currentState.updateState] = true;
-                }
-            }
-
-
-            // 2. CHECK FOR ENDINGS (MUST be done after state/dread update)
-            
-            // Check for Bad End 2 (Madness - Dread too high)
-            if (gameState.dread_level >= 4 && !gameState.final_reveal && stateKey !== 'escape_success' && stateKey !== 'end_reveal' && stateKey !== 'rules_screen') {
-                stateKey = 'madness_ending';
-                gameState.final_reveal = true;
-            }
-            
-            // Check for Bad End 1 (Transcribed - All B-12 clues found, player returns to start)
-            if (stateKey === 'start' && checkGameEnd() && !gameState.final_reveal) {
-                stateKey = 'end_reveal';
-                gameState.final_reveal = true;
-            }
-
-            const finalState = gameData[stateKey]; // Re-reference the state after all potential ending checks
-            
-            // 3. Update the UI components
-            
-            // Handle dynamic descriptions
-            if (typeof finalState.description === 'function') {
-                descriptionBox.textContent = finalState.description(gameState);
-            } else {
-                descriptionBox.textContent = finalState.description;
-            }
-
-            actionsContainer.innerHTML = ''; // Clear old buttons
-            messageBox.textContent = ''; // Clear message
-
-            // Inventory and Dread only show when NOT on the rules or ending screen
-            if (stateKey === 'rules_screen' || gameState.final_reveal) {
-                inventoryDisplay.innerHTML = '';
-                dreadDisplay.innerHTML = '';
-            } else {
-                // Update Inventory Display 
-                inventoryDisplay.innerHTML = gameState.has_keycard 
-                    ? '<i class="fas fa-key"></i> INVENTORY: Janitor\'s Keycard' 
-                    : '<i class="fas fa-lock"></i> INVENTORY: None';
-                
-                // Update Dread Level Display
-                dreadDisplay.innerHTML = `<i class="fas fa-skull"></i> DREAD LEVEL: ${gameState.dread_level} / 4 (DANGER)`;
-            }
-
-            // 4. Generate new buttons
-            const actions = typeof finalState.actions === 'function' 
-                            ? finalState.actions(gameState) 
-                            : finalState.actions;
-
-            actions.forEach(action => {
-                const button = document.createElement('button');
-                button.className = 'game-button';
-                button.innerHTML = `<i class="icon fas ${action.icon}"></i> ${action.text}`;
-                
-                // Disable button if the specific action in the START room has already been taken
-                const isInvestigated = action.requiredState && gameState[action.requiredState];
-                
-                if (isInvestigated && finalState === gameData['start']) {
-                    button.disabled = true;
-                    button.innerHTML = `<i class="icon fas fa-check"></i> ${action.text} (DONE)`;
-                }
-
-                button.onclick = () => {
-                    updateGame(action.nextState);
-                };
-
-                actionsContainer.appendChild(button);
-            });
-
-            // 5. Simple transition effect
-            descriptionBox.style.opacity = 0;
-            setTimeout(() => {
-                descriptionBox.style.opacity = 1;
-            }, 50);
+    function renderQuestion() {
+        if (currentQuestionIndex >= QUESTIONS_TO_ASK) {
+            showFinalScore();
+            return;
         }
 
-        /**
-         * Resets the game to the initial state.
-         */
-        function resetGame() {
-            gameState.location = 'rules_screen';
-            gameState.investigated_desk = false;
-            gameState.investigated_books = false;
-            gameState.investigated_window = false;
-            gameState.investigated_door = false;
-            gameState.has_keycard = false;
-            gameState.final_reveal = false;
-            gameState.dread_level = 0;
-            updateGame('rules_screen'); // Start at rules screen
+        const qData = selectedQuizData[currentQuestionIndex];
+        
+        // --- RANDOMIZATION STEP: Shuffle the answer options ---
+        const shuffledOptions = [...qData.options];
+        shuffleArray(shuffledOptions);
+
+        questionContent.innerHTML = `
+            <div class="question-box">
+                <div class="question-text">
+                    ${qData.questionNumber}. ${qData.question}
+                </div>
+                <div class="options">
+                    ${shuffledOptions.map((option, index) => `
+                        <label class="answer-option" data-is-correct="${option.isCorrect}" data-rationale="${option.rationale}">
+                            <input type="radio" name="answer" value="${index}" onclick="checkAnswer(this, ${option.isCorrect})">
+                            ${String.fromCharCode(65 + index)}. ${option.text}
+                        </label>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        nextButton.style.display = 'none';
+        rationaleText.style.display = 'none';
+        updateScoreDisplay();
+        updateProgressBar();
+    }
+
+    function checkAnswer(selectedInput, isCorrect) {
+        const optionsContainer = selectedInput.closest('.options');
+        const allLabels = optionsContainer.querySelectorAll('.answer-option');
+        
+        // Disable all options and find the correct rationale
+        let correctRationale = '';
+        allLabels.forEach(label => {
+            label.querySelector('input').disabled = true;
+            label.style.pointerEvents = 'none';
+
+            if (label.getAttribute('data-is-correct') === 'true') {
+                label.classList.add('correct');
+                correctRationale = label.getAttribute('data-rationale');
+            } else if (label.contains(selectedInput)) {
+                label.classList.add('incorrect');
+            }
+        });
+
+        // Update score and show rationale
+        if (isCorrect) {
+            score++;
+            rationaleText.style.backgroundColor = '#e6ffed';
+            rationaleText.style.borderColor = '#00a859';
+            rationaleText.style.color = '#00723a';
+        } else {
+            rationaleText.style.backgroundColor = '#ffe6e6';
+            rationaleText.style.borderColor = '#d93025';
+            rationaleText.style.color = '#b31412';
         }
+        
+        rationaleText.innerHTML = `<strong>Explanation:</strong> ${correctRationale}`;
+        rationaleText.style.display = 'block';
 
-        // Initialize the game on load
-        window.onload = () => {
-             resetGame(); // Ensure a clean start at the rules screen
-        };
+        updateScoreDisplay();
+        nextButton.style.display = 'block';
+    }
 
-    </script>
+    function loadNextQuestion() {
+        currentQuestionIndex++;
+        renderQuestion();
+    }
+
+    function updateScoreDisplay() {
+        scoreDisplay.textContent = `Question ${currentQuestionIndex + 1} of ${QUESTIONS_TO_ASK} | Correct: ${score}`;
+    }
+
+    function showFinalScore() {
+        // Ensure progress bar is full
+        progressBar.style.width = '100%'; 
+
+        quizArea.style.display = 'none';
+        scoreboard.style.display = 'block';
+        
+        scoreboard.innerHTML = `
+            <h2>Quiz Complete! 🎉</h2>
+            <p class="final-message">Well done, <span class="player-name">${playerName}</span>!</p>
+            <p class="final-message">You have finished the Advanced Financial Ratios Quiz.</p>
+            <p class="final-score">Final Score: ${score} out of ${QUESTIONS_TO_ASK}</p>
+            <p>Ready for more financial analysis? Refresh the page to play again, and you'll get 15 different random questions!</p>
+        `;
+    }
+
+    // Start screen visible on load
+    document.addEventListener('DOMContentLoaded', () => {
+        startScreen.style.display = 'block';
+        quizArea.style.display = 'none';
+        scoreboard.style.display = 'none';
+    });
+</script>
+
 </body>
 </html>
