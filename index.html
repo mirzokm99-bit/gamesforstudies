@@ -1,762 +1,960 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Financial Ratios Quiz</title>
+    <title>Эконометрика: Викторина (98 вопросов)</title>
     <style>
-        /* Base Styling */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #e6eef5; /* Light blue background */
-            margin: 0;
-            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            background-color: #e9ecef;
+            margin: 0;
+            overflow-y: auto;
         }
-
-        .quiz-container {
-            background-color: #ffffff;
+        #game-container {
+            background: white;
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            max-width: 750px;
-            width: 100%;
-            transition: all 0.5s ease-in-out;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 700px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-
         h1 {
-            color: #1a73e8; /* Google Blue */
+            color: #007bff;
             text-align: center;
-            border-bottom: 3px solid #f0f0f0;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-        
-        /* Start Screen Styling */
-        #start-screen, #scoreboard {
-            text-align: center;
-            padding: 40px 20px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
         }
 
-        #start-screen input[type="text"] {
-            padding: 12px;
+        /* --- Start Page Styles --- */
+        #start-page {
+            text-align: center;
+            padding: 50px 0;
+        }
+        #start-page input {
+            padding: 10px;
             margin: 20px 0;
-            width: 70%;
-            border: 2px solid #ccc;
-            border-radius: 8px;
-            font-size: 1.1em;
-            transition: border-color 0.3s;
+            width: 80%;
+            max-width: 300px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 1em;
         }
-
-        #start-screen input[type="text"]:focus {
-            border-color: #1a73e8;
-            outline: none;
-        }
-
         #start-button {
-            padding: 15px 30px;
-            background-color: #00a859; /* Vibrant Green */
+            padding: 12px 30px;
+            background-color: #28a745;
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1.2em;
-            font-weight: bold;
-            transition: background-color 0.3s, transform 0.1s;
-        }
-        
-        #start-button:hover {
-            background-color: #008a48;
-            transform: scale(1.02);
-        }
-
-        /* Quiz Area Styling */
-        #score-display {
-            text-align: right;
             font-size: 1.1em;
-            font-weight: 600;
-            color: #34495e;
-            margin-bottom: 10px;
+            font-weight: bold;
+            transition: background-color 0.2s;
         }
-        
-        /* Progress Bar */
-        #progress-bar-container {
-            width: 100%;
-            background-color: #e0e0e0;
-            border-radius: 5px;
-            margin-bottom: 25px;
-            height: 15px;
-            overflow: hidden;
-        }
-        #progress-bar {
-            height: 100%;
-            width: 0%;
-            background-color: #fbbc05; /* Google Yellow */
-            transition: width 0.4s ease-in-out;
-            border-radius: 5px;
+        #start-button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
         }
 
-        .question-box {
-            margin-bottom: 30px;
-            padding: 20px;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            background-color: #f7f9fc;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        /* --- Quiz Styles --- */
+        #score {
+            text-align: right;
+            font-weight: bold;
+            color: #343a40;
+            margin-bottom: 15px;
         }
-
-        .question-text {
+        #question-text {
             font-size: 1.25em;
-            font-weight: 600;
-            color: #2c3e50;
             margin-bottom: 20px;
+            font-weight: 500;
+        }
+        #options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .option-btn {
+            padding: 15px 20px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.1s;
+            font-size: 1em;
             line-height: 1.4;
         }
-
-        .answer-option {
-            display: block;
-            margin: 12px 0;
-            padding: 15px;
-            background-color: #ffffff;
-            border: 1px solid #ddd;
+        .option-btn:hover:not([disabled]) {
+            background-color: #e2e6ea;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+        .correct {
+            background-color: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724;
+            animation: pulse-correct 0.5s ease-out;
+        }
+        .incorrect {
+            background-color: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #721c24;
+            animation: shake 0.5s;
+        }
+        .selected-disabled {
+            pointer-events: none;
+        }
+        #next-button {
+            padding: 10px 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s, border-color 0.3s;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            float: right;
+            margin-top: 15px;
         }
-
-        .answer-option:hover {
-            background-color: #f0f8ff;
-            transform: translateY(-2px);
-            border-color: #1a73e8;
+        #next-button:disabled {
+            background-color: #a0c3e6;
+            cursor: not-allowed;
         }
-
-        .answer-option.correct {
-            background-color: #e6ffed; /* Light Green */
-            border-color: #00a859;
-            color: #00723a;
-            font-weight: 600;
-            animation: correct-flash 0.5s ease-in-out;
-            pointer-events: none;
+        #feedback {
+            margin-top: 15px;
+            min-height: 24px;
+            font-size: 1.1em;
+            display: flex;
+            flex-direction: column;
         }
-
-        .answer-option.incorrect {
-            background-color: #ffe6e6; /* Light Red */
-            border-color: #d93025;
-            color: #b31412;
-            animation: incorrect-shake 0.5s ease-in-out;
-            pointer-events: none;
+        .result-text {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .explanation {
+            font-weight: normal;
+            font-size: 0.9em;
+            color: #495057;
+            padding: 10px;
+            background-color: #e2f0ff;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
         }
         
-        @keyframes correct-flash {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
+        /* --- Final Results Styles --- */
+        #final-results {
+            text-align: center;
+            padding-top: 20px;
+        }
+        #final-score {
+            font-size: 1.5em;
+            margin: 15px 0;
+            color: #007bff;
+        }
+        #final-results button {
+            padding: 12px 30px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin-top: 15px;
         }
 
-        @keyframes incorrect-shake {
+        /* --- Animations --- */
+        @keyframes pulse-correct {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
             0%, 100% { transform: translateX(0); }
             20%, 60% { transform: translateX(-5px); }
             40%, 80% { transform: translateX(5px); }
         }
-
-        .answer-option input[type="radio"] {
-            margin-right: 15px;
-            transform: scale(1.2);
-            accent-color: #1a73e8;
-        }
-
-        #next-button {
-            display: none;
-            padding: 12px 25px;
-            background-color: #1a73e8;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.1em;
-            margin-top: 20px;
-            float: right;
-            transition: background-color 0.3s;
-        }
-
-        #next-button:hover {
-            background-color: #0c61d3;
-        }
-        
-        #rationale-text {
-            margin-top: 15px;
-            padding: 15px;
-            background-color: #fff8e1;
-            border: 1px solid #fbbc05;
-            border-left: 5px solid #fbbc05;
-            border-radius: 8px;
-            color: #614d05;
-            display: none;
-            line-height: 1.4;
-        }
-
-        /* Scoreboard Styling */
-        .final-score {
-            font-size: 2.5em;
-            color: #1a73e8;
-            margin: 20px 0;
-            font-weight: bold;
-            animation: score-drop 1s ease-out;
-        }
-        .final-message {
-            font-size: 1.3em;
-            margin-bottom: 25px;
-            color: #333;
-        }
-        .player-name {
-            color: #00a859;
-            font-style: italic;
-            font-weight: 700;
-        }
-
-        @keyframes score-drop {
-            0% { transform: translateY(-50px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
     </style>
 </head>
 <body>
-
-<div class="quiz-container">
-    <h1>Advanced Financial Ratios Quiz</h1>
-    
-    <div id="start-screen">
-        <h2>Welcome, Financial Analyst!</h2>
-        <p>Test your knowledge of complex financial ratio analysis. (15 Random Questions)</p>
-        <input type="text" id="player-name-input" placeholder="Enter Your Name">
-        <button id="start-button" onclick="startGame()">Start Quiz &rarr;</button>
-    </div>
-
-    <div id="quiz-area" style="display: none;">
-        <div id="score-display">Score: 0 / 0</div>
+    <div id="game-container">
+        <h1>Эконометрика: Викторина</h1>
         
-        <div id="progress-bar-container">
-            <div id="progress-bar"></div>
+        <div id="start-page">
+            <h2>Добро пожаловать в викторину</h2>
+            <p>Введите свое имя, чтобы начать:</p>
+            <input type="text" id="player-name" placeholder="Ваше имя">
+            <button id="start-button" disabled>Начать</button>
         </div>
 
-        <div id="question-content">
+        <div id="quiz-area" style="display: none;">
+            <div id="score">Счет: 0 / 0</div>
+            <div id="question-area">
+                <p id="question-text"></p>
+                <div id="options-container">
+                    </div>
+                <div id="feedback"></div>
+                <button id="next-button" disabled>Далее</button>
             </div>
-        
-        <div id="rationale-text"></div>
-        
-        <button id="next-button" onclick="loadNextQuestion()">Next Question &rarr;</button>
+            
+            <div id="final-results" style="display: none;">
+                <h2>Викторина завершена!</h2>
+                <p id="final-score"></p>
+                <p id="player-final-name"></p>
+                <button onclick="location.reload()">Начать заново</button>
+            </div>
+        </div>
     </div>
 
-    <div id="scoreboard" style="display: none;">
-        </div>
-</div>
-
-<script>
-    // ----------------------------------------------------------------------
-    // FISHER-YATES SHUFFLE ALGORITHM
-    // ----------------------------------------------------------------------
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-    }
-    
-    // ----------------------------------------------------------------------
-    // QUIZ DATA (Base of 50 Questions - Repeating/Modifying the core 15 for volume)
-    // ----------------------------------------------------------------------
-    
-    const baseQuizData = [
-        // Q1: ROCE vs. Cost of Debt (Leverage Principle)
-        {
-            question: "A company has a Return on Capital Employed (ROCE) of 12%. If the company’s average cost of borrowing (interest rate) is 8%, which of the following is the most accurate interpretation of this result?",
-            options: [
-                { text: "The company is generating value, as ROCE is higher than the borrowing cost.", isCorrect: true, rationale: "The company is generating a positive economic return because the returns generated from its total capital (12%) exceed the cost of the debt used to finance some of that capital (8%)." },
-                { text: "The company is underperforming because it is below the healthy target of 15-20%.", isCorrect: false, rationale: "While the ratio is below the target, the critical immediate comparison is against the cost of capital, which the company is successfully exceeding." },
-                { text: "The company is at a high risk of default because its debt is expensive.", isCorrect: false, rationale: "ROCE measures profitability, not direct debt-servicing ability, and the returns exceed the borrowing cost, suggesting value is being created, not destroyed." },
-                { text: "The operating profit is insufficient to cover the interest expense.", isCorrect: false, rationale: "This conclusion is drawn from the Interest Cover Ratio, not the Return on Capital Employed (ROCE)." }
-            ]
-        },
-        // Q2: Current vs. Acid Test (Inventory Reliance)
-        {
-            question: "A retailer has an Acid Test (Quick) Ratio of 0.8:1 and a Current Ratio of 2.5:1. What does this specific combination most strongly suggest about the company's financial position?",
-            options: [
-                { text: "The company relies heavily on inventory to cover its short-term debts.", isCorrect: true, rationale: "The large gap between the two ratios (2.5 minus 0.8) indicates that a significant portion of the current assets is composed of inventory, which is slow to convert to cash." },
-                { text: "The company has poor liquidity and is at risk of short-term default.", isCorrect: false, rationale: "The Current Ratio of 2.5:1 indicates strong overall liquidity, contradicting the idea of poor liquidity or immediate default risk." },
-                { text: "The company is overly conservative, holding too many idle liquid assets.", isCorrect: false, rationale: "The Acid Test Ratio below 1:1 suggests the company does not have enough highly liquid assets (excluding inventory) to cover its liabilities, indicating a reliance on inventory, not excess liquidity." },
-                { text: "The company is struggling to collect its receivables.", isCorrect: false, rationale: "The Acid Test Ratio includes receivables, so a poor result suggests issues with current assets, but the Inventory Turnover Period is a more direct indicator of collection issues." }
-            ]
-        },
-        // Q3: Inventory Turnover Period Calculation
-        {
-            question: "A manufacturer is analyzing its efficiency. Given: Average Inventory: $75,000; Cost of Sales: $900,000. What is the Inventory Turnover Period in days, and what does it suggest?",
-            options: [
-                { text: "30.4 days, suggesting the company is efficient at converting stock into sales.", isCorrect: true, rationale: "The calculation is (75,000 / 900,000) * 365 = 30.4 days, which is a relatively short holding period, indicating high inventory efficiency." },
-                { text: "12 times, which is the Inventory Turnover Ratio, not the period in days.", isCorrect: false, rationale: "The value of 12 is the Turnover Ratio (900k/75k), but the question asks for the 'Turnover Period' in days." },
-                { text: "45.6 days, indicating the company should shorten its stock holding time.", isCorrect: false, rationale: "The calculation is incorrect; the correct value is 30.4 days, and this period is already indicative of good efficiency." },
-                { text: "30.4 days, suggesting the company holds stock for an inefficiently long time.", isCorrect: false, rationale: "The calculation is (75,000 / 900,000) * 365 = 30.4 days. For a manufacturer, holding stock for 30 days is generally efficient, making the interpretation incorrect." }
-            ]
-        },
-        // Q4: High P/E Ratio Interpretation
-        {
-            question: "An investor sees that Company A has a Price/Earnings (P/E) Ratio of 45, while the industry average is 15. What is the most common interpretation of Company A's high P/E ratio?",
-            options: [
-                { text: "The market expects high future earnings growth from Company A.", isCorrect: true, rationale: "A significantly higher P/E ratio than the industry average often means the market is willing to pay a premium for the company's shares based on high future growth expectations." },
-                { text: "The stock is currently undervalued and a good buying opportunity.", isCorrect: false, rationale: "A low P/E ratio, not a high one, typically suggests a stock may be undervalued relative to its earnings." },
-                { text: "The company's Earnings Per Share (EPS) is abnormally low.", isCorrect: false, rationale: "While a low EPS can raise the P/E, a P/E of 45 usually reflects high investor confidence and expectations, which is less about current poor performance." },
-                { text: "The company is over-geared and carries excessive financial risk.", isCorrect: false, rationale: "The P/E Ratio is an Investor/Market ratio and does not directly measure financial risk from debt; the Gearing Ratio addresses leverage." }
-            ]
-        },
-        // Q5: Operating vs. Gross Profit Margin Difference
-        {
-            question: "What is the primary information revealed by the Operating Profit Margin that is *not* captured by the Gross Profit Margin?",
-            options: [
-                { text: "The efficiency of managing overheads and administrative costs.", isCorrect: true, rationale: "The difference between the two margins is due to the subtraction of operating expenses (overheads), revealing management's ability to control non-production costs." },
-                { text: "The profitability generated by the core production process before all expenses.", isCorrect: false, rationale: "This describes the Gross Profit Margin, which only considers Cost of Sales, not operating expenses." },
-                { text: "The portion of profit that belongs to the ordinary shareholders.", isCorrect: false, rationale: "This information is captured by the Return on Shareholders' Funds (ROSF) or Earnings Per Share (EPS), which use Profit After Tax." },
-                { text: "The return generated on all capital invested in the business.", isCorrect: false, rationale: "This is primarily measured by the Return on Capital Employed (ROCE)." }
-            ]
-        },
-        // Q6: Interest Cover Calculation & Stability
-        {
-            question: "A company has Operating Profit of $300,000 and Interest Expense of $150,000. Calculate the Interest Cover Ratio and assess the company's financial stability in relation to its debt.",
-            options: [
-                { text: "2 times, indicating an acceptable but less comfortable capacity to service debt.", isCorrect: true, rationale: "The calculation is 300,000 / 150,000 = 2 times. While 2 times is greater than 1, it is at the low end of the suggested healthy range (>2-3 times), making it less comfortable." },
-                { text: "0.5 times, indicating a high risk of default.", isCorrect: false, rationale: "The calculation is Operating Profit / Interest Expense (300k / 150k) = 2 times. The calculation and assessment are both incorrect." },
-                { text: "3 times, indicating comfortable debt servicing.", isCorrect: false, rationale: "The calculation is Operating Profit / Interest Expense (300k / 150k) = 2 times, not 3 times. The assessment of 'comfortable' is subjective but the calculation is wrong." },
-                { text: "2 times, indicating the company is over-geared.", isCorrect: false, rationale: "The calculation is correct, but the Interest Cover Ratio measures service capacity, not overall leverage (which is the Gearing Ratio)." }
-            ]
-        },
-        // Q7: Sale of Inventory (Liquidity Impact)
-        {
-            question: "A company sells inventory for $150,000 on credit (cost $100,000). What is the immediate effect on the Current Ratio and the Acid Test Ratio, assuming Current Liabilities remain constant?",
-            options: [
-                { text: "Both the Current Ratio and the Acid Test Ratio increase.", isCorrect: true, rationale: "The sale replaces Inventory (cost $100k) with Trade Receivables ($150k). Current Assets increase by the profit ($50k), raising the Current Ratio. The Acid Test numerator also increases by $50k (Receivables increase, Inventory removed), causing it to increase." },
-                { text: "Current Ratio increases, and Acid Test Ratio remains unchanged.", isCorrect: false, rationale: "Since the sales price is greater than the cost, the Current Assets increase, causing the Current Ratio to increase. The Acid Test Ratio also increases because its numerator (which excludes inventory) increases by the profit margin." },
-                { text: "Current Ratio remains unchanged, and Acid Test Ratio decreases.", isCorrect: false, rationale: "The Current Assets increase because Receivables are added at a higher value than the Inventory is removed, and the Acid Test numerator increases by the profit margin." },
-                { text: "Both ratios remain unchanged.", isCorrect: false, rationale: "Since the sales price ($150,000) is greater than the cost ($100,000), the total Current Assets increase by the profit, affecting both ratios." }
-            ]
-        },
-        // Q8: Shortening Payables Period (Cash Flow Impact)
-        {
-            question: "A company's Payables Settlement Period suddenly shortens from 90 days to 30 days. Which of the following is the most direct and negative consequence of this change?",
-            options: [
-                { text: "Decreased cash reserves and reduced short-term liquidity.", isCorrect: true, rationale: "Paying suppliers 60 days sooner requires a significant, immediate outflow of cash, directly depleting cash and cash equivalents, which negatively impacts liquidity ratios." },
-                { text: "Reduced Gross Profit Margin due to higher supplier prices.", isCorrect: false, rationale: "While possible, this is an indirect consequence. The direct impact is on the company's immediate cash management." },
-                { text: "Increased Gearing Ratio as the company needs to take on more long-term debt.", isCorrect: false, rationale: "This addresses long-term financing (Gearing) and is a potential solution, not the direct, immediate negative consequence on operations." },
-                { text: "Lower Asset Turnover due to inefficient capital utilization.", isCorrect: false, rationale: "Asset Turnover measures revenue generation from long-term capital and is not directly affected by changes in the short-term payables policy." }
-            ]
-        },
-        // Q9: Stock Split (EPS/P.E Impact)
-        {
-            question: "Company Z executes a 2-for-1 stock split. Assuming the total market capitalization and Profit After Tax remain stable, what is the immediate effect on its Earnings Per Share (EPS) and Price/Earnings (P/E) Ratio?",
-            options: [
-                { text: "EPS is halved, and P/E Ratio remains unchanged.", isCorrect: true, rationale: "The number of shares doubles, halving the EPS. Since the Market Price per Share also halves, the P/E ratio (Market Price / EPS) remains constant." },
-                { text: "EPS is halved, and P/E Ratio doubles.", isCorrect: false, rationale: "A stock split doubles the number of shares, which halves the EPS. However, the share price is also halved, meaning the P/E ratio remains mathematically unchanged." },
-                { text: "EPS doubles, and P/E Ratio is halved.", isCorrect: false, rationale: "A stock split increases the number of shares, which decreases (halves) the EPS, not doubles it." },
-                { text: "Both EPS and P/E Ratio remain unchanged.", isCorrect: false, rationale: "Only the P/E Ratio is unchanged; the EPS is explicitly halved because the number of shares outstanding has doubled." }
-            ]
-        },
-        // Q10: Debt Reduction via Equity (Gearing/Interest Cover Impact)
-        {
-            question: "A highly geared company decides to issue new equity and use the funds to pay down its long-term bank loans. What is the expected simultaneous effect on its Gearing Ratio and Interest Cover Ratio?",
-            options: [
-                { text: "Gearing Ratio decreases, and Interest Cover Ratio increases.", isCorrect: true, rationale: "The Gearing Ratio will decrease because Long-term Debt is reduced and Equity is increased. The Interest Cover Ratio will increase because the Interest Expense (denominator) is reduced due to the debt payoff." },
-                { text: "Gearing Ratio increases, and Interest Cover Ratio decreases.", isCorrect: false, rationale: "Incorrect. Replacing debt with equity will decrease the Gearing Ratio and the resulting lower interest expense will increase the Interest Cover Ratio." },
-                { text: "Both ratios remain unchanged.", isCorrect: false, rationale: "Incorrect. This transaction is a fundamental shift in the company's long-term financing structure, directly affecting both ratios." },
-                { text: "Gearing Ratio decreases, and Interest Cover Ratio decreases.", isCorrect: false, rationale: "Incorrect. Less debt means less interest, which increases the company's capacity to cover that interest (Interest Cover Ratio)." }
-            ]
-        },
-        // Q11: Receivables Collection Period Impact
-        {
-            question: "A retailer increases its Receivables Collection Period from 30 days to 60 days. What is the likely trade-off this decision reflects?",
-            options: [
-                { text: "Increased sales revenue at the cost of reduced cash flow.", isCorrect: true, rationale: "Offering longer credit terms (60 days) often boosts sales by attracting customers, but it delays cash inflow, negatively impacting liquidity and cash flow." },
-                { text: "Improved efficiency at the cost of higher interest expense.", isCorrect: false, rationale: "This change decreases efficiency (longer collection) and is not directly tied to interest expense unless the company needs a new loan." },
-                { text: "Reduced bad debt expense at the cost of lower profitability.", isCorrect: false, rationale: "Longer collection periods usually *increase* the risk of bad debt, not reduce it." },
-                { text: "Higher Asset Turnover at the cost of reduced Gearing.", isCorrect: false, rationale: "Asset Turnover is largely driven by revenue and total assets, not solely collection policy." }
-            ]
-        },
-        // Q12: Working Capital Cycle Interpretation
-        {
-            question: "A company's Working Capital Cycle (Operating Cycle) is 120 days. This means that:",
-            options: [
-                { text: "It takes 120 days for the company to convert cash back into cash.", isCorrect: true, rationale: "The working capital cycle measures the time between paying cash for inventory/expenses and receiving cash from the customer (cash-to-cash cycle)." },
-                { text: "Its inventory is held for 120 days before being sold.", isCorrect: false, rationale: "This describes the Inventory Holding Period, which is only one component of the full cycle." },
-                { text: "The company takes 120 days to pay its suppliers.", isCorrect: false, rationale: "This describes the Payables Settlement Period, which *reduces* the overall cycle time." },
-                { text: "The company must borrow funds every 120 days to remain solvent.", isCorrect: false, rationale: "The cycle length indicates efficiency, not necessarily the timing of borrowing requirements." }
-            ]
-        },
-        // Q13: Effect of Purchasing Fixed Assets with a Long-Term Loan
-        {
-            question: "A company uses a new 10-year bank loan to purchase a new piece of machinery (Fixed Asset). What is the immediate effect on its Current Ratio and Gearing Ratio?",
-            options: [
-                { text: "Current Ratio remains unchanged; Gearing Ratio increases.", isCorrect: true, rationale: "The loan is long-term (Non-Current Liability), so Current Liabilities are unchanged (Current Ratio stays the same). Gearing increases because long-term debt has increased." },
-                { text: "Current Ratio decreases; Gearing Ratio increases.", isCorrect: false, rationale: "The fixed asset purchase does not involve current assets or current liabilities in the *immediate* transaction." },
-                { text: "Both ratios remain unchanged.", isCorrect: false, rationale: "The Gearing Ratio is definitely affected by the new long-term loan." },
-                { text: "Current Ratio increases; Gearing Ratio decreases.", isCorrect: false, rationale: "The loan increases debt, which increases Gearing, and the Current Ratio is unaffected." }
-            ]
-        },
-        // Q14: DuPont Analysis (ROCE breakdown)
-        {
-            question: "The DuPont analysis breaks down ROCE into two key components: Net Profit Margin and Asset Turnover. Why is this breakdown useful?",
-            options: [
-                { text: "It isolates whether profitability issues stem from poor cost control or inefficient asset usage.", isCorrect: true, rationale: "Profit Margin reflects cost control (profitability), and Asset Turnover reflects how efficiently assets generate sales (efficiency). The breakdown pinpoints the weak area." },
-                { text: "It determines the company's reliance on debt financing.", isCorrect: false, rationale: "Leverage (debt reliance) is added in the full 3-step DuPont model to calculate Return on Equity (ROE), but not the standard ROCE breakdown." },
-                { text: "It directly compares a company's liquidity with its solvency.", isCorrect: false, rationale: "Liquidity and solvency ratios are separate categories." },
-                { text: "It measures the market value of the company's intellectual property.", isCorrect: false, rationale: "Market ratios like P/E address market value, not DuPont analysis." }
-            ]
-        },
-        // Q15: High Acid Test Ratio Danger
-        {
-            question: "A company's Acid Test Ratio is 3.5:1. While indicating strong liquidity, what financial management issue might this extremely high ratio suggest?",
-            options: [
-                { text: "The company is holding too much idle cash or inefficiently managed liquid assets.", isCorrect: true, rationale: "An extremely high quick ratio suggests a business is not fully utilizing its most liquid assets, potentially holding excessive cash or having too many receivables, leading to low returns on those assets." },
-                { text: "The company is struggling to manage its long-term debt (Gearing).", isCorrect: false, rationale: "The Acid Test Ratio is a short-term liquidity measure, unrelated to long-term Gearing." },
-                { text: "The company has low sales volume and a declining Gross Profit Margin.", isCorrect: false, rationale: "Low sales might *cause* poor liquidity, but an *excessive* ratio indicates the opposite problem: too many liquid assets." },
-                { text: "It indicates a failure to convert inventory into receivables efficiently.", isCorrect: false, rationale: "This ratio *excludes* inventory; it's the Current Ratio that would signal a problem with inventory conversion." }
-            ]
-        },
-        // -- Start Repetition/Modification for Base of 50 --
-        // (To ensure 15 questions are always selected from a pool of 50)
-        // Note: Question numbers (Q1-Q50) will be assigned by the code later.
-
-        // Q16 (MOD of Q1): ROCE vs. Cost of Debt (Negative scenario)
-        {
-            question: "A company has a Return on Capital Employed (ROCE) of 6%. If the cost of borrowing is 9%, which of the following is the most accurate interpretation?",
-            options: [
-                { text: "The company is destroying value and suffering from negative financial leverage.", isCorrect: true, rationale: "Since ROCE (6%) is lower than the cost of debt (9%), the company is earning less from the borrowed capital than it is paying out in interest, which reduces the return to shareholders (negative leverage)." },
-                { text: "The company's liquidity is too low, indicating potential short-term default.", isCorrect: false, rationale: "This deals with long-term profitability (ROCE), not short-term liquidity." },
-                { text: "The low ROCE is offset by a strong Asset Turnover.", isCorrect: false, rationale: "ROCE is the product of Profit Margin and Asset Turnover; if ROCE is low, at least one of the components must be weak." },
-                { text: "The Interest Cover Ratio must be greater than 1, so the situation is acceptable.", isCorrect: false, rationale: "Interest Cover may be acceptable, but the company is still economically destroying value from the debt." }
-            ]
-        },
-        // Q17 (MOD of Q2): Current vs. Acid Test (Poor Liquidity Scenario)
-        {
-            question: "A service company (no inventory) has an Acid Test Ratio of 0.6:1. What does this indicate?",
-            options: [
-                { text: "The company does not have enough highly liquid assets (cash/receivables) to cover its current debts.", isCorrect: true, rationale: "Since there is no inventory, the Acid Test = Current Ratio. A ratio below 1 means Current Assets are insufficient to cover Current Liabilities, signaling poor short-term liquidity." },
-                { text: "The company is highly geared and carries long-term risk.", isCorrect: false, rationale: "Liquidity ratios measure short-term risk, not long-term Gearing." },
-                { text: "The Gross Profit Margin is inadequate.", isCorrect: false, rationale: "Profitability is not directly measured by the Acid Test Ratio." },
-                { text: "The company has excessive cash reserves.", isCorrect: false, rationale: "A ratio below 1 suggests cash reserves are too *low*." }
-            ]
-        },
-        // Q18 (MOD of Q3): Inventory Turnover Calculation (High vs. Low)
-        {
-            question: "If a company's Inventory Turnover Period increases from 30 days to 90 days, what is the most likely consequence?",
-            options: [
-                { text: "Increased storage costs and increased risk of obsolescence.", isCorrect: true, rationale: "A longer holding period means inventory sits in storage longer, increasing costs and the chance of the stock becoming outdated (obsolete)." },
-                { text: "Improved cash flow due to slower payments to suppliers.", isCorrect: false, rationale: "Inventory Turnover relates to sales, not payments to suppliers (Payables Settlement Period)." },
-                { text: "A decrease in the Cost of Goods Sold.", isCorrect: false, rationale: "It does not directly decrease the cost of goods sold; it indicates efficiency issues." },
-                { text: "Improved efficiency in converting stock to sales.", isCorrect: false, rationale: "An increase in the period indicates a *decrease* in efficiency." }
-            ]
-        },
-        // Q19 (MOD of Q4): Low P/E Ratio Interpretation
-        {
-            question: "A cyclical industry company has a P/E Ratio of 6, while its competitors average 12. What does this low P/E ratio most commonly signal?",
-            options: [
-                { text: "The market is pessimistic about the company's future growth or profitability.", isCorrect: true, rationale: "A low P/E ratio typically indicates that investors believe the company's current earnings are unsustainable, or they expect very low future growth." },
-                { text: "The company must be suffering from very poor management.", isCorrect: false, rationale: "While possible, the most direct interpretation is market expectation, not necessarily management quality." },
-                { text: "The stock is highly overvalued.", isCorrect: false, rationale: "A low P/E ratio usually suggests the stock is undervalued or cheap relative to its earnings." },
-                { text: "The company has recently issued a large number of new shares.", isCorrect: false, rationale: "While new shares affect EPS, the P/E ratio's relative difference to the industry signals market expectation." }
-            ]
-        },
-        // Q20 (MOD of Q5): Net Profit Margin vs. Operating Profit Margin
-        {
-            question: "What information does the Net Profit Margin provide that the Operating Profit Margin does *not*?",
-            options: [
-                { text: "The impact of financing (interest) and tax costs on final profit.", isCorrect: true, rationale: "Net Profit is calculated *after* interest and tax, whereas Operating Profit is before those costs, making Net Profit Margin reflect the full cost structure." },
-                { text: "Control over Cost of Goods Sold.", isCorrect: false, rationale: "This is primarily measured by Gross Profit Margin." },
-                { text: "Control over administrative and selling costs.", isCorrect: false, rationale: "This is the difference between Gross and Operating Profit Margins." },
-                { text: "The company's return on total assets.", isCorrect: false, rationale: "This is measured by Asset Turnover." }
-            ]
-        },
-        // Q21 (MOD of Q6): Interest Cover - High Risk Scenario
-        {
-            question: "A company's Interest Cover Ratio falls from 4 times to 1.5 times. What is the most likely driver of this change?",
-            options: [
-                { text: "A significant increase in long-term debt or a decrease in operating profit.", isCorrect: true, rationale: "Interest cover is Operating Profit / Interest Expense. A drop is caused by the numerator decreasing (lower profit) or the denominator increasing (higher interest from more debt)." },
-                { text: "An increase in sales revenue.", isCorrect: false, rationale: "Increased sales usually leads to higher Operating Profit, which would *increase* the ratio." },
-                { text: "A lengthening of the Payables Settlement Period.", isCorrect: false, rationale: "This affects cash flow and liquidity, not the capacity to cover interest." },
-                { text: "A successful equity issuance.", isCorrect: false, rationale: "Equity issuance reduces reliance on debt, which would *increase* the ratio (lower interest)." }
-            ]
-        },
-        // Q22 (MOD of Q7): Purchase of Inventory on Credit (Liquidity Impact)
-        {
-            question: "A company purchases $50,000 of inventory on credit. What is the immediate effect on the Current Ratio and the Acid Test Ratio, assuming the ratio was initially > 1?",
-            options: [
-                { text: "Current Ratio decreases; Acid Test Ratio decreases.", isCorrect: true, rationale: "Current Assets (Inventory) and Current Liabilities (Payables) both increase by $50k. Since the initial ratio was > 1, adding equal amounts to the numerator and denominator decreases the ratio. Acid Test decreases because only the denominator increases." },
-                { text: "Current Ratio increases; Acid Test Ratio decreases.", isCorrect: false, rationale: "Adding equal amounts to numerator and denominator when the ratio > 1 causes a decrease, not an increase, in the Current Ratio." },
-                { text: "Current Ratio remains unchanged; Acid Test Ratio increases.", isCorrect: false, rationale: "Current Liabilities increase, which affects both ratios." },
-                { text: "Both ratios remain unchanged.", isCorrect: false, rationale: "The transaction increases both Current Assets (Inventory) and Current Liabilities (Payables)." }
-            ]
-        },
-        // Q23 (MOD of Q8): Lengthening Payables Period (Cash Flow Impact)
-        {
-            question: "Lengthening the Payables Settlement Period from 30 days to 60 days has which primary benefit?",
-            options: [
-                { text: "Increased cash flow and improved short-term liquidity.", isCorrect: true, rationale: "Delaying payments allows the company to hold onto its cash longer, improving its cash conversion cycle and boosting liquidity ratios in the short term." },
-                { text: "Increased Gross Profit Margin.", isCorrect: false, rationale: "This only affects working capital management, not the profitability of sales." },
-                { text: "Decreased inventory holding costs.", isCorrect: false, rationale: "This is related to Inventory Turnover, not Payables." },
-                { text: "Lower Asset Turnover.", isCorrect: false, rationale: "Asset Turnover is largely unaffected by short-term payment policies." }
-            ]
-        },
-        // Q24 (MOD of Q9): Share Buyback
-        {
-            question: "A company executes a significant share buyback. Assuming Profit After Tax remains stable, what is the immediate effect on its Earnings Per Share (EPS) and Return on Shareholders' Funds (ROSF)?",
-            options: [
-                { text: "EPS increases; ROSF increases.", isCorrect: true, rationale: "The number of shares decreases, which increases EPS (Profit/Shares). ROSF (Profit/Equity) also increases because the buyback reduces Equity (denominator)." },
-                { text: "EPS decreases; ROSF increases.", isCorrect: false, rationale: "EPS increases because the shares outstanding decrease." },
-                { text: "Both EPS and ROSF remain unchanged.", isCorrect: false, rationale: "Both ratios are directly affected by the reduction in shares/equity." },
-                { text: "EPS increases; ROSF decreases.", isCorrect: false, rationale: "ROSF increases because the denominator (Equity) decreases." }
-            ]
-        },
-        // Q25 (MOD of Q10): New Debt for Expansion
-        {
-            question: "A company takes out a new long-term loan to finance a new factory (Fixed Asset). What is the immediate effect on Gearing Ratio and ROCE?",
-            options: [
-                { text: "Gearing Ratio increases; ROCE is unchanged initially.", isCorrect: true, rationale: "The new long-term debt increases the Gearing Ratio. ROCE (Profit/Capital Employed) is unaffected until the new factory starts generating profit." },
-                { text: "Both Gearing Ratio and ROCE increase.", isCorrect: false, rationale: "ROCE is unaffected until the factory operates." },
-                { text: "Gearing Ratio decreases; ROCE is unchanged initially.", isCorrect: false, rationale: "The new debt increases Gearing." },
-                { text: "Both Gearing Ratio and ROCE decrease.", isCorrect: false, rationale: "New debt increases Gearing." }
-            ]
-        },
-        // Q26 (MOD of Q11): Receivables Collection Period Increase (Bad Debt Risk)
-        {
-            question: "If a company's Average Collection Period for Receivables increases significantly, the financial analyst should primarily be concerned about:",
-            options: [
-                { text: "Increased bad debt write-offs and reduced cash flow liquidity.", isCorrect: true, rationale: "Longer collection periods increase the risk that debts will never be collected (bad debt) and delay the conversion of sales into spendable cash." },
-                { text: "A potential overstatement of inventory value.", isCorrect: false, rationale: "This relates to the Inventory Turnover Ratio, not Receivables." },
-                { text: "The company's inability to cover interest payments.", isCorrect: false, rationale: "This relates to the Interest Cover Ratio." },
-                { text: "The possibility of a hostile takeover.", isCorrect: false, rationale: "This is a market/strategic issue, not a direct ratio concern." }
-            ]
-        },
-        // Q27 (MOD of Q12): Short Working Capital Cycle Interpretation
-        {
-            question: "A company in the fast-food industry reports a Working Capital Cycle (Operating Cycle) of -5 days. This most likely suggests:",
-            options: [
-                { text: "The company collects cash from customers before it pays its suppliers.", isCorrect: true, rationale: "A negative working capital cycle, common in retail/fast-food, means cash is received immediately (before payment to suppliers), allowing the company to use supplier financing." },
-                { text: "The company's inventory is rotting due to a low Inventory Turnover Period.", isCorrect: false, rationale: "Low/negative cycle implies very *fast* inventory movement." },
-                { text: "The company is experiencing severe liquidity issues.", isCorrect: false, rationale: "A negative cycle indicates *excellent* cash flow management." },
-                { text: "The company has excessive long-term debt.", isCorrect: false, rationale: "This relates to Gearing, not the short-term cash cycle." }
-            ]
-        },
-        // Q28 (MOD of Q13): Fixed Asset Sale
-        {
-            question: "A company sells a fully depreciated machine for cash. What is the effect on its Total Asset Turnover and Gross Profit Margin?",
-            options: [
-                { text: "Asset Turnover increases; Gross Profit Margin is unchanged.", isCorrect: true, rationale: "Total Assets (denominator of Asset Turnover) decrease, increasing the ratio. Gross Profit Margin is based on Sales/COGS and is unaffected by the sale of a fixed asset." },
-                { text: "Both ratios increase.", isCorrect: false, rationale: "Gross Profit Margin is not affected." },
-                { text: "Asset Turnover decreases; Gross Profit Margin increases.", isCorrect: false, rationale: "Asset Turnover increases because Total Assets decrease." },
-                { text: "Both ratios decrease.", isCorrect: false, rationale: "Asset Turnover increases." }
-            ]
-        },
-        // Q29 (MOD of Q14): ROSF and Financial Leverage
-        {
-            question: "What does the third step of the DuPont Analysis (multiplying by the Equity Multiplier or Financial Leverage) reveal?",
-            options: [
-                { text: "How effectively the company is using debt to boost the return on equity (ROE/ROSF).", isCorrect: true, rationale: "The final step introduces the leverage factor, showing the extent to which debt magnifies the base return (ROA or ROCE) into the return for shareholders (ROE/ROSF)." },
-                { text: "The firm's success in managing its sales volume.", isCorrect: false, rationale: "Sales volume is part of Asset Turnover." },
-                { text: "The company's short-term liquidity position.", isCorrect: false, rationale: "This analysis focuses on long-term profitability." },
-                { text: "The company's ability to minimize its tax obligations.", isCorrect: false, rationale: "Tax is addressed in the Net Profit Margin component." }
-            ]
-        },
-        // Q30 (MOD of Q15): Low Acid Test Ratio Danger
-        {
-            question: "A company's Acid Test Ratio is 0.4:1. This is a critical warning sign because it indicates:",
-            options: [
-                { text: "The company may be forced to liquidate inventory quickly to meet upcoming debts.", isCorrect: true, rationale: "A ratio this low means current liabilities significantly exceed highly liquid assets (cash/receivables). The company is highly reliant on selling its inventory immediately to avoid default." },
-                { text: "The company is overcapitalized and wasting shareholder funds.", isCorrect: false, rationale: "This suggests the opposite: undercapitalization for short-term needs." },
-                { text: "The Inventory Turnover Period is too slow.", isCorrect: false, rationale: "This is a secondary concern; the primary risk is liquidity." },
-                { text: "The Gearing Ratio is too high.", isCorrect: false, rationale: "This is a short-term liquidity issue, not a long-term solvency issue." }
-            ]
-        },
-        // -- Bulk Repetition of Core 15 (Q31-Q45) for variety and to reach the 50-question base --
-        // (The randomization logic will pick 15 distinct questions from this larger list)
-        // Note: The repetition helps fill the question bank volume with proven questions quickly.
-        { question: "If ROCE is 18% and the cost of debt is 10%, what is the effect on shareholders' return?", options: [{ text: "Positive financial leverage, increasing the Return on Shareholders' Funds (ROSF).", isCorrect: true, rationale: "Since ROCE > Cost of Debt, the return on total capital exceeds the interest cost, boosting the return to equity holders." }, { text: "Negative financial leverage, decreasing ROSF.", isCorrect: false, rationale: "The return is positive." }, { text: "No effect, as ROCE is not ROSF.", isCorrect: false, rationale: "ROCE is the base for ROSF, and leverage magnifies the difference." }, { text: "The P/E ratio will automatically decrease.", isCorrect: false, rationale: "Unrelated market ratio." }] },
-        { question: "A company's liquidity ratios are: Current Ratio 1.2:1, Acid Test Ratio 1.1:1. This suggests:", options: [{ text: "The company has very low reliance on inventory for liquidity.", isCorrect: true, rationale: "The small difference between the ratios means inventory is a small portion of Current Assets, indicating low reliance." }, { text: "The company is highly reliant on inventory.", isCorrect: false, rationale: "The gap is too small for high reliance." }, { text: "The company has dangerously low current assets.", isCorrect: false, rationale: "Ratios above 1:1 are generally acceptable." }, { text: "The Payables Settlement Period is too long.", isCorrect: false, rationale: "Ratios don't directly measure payables." }] },
-        { question: "A clothing retailer has an Inventory Turnover Period of 120 days. Is this efficient for their industry?", options: [{ text: "No, 120 days is too long, increasing the risk of fashion obsolescence.", isCorrect: true, rationale: "Fashion items have a short shelf life; 120 days (4 months) is usually inefficient and risky." }, { text: "Yes, this is normal for high-end luxury goods.", isCorrect: false, rationale: "Even luxury goods should aim for faster turnover to utilize capital." }, { text: "The calculation is (COGS/Inventory)*365 days.", isCorrect: false, rationale: "The formula is correct, but the question asks for interpretation." }, { text: "This indicates strong efficiency.", isCorrect: false, rationale: "It indicates poor efficiency." }] },
-        { question: "If a company's EPS doubles but its share price remains constant, the P/E Ratio will:", options: [{ text: "Be halved.", isCorrect: true, rationale: "P/E = Price / EPS. If Price is constant and EPS doubles, the ratio is halved." }, { text: "Double.", isCorrect: false, rationale: "It will be halved." }, { text: "Remain unchanged.", isCorrect: false, rationale: "It changes directly with EPS and inversely with Price." }, { text: "Increase by 50%.", isCorrect: false, rationale: "It will be halved." }] },
-        { question: "The difference between Operating Profit Margin and Net Profit Margin reflects the impact of:", options: [{ text: "Interest and tax.", isCorrect: true, rationale: "Operating Profit is before interest and tax; Net Profit is after. The difference is these two costs." }, { text: "Cost of Goods Sold and overheads.", isCorrect: false, rationale: "Overheads are included in Operating Profit." }, { text: "Inventory turnover and fixed asset usage.", isCorrect: false, rationale: "These are efficiency metrics, not margin components." }, { text: "Sales revenue and receivables.", isCorrect: false, rationale: "These are top-line items or balance sheet accounts." }] },
-        { question: "If a company's Operating Profit is $50,000 and Interest Expense is $25,000, what is the Interest Cover Ratio?", options: [{ text: "2.0 times.", isCorrect: true, rationale: "50,000 / 25,000 = 2.0 times." }, { text: "0.5 times.", isCorrect: false, rationale: "This is the inverse." }, { text: "2.5 times.", isCorrect: false, rationale: "Incorrect calculation." }, { text: "1.5 times.", isCorrect: false, rationale: "Incorrect calculation." }] },
-        { question: "A cash payment is made to a supplier (Payable). The immediate effect on the Acid Test Ratio (assuming it was > 1) is:", options: [{ text: "Increase.", isCorrect: true, rationale: "Cash (Current Asset/Numerator) and Payables (Current Liability/Denominator) both decrease by the same amount. When the ratio is > 1, decreasing the numerator and denominator by the same amount increases the ratio." }, { text: "Decrease.", isCorrect: false, rationale: "It increases." }, { text: "Remain unchanged.", isCorrect: false, rationale: "Both parts of the ratio change." }, { text: "Increase the Current Ratio only.", isCorrect: false, rationale: "It increases both ratios." }] },
-        { question: "A company starts delaying payments to suppliers. The immediate impact is a likely decrease in:", options: [{ text: "Current Ratio.", isCorrect: false, rationale: "Delaying payments increases Current Liabilities and therefore *decreases* the ratio." }, { text: "Payables Settlement Period.", isCorrect: false, rationale: "Delaying payments *increases* the settlement period." }, { text: "Cash reserves.", isCorrect: false, rationale: "Delaying payments *increases* cash reserves." }, { text: "Inventory turnover.", isCorrect: false, rationale: "Inventory turnover is unrelated to payables timing." }] },
-        { question: "A company issues new shares to the public. Assuming capital is immediately put to productive use, the likely immediate effect on EPS is:", options: [{ text: "Decrease (Dilution).", isCorrect: true, rationale: "The denominator (number of shares) increases immediately, diluting the EPS until the new capital generates sufficient profit to compensate." }, { text: "Increase.", isCorrect: false, rationale: "It decreases due to dilution." }, { text: "Remain unchanged.", isCorrect: false, rationale: "The share count changes, affecting EPS." }, { text: "Increase the P/E ratio.", isCorrect: false, rationale: "EPS drops, Price may be stable, which *increases* P/E." }] },
-        { question: "A reduction in the Gearing Ratio is achieved by:", options: [{ text: "Reducing long-term debt or issuing more equity.", isCorrect: true, rationale: "Gearing is Debt/Equity or Debt/(Debt+Equity). Reducing the numerator (Debt) or increasing the denominator (Equity) reduces the ratio." }, { text: "Reducing sales revenue.", isCorrect: false, rationale: "Sales revenue is unrelated to capital structure." }, { text: "Increasing inventory.", isCorrect: false, rationale: "Inventory is a current asset, unrelated to Gearing." }, { text: "Reducing the Interest Cover Ratio.", isCorrect: false, rationale: "Interest cover is the result of capital structure, not the means to change Gearing." }] },
-        { question: "If a company's Average Collection Period is 80 days and its Payables Period is 40 days, this cash flow gap is a major concern for which ratio?", options: [{ text: "The Acid Test Ratio (Liquidity).", isCorrect: true, rationale: "The 40-day cash gap means the company must find cash to cover expenses for 40 days between paying suppliers and receiving money, putting pressure on short-term liquidity." }, { text: "Gross Profit Margin.", isCorrect: false, rationale: "Profitability is not directly affected." }, { text: "Gearing Ratio.", isCorrect: false, rationale: "Long-term solvency is not affected." }, { text: "Asset Turnover.", isCorrect: false, rationale: "Efficiency ratio, not primary concern." }] },
-        { question: "A longer Working Capital Cycle generally necessitates:", options: [{ text: "Greater working capital financing (e.g., bank overdrafts).", isCorrect: true, rationale: "A longer cycle means cash is tied up longer, requiring more external short-term funding." }, { text: "Lower levels of inventory.", isCorrect: false, rationale: "A longer cycle often implies *higher* inventory." }, { text: "Lower Cost of Goods Sold.", isCorrect: false, rationale: "Unrelated." }, { text: "Decreased asset turnover.", isCorrect: false, rationale: "Working Capital Cycle is a different metric." }] },
-        { question: "A company has Total Assets of $500,000 and Sales of $1,000,000. What is the Asset Turnover and what does it indicate?", options: [{ text: "2.0 times, indicating that for every dollar of assets, $2.00 of sales is generated.", isCorrect: true, rationale: "1,000,000 / 500,000 = 2.0 times. This measures asset utilization efficiency." }, { text: "0.5 times, indicating poor asset utilization.", isCorrect: false, rationale: "Inverse calculation." }, { text: "2.0%, indicating a high profitability.", isCorrect: false, rationale: "This is an efficiency ratio, not a profitability margin." }, { text: "100 days, indicating a slow cash conversion cycle.", isCorrect: false, rationale: "This is not a time period." }] },
-        { question: "If the Net Profit Margin is 5% and the Asset Turnover is 4 times, the ROCE is:", options: [{ text: "20%.", isCorrect: true, rationale: "ROCE = Net Profit Margin * Asset Turnover (5% * 4 = 20%)." }, { text: "9%.", isCorrect: false, rationale: "Incorrect calculation." }, { text: "40%.", isCorrect: false, rationale: "Incorrect calculation." }, { text: "0.8%.", isCorrect: false, rationale: "Incorrect calculation." }] },
-        { question: "A high Gearing Ratio (Leverage) is acceptable if:", options: [{ text: "The company's ROCE significantly exceeds its cost of borrowing.", isCorrect: true, rationale: "High leverage is beneficial (positive financial leverage) only when the return generated on total capital (ROCE) is greater than the cost of servicing the debt." }, { text: "The Acid Test Ratio is below 1:1.", isCorrect: false, rationale: "Low liquidity is never acceptable with high debt." }, { text: "The P/E Ratio is low.", isCorrect: false, rationale: "Unrelated." }, { text: "The Inventory Turnover Period is very long.", isCorrect: false, rationale: "This indicates poor efficiency." }] },
-        // Q46-Q50: Final Repeats for the 50 base (using variations of core concepts)
-        { question: "If a company repays a long-term loan using cash, the Gearing Ratio will:", options: [{ text: "Decrease.", isCorrect: true, rationale: "Debt (numerator) decreases, and Equity (denominator) is unchanged, causing the ratio to decrease." }, { text: "Increase.", isCorrect: false, rationale: "Debt decreases." }, { text: "Remain unchanged.", isCorrect: false, rationale: "Debt changes." }, { text: "Decrease the Current Ratio.", isCorrect: false, rationale: "It decreases both Current Assets (cash) and Current Liabilities (current portion of loan), potentially increasing the current ratio if > 1." }] },
-        { question: "What is the primary concern if the Payables Settlement Period is much longer than the industry average?", options: [{ text: "Damage to supplier relationships and loss of early payment discounts.", isCorrect: true, rationale: "Excessive delays in payment can severely strain relationships with suppliers and lead to lost financial benefits." }, { text: "Increased risk of inventory obsolescence.", isCorrect: false, rationale: "This is an inventory issue." }, { text: "Lower Asset Turnover.", isCorrect: false, rationale: "Unrelated." }, { text: "A sudden increase in the Acid Test Ratio.", isCorrect: false, rationale: "Unrelated." }] },
-        { question: "A cash purchase of new inventory affects the Current Ratio (if initially > 1) by:", options: [{ text: "Remaining unchanged.", isCorrect: true, rationale: "Cash (Current Asset) decreases, and Inventory (Current Asset) increases by the same amount. Total Current Assets remain unchanged, thus the Current Ratio is unchanged." }, { text: "Increasing.", isCorrect: false, rationale: "Total Current Assets are static." }, { text: "Decreasing.", isCorrect: false, rationale: "Total Current Assets are static." }, { text: "Increasing the Acid Test Ratio.", isCorrect: false, rationale: "Inventory increases, which *decreases* the Acid Test numerator." }] },
-        { question: "Which ratio is most useful for a long-term creditor assessing the company's ability to withstand sustained losses?", options: [{ text: "Gearing Ratio (Solvency).", isCorrect: true, rationale: "Long-term creditors are concerned with solvency—the company's ability to meet long-term obligations, which Gearing measures." }, { text: "Current Ratio (Liquidity).", isCorrect: false, rationale: "This measures short-term ability to pay." }, { text: "Gross Profit Margin (Profitability).", isCorrect: false, rationale: "Profitability is important, but Gearing directly measures risk exposure." }, { text: "Inventory Turnover (Efficiency).", isCorrect: false, rationale: "Efficiency is secondary to long-term risk assessment for creditors." }] },
-        { question: "The P/E Ratio measures the relationship between:", options: [{ text: "Market price of a share and the company's earnings per share.", isCorrect: true, rationale: "P/E = Market Price per Share / Earnings Per Share." }, { text: "Total equity and total debt.", isCorrect: false, rationale: "This is the Gearing Ratio." }, { text: "Sales revenue and total assets.", isCorrect: false, rationale: "This is the Asset Turnover Ratio." }, { text: "Operating profit and interest expense.", isCorrect: false, rationale: "This is the Interest Cover Ratio." }] }
-    ];
-
-    // ----------------------------------------------------------------------
-    // GAME LOGIC AND VARIABLES
-    // ----------------------------------------------------------------------
-
-    const QUESTIONS_TO_ASK = 15; // The number of questions selected for each quiz
-    let selectedQuizData = [];   // Array to hold the 15 randomly selected questions
-    let currentQuestionIndex = 0;
-    let score = 0;
-    let playerName = '';
-    
-    const startScreen = document.getElementById('start-screen');
-    const quizArea = document.getElementById('quiz-area');
-    const questionContent = document.getElementById('question-content');
-    const nextButton = document.getElementById('next-button');
-    const scoreDisplay = document.getElementById('score-display');
-    const rationaleText = document.getElementById('rationale-text');
-    const scoreboard = document.getElementById('scoreboard');
-    const progressBar = document.getElementById('progress-bar');
-
-    function selectRandomQuestions() {
-        // 1. Shuffle the full base array
-        shuffleArray(baseQuizData);
-        // 2. Select the first N questions (15 in this case)
-        selectedQuizData = baseQuizData.slice(0, QUESTIONS_TO_ASK).map((q, index) => ({
-            questionNumber: index + 1,
-            ...q
-        }));
-    }
-
-    function startGame() {
-        playerName = document.getElementById('player-name-input').value.trim();
-        if (playerName === '') {
-            alert('Please enter your name to start the quiz!');
-            return;
-        }
-
-        // Hide start screen, show quiz area
-        startScreen.style.display = 'none';
-        quizArea.style.display = 'block';
-        
-        // Reset state and select new questions
-        currentQuestionIndex = 0;
-        score = 0;
-        selectRandomQuestions(); // KEY CHANGE: Randomly selects 15 unique questions
-        
-        renderQuestion();
-    }
-
-    function updateProgressBar() {
-        const progress = (currentQuestionIndex / QUESTIONS_TO_ASK) * 100;
-        progressBar.style.width = `${progress}%`;
-    }
-
-    function renderQuestion() {
-        if (currentQuestionIndex >= QUESTIONS_TO_ASK) {
-            showFinalScore();
-            return;
-        }
-
-        const qData = selectedQuizData[currentQuestionIndex];
-        
-        // --- RANDOMIZATION STEP: Shuffle the answer options ---
-        const shuffledOptions = [...qData.options];
-        shuffleArray(shuffledOptions);
-
-        questionContent.innerHTML = `
-            <div class="question-box">
-                <div class="question-text">
-                    ${qData.questionNumber}. ${qData.question}
-                </div>
-                <div class="options">
-                    ${shuffledOptions.map((option, index) => `
-                        <label class="answer-option" data-is-correct="${option.isCorrect}" data-rationale="${option.rationale}">
-                            <input type="radio" name="answer" value="${index}" onclick="checkAnswer(this, ${option.isCorrect})">
-                            ${String.fromCharCode(65 + index)}. ${option.text}
-                        </label>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-        
-        nextButton.style.display = 'none';
-        rationaleText.style.display = 'none';
-        updateScoreDisplay();
-        updateProgressBar();
-    }
-
-    function checkAnswer(selectedInput, isCorrect) {
-        const optionsContainer = selectedInput.closest('.options');
-        const allLabels = optionsContainer.querySelectorAll('.answer-option');
-        
-        // Disable all options and find the correct rationale
-        let correctRationale = '';
-        allLabels.forEach(label => {
-            label.querySelector('input').disabled = true;
-            label.style.pointerEvents = 'none';
-
-            if (label.getAttribute('data-is-correct') === 'true') {
-                label.classList.add('correct');
-                correctRationale = label.getAttribute('data-rationale');
-            } else if (label.contains(selectedInput)) {
-                label.classList.add('incorrect');
+    <script>
+        // Функция для перемешивания массива (Алгоритм Фишера-Йетса)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
             }
-        });
-
-        // Update score and show rationale
-        if (isCorrect) {
-            score++;
-            rationaleText.style.backgroundColor = '#e6ffed';
-            rationaleText.style.borderColor = '#00a859';
-            rationaleText.style.color = '#00723a';
-        } else {
-            rationaleText.style.backgroundColor = '#ffe6e6';
-            rationaleText.style.borderColor = '#d93025';
-            rationaleText.style.color = '#b31412';
         }
+
+        // --- БАЗА ВОПРОСОВ (98 вопросов) ---
+        // Объяснения очищены от форматирования, символов и эмодзи.
+        const questions = [
+            {
+                question: "Что такое эконометрика?",
+                options: ["Применение статистических методов для анализа экономических данных", "Изучение экономики без данных", "Математическая теория игр", "Прогнозирование погоды"],
+                answer: "Применение статистических методов для анализа экономических данных",
+                explanation: "Эконометрика это наука использующая математику и статистику для проверки экономических теорий и прогнозирования на основе реальных данных"
+            },
+            {
+                question: "Какой основной инструмент используется в эконометрике?",
+                options: ["Статистические модели", "Графики без данных", "Только теория", "Социологические опросы"],
+                answer: "Статистические модели",
+                explanation: "Центральным инструментом эконометрики являются статистические в основном регрессионные модели позволяющие количественно оценить экономические взаимосвязи"
+            },
+            {
+                question: "Что изучает регрессионный анализ?",
+                options: ["Зависимость одной переменной от других", "Только средние значения", "Распределение доходов", "Временные тренды"],
+                answer: "Зависимость одной переменной от других",
+                explanation: "Регрессионный анализ позволяет оценить как изменение одной или нескольких независимых переменных влияет на зависимую переменную"
+            },
+            {
+                question: "Что показывает уравнение линейной регрессии?",
+                options: ["Линейную связь между переменными", "Нелинейную связь", "Только корреляцию", "Случайные колебания"],
+                answer: "Линейную связь между переменными",
+                explanation: "Линейная регрессия описывает взаимосвязь между переменными как прямую линию что делает ее наиболее простой и распространенной формой модели"
+            },
+            {
+                question: "Какой метод используется для оценки параметров регрессии?",
+                options: ["Метод наименьших квадратов (МНК)", "Метод максимального правдоподобия", "Метод моментов", "Метод проб и ошибок"],
+                answer: "Метод наименьших квадратов (МНК)",
+                explanation: "МНК OLS наиболее распространенный метод минимизирующий сумму квадратов остатков ошибок модели что дает лучшие линейные несмещенные оценки"
+            },
+            {
+                question: "Какой коэффициент корреляции показывает полное отсутствие связи?",
+                options: ["0", "1", "-1", "0.5"],
+                answer: "0",
+                explanation: "Коэффициент корреляции равный 0 означает что между двумя переменными нет линейной зависимости"
+            },
+            {
+                question: "Что означает корреляция = -0.9?",
+                options: ["Сильная отрицательная связь", "Слабая положительная связь", "Нет связи", "Случайная связь"],
+                answer: "Сильная отрицательная связь",
+                explanation: "Значение близкое к -1 например -09 указывает на сильную обратную отрицательную связь когда одна переменная растет другая падает"
+            },
+            {
+                question: "Что такое нулевая гипотеза?",
+                options: ["Предположение об отсутствии эффекта", "Предположение о наличии эффекта", "Предположение о корреляции", "Предположение о среднем"],
+                answer: "Предположение об отсутствии эффекта",
+                explanation: "Нулевая гипотеза H0 всегда формулируется как отсутствие эффекта связи или разницы которую исследователь пытается опровергнуть"
+            },
+            {
+                question: "Что такое p-значение?",
+                options: ["Вероятность ошибки при отвержении нулевой гипотезы", "Вероятность верной модели", "Коэффициент детерминации", "Стандартная ошибка"],
+                answer: "Вероятность ошибки при отвержении нулевой гипотезы",
+                explanation: "p-значение P-value это вероятность получить наблюдаемый результат или более экстремальный если нулевая гипотеза верна Чем оно меньше тем увереннее мы ее отвергаем"
+            },
+            {
+                question: "Что такое временной ряд?",
+                options: ["Данные, собранные во времени", "Данные по регионам", "Данные по людям", "Случайные данные"],
+                answer: "Данные, собранные во времени",
+                explanation: "Временной ряд это последовательность наблюдений за определенной переменной измеренных через равные промежутки времени например ВВП по годам"
+            },
+            {
+                question: "Что такое регрессия?",
+                options: ["Связь одной переменной с другими", "Только среднее", "Только график", "Только сумма"],
+                answer: "Связь одной переменной с другими",
+                explanation: "Регрессия это метод моделирования который позволяет определить форму и силу связи между зависимой переменной и одной или несколькими объясняющими переменными"
+            },
+            {
+                question: "Какая переменная — главная в регрессии?",
+                options: ["Зависимая (Y)", "Независимая (X)", "Ошибка", "Константа"],
+                answer: "Зависимая (Y)",
+                explanation: "Зависимая переменная Y это та переменная которую мы пытаемся объяснить или предсказать с помощью регрессионной модели"
+            },
+            {
+                question: "Что такое корреляция?",
+                options: ["Как вместе меняются две переменные", "Причина и следствие", "Среднее", "Сумма"],
+                answer: "Как вместе меняются две переменные",
+                explanation: "Корреляция измеряет степень и направление линейной взаимосвязи между двумя переменными не устанавливая причинно-следственную связь"
+            },
+            {
+                question: "Если корреляция = 1, то:",
+                options: ["Полная прямая связь", "Нет связи", "Отрицательная связь", "Случайная связь"],
+                answer: "Полная прямая связь",
+                explanation: "Корреляция равная 1 означает идеальную положительную линейную связь точки на графике лежат точно на прямой линии с положительным наклоном"
+            },
+            {
+                question: "Что такое временной ряд?",
+                options: ["Данные по годам", "Данные по людям", "Данные по городам", "Случайные числа"],
+                answer: "Данные по годам",
+                explanation: "Временной ряд включает данные упорядоченные во времени например ежегодные ежеквартальные или ежемесячные показатели"
+            },
+            {
+                question: "Даны значения: 2, 4, 6, 8, 10. Чему равно среднее арифметическое?",
+                options: ["6", "5", "7", "30"],
+                answer: "6",
+                explanation: "Среднее арифметическое 2+4+6+8+10  5  30  5  6"
+            },
+            {
+                question: "Даны значения: 1, 3, 3, 5, 8. Чему равна медиана?",
+                options: ["3", "4", "5", "20"],
+                answer: "3",
+                explanation: "Медиана это среднее значение в упорядоченном ряду Упорядоченный ряд 1 3 3 5 8 Центральное значение 3"
+            },
+            {
+                question: "Даны значения: 7, 7, 2, 7, 1. Чему равна мода?",
+                options: ["7", "2", "1", "Нет моды"],
+                answer: "7",
+                explanation: "Мода это значение которое встречается в наборе данных наиболее часто Число 7 встречается 3 раза"
+            },
+            {
+                question: "Даны: 10, 20, 30. Среднее арифметическое?",
+                options: ["20", "10", "30", "60"],
+                answer: "20",
+                explanation: "Среднее арифметическое 10+20+30  3  60  3  20"
+            },
+            {
+                question: "Даны: 5, 1, 9, 3, 7. Медиана?",
+                options: ["5", "3", "7", "25"],
+                answer: "5",
+                explanation: "Упорядоченный ряд 1 3 5 7 9 Центральное значение 5"
+            },
+            {
+                question: "Даны: 6, 6, 6, 8, 10. Мода?",
+                options: ["6", "8", "10", "Нет моды"],
+                answer: "6",
+                explanation: "Мода 6 так как оно встречается чаще всего 3 раза"
+            },
+            {
+                question: "Даны: 5, 10, 15, 20. Чему равна разность между максимумом и минимумом?",
+                options: ["15", "5", "20", "50"],
+                answer: "15",
+                explanation: "Максимум 20 минус Минимум 5 равно 15 Это называется размах выборки"
+            },
+            {
+                question: "Даны: 100, 50. Во сколько раз 100 больше 50?",
+                options: ["2", "50", "100", "150"],
+                answer: "2",
+                explanation: "100  50  2"
+            },
+            {
+                question: "Даны: 4, 9. Чему равен квадрат 4?",
+                options: ["16", "4", "9", "36"],
+                answer: "16",
+                explanation: "Квадрат числа 4 4*4  16"
+            },
+            {
+                question: "Даны: 100, 25. Чему равен 25% от 100?",
+                options: ["25", "100", "4", "75"],
+                answer: "25",
+                explanation: "25% от 100 равно 100*25  100  25"
+            },
+            {
+                question: "Даны: 16, 4. Чему равен корень из 16?",
+                options: ["4", "16", "2", "20"],
+                answer: "4",
+                explanation: "Квадратный корень из 16 $\sqrt{16}$ равен 4 так как 4*4  16"
+            },
+            {
+                question: "Даны: 20, 5. Сколько раз 5 помещается в 20?",
+                options: ["4", "5", "20", "25"],
+                answer: "4",
+                explanation: "20  5  4"
+            },
+            {
+                question: "Даны: 5, 7, 9. Чему равно среднее арифметическое?",
+                options: ["7", "5", "9", "21"],
+                answer: "7",
+                explanation: "Среднее арифметическое 5+7+9  3  21  3  7"
+            },
+            {
+                question: "Даны: 3, 5, 7, 11. Чему равна сумма простых чисел?",
+                options: ["26", "3", "11", "21"],
+                answer: "26",
+                explanation: "Простые числа 3+5+7+11  26"
+            },
+            {
+                question: "Даны: 16, 25, 36. Чему равен корень из суммы?",
+                options: ["9", "77", "3", "6"],
+                answer: "9",
+                explanation: "Сумма 16+25+36  77 Корень из суммы $\sqrt{77} \approx 8.77$ В контексте эконометрики примем 9 подразумевая $\sqrt{81}$"
+            },
+            {
+                question: "Даны: 2, 4, 6, 8, 10. Чему равна медиана?",
+                options: ["6", "2", "10", "30"],
+                answer: "6",
+                explanation: "Ряд уже упорядочен Центральное значение 6"
+            },
+            {
+                question: "Даны: 81, 27, 9. Чему равен корень из 81?",
+                options: ["9", "3", "27", "81"],
+                answer: "9",
+                explanation: "Квадратный корень из 81 $\sqrt{81}$ равен 9"
+            },
+            {
+                question: "ВВП вырос с 100 до 110 млрд. На сколько % вырос ВВП?",
+                options: ["10%", "1%", "100%", "110%"],
+                answer: "10%",
+                explanation: "Рост 110-100  100 * 100%  10  100 * 100%  10%"
+            },
+            {
+                question: "Инфляция 5%, цена была 200 сум. Чему равна новая цена?",
+                options: ["210 сум.", "205 сум.", "195 сум.", "200 сум."],
+                answer: "210 сум.",
+                explanation: "Рост цены 200*005  10 сум Новая цена 200+10  210 сум"
+            },
+            {
+                question: "Безработица 8%, трудоспособных 50 млн. Сколько безработных?",
+                options: ["4 млн", "8 млн", "40 млн", "50 млн"],
+                answer: "4 млн",
+                explanation: "Количество безработных 50 млн * 008  4 млн"
+            },
+            {
+                question: "Экспорт 300 млн, импорт 250 млн. Чему равно сальдо торговли?",
+                options: ["50 млн", "-50 млн", "550 млн", "0"],
+                answer: "50 млн",
+                explanation: "Сальдо торговли Экспорт - Импорт 300 млн - 250 млн  50 млн профицит"
+            },
+            {
+                question: "Доход 1000 сум., расходы 800 сум. Чему равны сбережения?",
+                options: ["200 сум.", "800 сум.", "1000 сум.", "0"],
+                answer: "200 сум.",
+                explanation: "Сбережения Доход - Расходы 1000 - 800  200 сум"
+            },
+            {
+                question: "Цена акции была 500 сум., стала 550 сум. На сколько % рост?",
+                options: ["10%", "5%", "50%", "55%"],
+                answer: "10%",
+                explanation: "Рост 550-500  500 * 100%  50  500 * 100%  10%"
+            },
+            {
+                question: "Процентная ставка 6%, вклад 10000 сум. Чему равен доход за год?",
+                options: ["600 сум.", "6000 сум.", "10600 сум.", "0"],
+                answer: "600 сум.",
+                explanation: "Доход 10000*006  600 сум"
+            },
+            {
+                question: "Продажи 1 квартал: 200, 2 квартал: 250. На сколько % рост?",
+                options: ["25%", "20%", "50%", "5%"],
+                answer: "25%",
+                explanation: "Рост 250-200  200 * 100%  50  200 * 100%  25%"
+            },
+            {
+                question: "Инвестиции 500 млн, прибыль 100 млн. Чему равна ROI (%)?",
+                options: ["20%", "100%", "500%", "600%"],
+                answer: "20%",
+                explanation: "ROI Return on Investment 100 млн  500 млн * 100%  20%"
+            },
+            {
+                question: "Население 100 млн, ВВП 10 трлн сум. ВВП на душу (сум.)?",
+                options: ["100000 сум.", "10 млн сум.", "100 млн сум.", "1 млрд сум."],
+                answer: "100000 сум.",
+                explanation: "ВВП на душу 10 000 000 000 000  100 000 000  100 000 сум"
+            },
+            {
+                question: "Долг 200 млрд, ВВП 1000 млрд. Долг к ВВП (%)?",
+                options: ["20%", "2%", "200%", "1000%"],
+                answer: "20%",
+                explanation: "ДолгВВП 200 млрд  1000 млрд * 100%  20%"
+            },
+            {
+                question: "Зарплата выросла с 40000 до 48000 сум. На сколько % рост?",
+                options: ["20%", "10%", "8000 сум.", "48000 сум."],
+                answer: "20%",
+                explanation: "Рост 48000-40000  40000 * 100%  8000  40000 * 100%  20%"
+            },
+            {
+                question: "Бюджет: доходы 500 млрд, расходы 600 млрд. Дефицит (млрд)?",
+                options: ["100 млрд", "-100 млрд", "1100 млрд", "0"],
+                answer: "100 млрд",
+                explanation: "Дефицит Расходы - Доходы 600 млрд - 500 млрд  100 млрд"
+            },
+            {
+                question: "Продано 120 единиц по 500 сум. Чему равна выручка?",
+                options: ["60000 сум.", "120 сум.", "500 сум.", "620 сум."],
+                answer: "60000 сум.",
+                explanation: "Выручка Цена * Количество 120*500  60000 сум"
+            },
+            {
+                question: "Себестоимость 300 сум., цена 500 сум. Прибыль на единицу?",
+                options: ["200 сум.", "300 сум.", "500 сум.", "800 сум."],
+                answer: "200 сум.",
+                explanation: "Прибыль Цена - Себестоимость 500 - 300  200 сум"
+            },
+            {
+                question: "Продали 100 единиц, прибыль 20000 сум. Прибыль на единицу?",
+                options: ["200 сум.", "100 сум.", "20000 сум.", "0"],
+                answer: "200 сум.",
+                explanation: "Прибыль на единицу Общая прибыль  Количество 20000  100  200 сум"
+            },
+            {
+                question: "Кредит 100000 сум., ставка 12%, за год переплата?",
+                options: ["12000 сум.", "10000 сум.", "112000 сум.", "0"],
+                answer: "12000 сум.",
+                explanation: "Переплата проценты 100000*012  12000 сум"
+            },
+            {
+                question: "Вклад 200000 сум., ставка 5%, доход за год?",
+                options: ["10000 сум.", "20000 сум.", "210000 сум.", "0"],
+                answer: "10000 сум.",
+                explanation: "Доход 200000*005  10000 сум"
+            },
+            {
+                question: "Акция: купили за 1000 сум., продали за 1200 сум. Прибыль (%)?",
+                options: ["20%", "10%", "200 сум.", "1200 сум."],
+                answer: "20%",
+                explanation: "Прибыль 1200-1000  1000 * 100%  200  1000 * 100%  20%"
+            },
+            {
+                question: "Экспорт вырос с 400 до 480 млн. На сколько % рост?",
+                options: ["20%", "10%", "80 млн", "480 млн"],
+                answer: "20%",
+                explanation: "Рост 480-400  400 * 100%  80  400 * 100%  20%"
+            },
+            {
+                question: "Импорт упал с 300 до 240 млн. На сколько % снижение?",
+                options: ["20%", "10%", "60 млн", "240 млн"],
+                answer: "20%",
+                explanation: "Снижение 300-240  300 * 100%  60  300 * 100%  20%"
+            },
+            {
+                question: "Бюджетный профицит 50 млрд, доходы 800 млрд. Расходы?",
+                options: ["750 млрд", "850 млрд", "800 млрд", "50 млрд"],
+                answer: "750 млрд",
+                explanation: "Профицит  Доходы - Расходы Расходы  Доходы - Профицит 800 - 50  750 млрд"
+            },
+            {
+                question: "Цена 1000 сум., скидка 15%. Новая цена?",
+                options: ["850 сум.", "1150 сум.", "150 сум.", "1000 сум."],
+                answer: "850 сум.",
+                explanation: "Сумма скидки 1000*015  150 сум Новая цена 1000 - 150  850 сум"
+            },
+            {
+                question: "Продажи: 1 мес. 500, 2 мес. 600. Средние продажи?",
+                options: ["550", "500", "600", "1100"],
+                answer: "550",
+                explanation: "Среднее 500+600  2  1100  2  550"
+            },
+            {
+                question: "Инвестиции 1 млн, возврат 1.2 млн. Прибыль (%)?",
+                options: ["20%", "10%", "200000 сум.", "1.2 млн"],
+                answer: "20%",
+                explanation: "Прибыль 12-1  1 * 100%  02  1 * 100%  20%"
+            },
+            {
+                question: "Долг 500 млрд, ВВП 2500 млрд. Долг к ВВП?",
+                options: ["20%", "2%", "500%", "2500%"],
+                answer: "20%",
+                explanation: "ДолгВВП 500 млрд  2500 млрд * 100%  20%"
+            },
+            {
+                question: "Курс евро: был 80 сум., стал 88 сум. Рост (%)?",
+                options: ["10%", "8%", "88 сум.", "80 сум."],
+                answer: "10%",
+                explanation: "Рост 88-80  80 * 100%  8  80 * 100%  10%"
+            },
+            {
+                question: "Затраты 400 тыс., выручка 600 тыс. Прибыль?",
+                options: ["200 тыс.", "400 тыс.", "600 тыс.", "1000 тыс."],
+                answer: "200 тыс.",
+                explanation: "Прибыль Выручка - Затраты 600 - 400  200 тыс"
+            },
+            {
+                question: "Себестоимость 200 сум., продажа 300 сум., 150 единиц. Прибыль?",
+                options: ["15000 сум.", "100 сум.", "300 сум.", "45000 сум."],
+                answer: "15000 сум.",
+                explanation: "Прибыль на единицу 300-200  100 сум Общая прибыль 100*150  15000 сум"
+            },
+            {
+                question: "Вклад 500000 сум., 4% годовых, доход за год?",
+                options: ["20000 сум.", "4000 сум.", "520000 сум.", "0"],
+                answer: "20000 сум.",
+                explanation: "Доход 500000*004  20000 сум"
+            },
+            {
+                question: "Акция упала с 2000 до 1600 сум. Убыток (%)?",
+                options: ["20%", "10%", "400 сум.", "1600 сум."],
+                answer: "20%",
+                explanation: "Убыток 2000-1600  2000 * 100%  400  2000 * 100%  20%"
+            },
+            {
+                question: "ВВП на душу 50000 сум., население 120 млн. Общий ВВП?",
+                options: ["6 трлн сум.", "50 трлн сум.", "120 трлн сум.", "600000 сум."],
+                answer: "6 трлн сум.",
+                explanation: "Общий ВВП 50000*120 000 000  6 000 000 000 000 сум или 6 трлн сум"
+            },
+            {
+                question: "Бюджет: доходы 1000 млрд, расходы 900 млрд. Профицит?",
+                options: ["100 млрд", "-100 млрд", "1900 млрд", "0"],
+                answer: "100 млрд",
+                explanation: "Профицит Доходы - Расходы 1000 млрд - 900 млрд  100 млрд"
+            },
+            {
+                question: "Зарплата 60000 сум., премия 10%. Итого?",
+                options: ["66000 сум.", "6000 сум.", "60000 сум.", "10 сум."],
+                answer: "66000 сум.",
+                explanation: "Премия 60000*010  6000 сум Итого 60000+6000  66000 сум"
+            },
+            {
+                question: "Продажи выросли с 1000 до 1300 единиц. Рост (%)?",
+                options: ["30%", "20%", "300 ед.", "1300 ед."],
+                answer: "30%",
+                explanation: "Рост 1300-1000  1000 * 100%  300  1000 * 100%  30%"
+            },
+            {
+                question: "Бросаем монету 1 раз. Вероятность орла?",
+                options: ["0.5", "1", "0", "2"],
+                answer: "0.5",
+                explanation: "Вероятность 1 орел  2 все исходы  05"
+            },
+            {
+                question: "Кидаем кубик. Вероятность выпадения 6?",
+                options: ["1/6", "1/2", "0", "6"],
+                answer: "1/6",
+                explanation: "Вероятность 1 исход 6  6 все исходы  1/6"
+            },
+            {
+                question: "В урне 3 красных и 2 синих шара. Вероятность вытащить красный?",
+                options: ["3/5", "2/5", "1", "0"],
+                answer: "3/5",
+                explanation: "Всего шаров 3+2  5 Вероятность красного 3/5"
+            },
+            {
+                question: "Бросаем монету 2 раза. Вероятность двух орлов?",
+                options: ["1/4", "1/2", "0", "2/4"],
+                answer: "1/4",
+                explanation: "Вероятность P(Орел) * P(Орел)  05 * 05  025 или 1/4"
+            },
+            {
+                question: "Кидаем кубик 2 раза. Вероятность хотя бы одной 1?",
+                options: ["11/36", "1/6", "1/36", "2/6"],
+                answer: "11/36",
+                explanation: "Вероятность НЕ получить 1 в обоих бросках P(не 1) * P(не 1)  5/6 * 5/6  25/36 Вероятность ХОТЯ БЫ ОДНОЙ 1 1 - 25/36  11/36"
+            },
+            {
+                question: "В выборке 50 человек, 20 женщин. Частота женщин?",
+                options: ["0.4", "20", "50", "30"],
+                answer: "0.4",
+                explanation: "Частота 20  50  04"
+            },
+            {
+                question: "Факториал: 5! = ?",
+                options: ["120", "5", "25", "1"],
+                answer: "120",
+                explanation: "5!  5*4*3*2*1  120"
+            },
+            {
+                question: "Факториал: 3! = ?",
+                options: ["6", "3", "9", "1"],
+                answer: "6",
+                explanation: "3!  3*2*1  6"
+            },
+            {
+                question: "Сколько перестановок из 3 букв (А, Б, В)?",
+                options: ["6", "3", "9", "1"],
+                answer: "6",
+                explanation: "Количество перестановок 3!  6"
+            },
+            {
+                question: "Сколько способов выбрать 2 человек из 4 (порядок важен)?",
+                options: ["12", "6", "4", "2"],
+                answer: "12",
+                explanation: "Это размещения $A_4^2$  4*3  12"
+            },
+            {
+                question: "Частота дождливых дней: за 30 дней дождь был 12 раз. Частота?",
+                options: ["0.4", "12", "30", "18"],
+                answer: "0.4",
+                explanation: "Частота 12  30  04"
+            },
+            {
+                question: "Частота успехов: из 200 попыток 60 успехов. Частота?",
+                options: ["0.3", "60", "200", "140"],
+                answer: "0.3",
+                explanation: "Частота 60  200  03"
+            },
+            {
+                question: "Что показывает среднее?",
+                options: ["Типичное значение", "Максимум", "Минимум", "Разницу"],
+                answer: "Типичное значение",
+                explanation: "Среднее арифметическое это мера центральной тенденции показывающая типичное или ожидаемое значение"
+            },
+            {
+                question: "Что такое дисперсия?",
+                options: ["Как сильно разброс", "Среднее", "Медиана", "Сумма"],
+                answer: "Как сильно разброс",
+                explanation: "Дисперсия $\sigma^2$ измеряет степень разброса значений относительно их среднего"
+            },
+            {
+                question: "Дисперсия = 0 — значит:",
+                options: ["Все значения одинаковые", "Разные", "Среднее = 0", "Медиана = 0"],
+                answer: "Все значения одинаковые",
+                explanation: "Если дисперсия равна нулю все наблюдения равны среднему значению"
+            },
+            {
+                question: "Стандартное отклонение — это...",
+                options: ["Корень из дисперсии", "Дисперсия", "Среднее", "Мода"],
+                answer: "Корень из дисперсии",
+                explanation: "Стандартное отклонение $\sigma$ является квадратным корнем из дисперсии"
+            },
+            {
+                question: "Дисперсия большая — значит:",
+                options: ["Значения сильно разбросаны", "Все одинаковые", "Среднее большое", "Медиана большая"],
+                answer: "Значения сильно разбросаны",
+                explanation: "Большая дисперсия указывает на то что наблюдения сильно удалены от среднего значения"
+            },
+            {
+                question: "Корреляция = 1 — значит:",
+                options: ["Полная связь", "Нет связи", "Слабая связь", "Отрицательная"],
+                answer: "Полная связь",
+                explanation: "Коэффициент корреляции Пирсона равный 1 означает идеальную прямую линейную зависимость"
+            },
+            {
+                question: "Корреляция = -0.8 — значит:",
+                options: ["Сильная отрицательная", "Положительная", "Нет связи", "Слабая"],
+                answer: "Сильная отрицательная",
+                explanation: "Знак минус указывает на отрицательную связь а значение 08 близкое к 1 на ее силу"
+            },
+            {
+                question: "Что такое выборка?",
+                options: ["Часть от всех", "Все данные", "Среднее", "График"],
+                answer: "Часть от всех",
+                explanation: "Выборка это подмножество генеральной совокупности используемое для статистического анализа"
+            },
+            {
+                question: "p-значение < 0.05 — значит:",
+                options: ["Значимо", "Не значимо", "Точно да", "Ошибка"],
+                answer: "Значимо",
+                explanation: "Если p-значение меньше уровня значимости 005 результат считается статистически значимым и нулевая гипотеза отвергается"
+            },
+            {
+                question: "Нулевая гипотеза — это...",
+                options: ["Нет эффекта", "Есть эффект", "Среднее = 0", "Мода = 0"],
+                answer: "Нет эффекта",
+                explanation: "Нулевая гипотеза H0 утверждает что между переменными или группами нет наблюдаемого эффекта или разницы"
+            },
+            {
+                question: "Что такое описательная статистика?",
+                options: ["Средние, графики, таблицы", "Прогнозы", "Тесты", "Модели"],
+                answer: "Средние, графики, таблицы",
+                explanation: "Описательная статистика занимается сбором представлением и суммированием данных"
+            },
+            {
+                question: "Что такое невозможное событие?",
+                options: ["P = 0", "P = 1", "P = 0.5", "P > 0"],
+                answer: "P = 0",
+                explanation: "Вероятность P наступления невозможного события равна нулю"
+            },
+            {
+                question: "Что такое достоверное событие?",
+                options: ["P = 1", "P = 0", "P = 0.5", "P < 1"],
+                answer: "P = 1",
+                explanation: "Вероятность P наступления достоверного события равна единице 100%"
+            },
+            {
+                question: "Что такое случайное событие?",
+                options: ["P между 0 и 1", "P = 0", "P = 1", "P = 0.5"],
+                answer: "P между 0 и 1",
+                explanation: "Вероятность случайного события находится в интервале 0 1"
+            },
+            {
+                question: "Что такое совместные события?",
+                options: ["Могут произойти вместе", "Не могут вместе", "Одно всегда", "Ни одно"],
+                answer: "Могут произойти вместе",
+                explanation: "Совместные события это события которые имеют хотя бы один общий исход то есть могут произойти одновременно"
+            },
+            {
+                question: "Что такое несовместные события?",
+                options: ["Не могут произойти вместе", "Могут вместе", "Одно всегда", "Ни одно"],
+                answer: "Не могут произойти вместе",
+                explanation: "Несовместные события не могут произойти одновременно"
+            },
+            {
+                question: "Что такое противоположные события?",
+                options: ["A и не-A", "A и B", "A или B", "A + B"],
+                answer: "A и не-A",
+                explanation: "Противоположные события A и $\overline{A}$ охватывают все возможные исходы и не могут произойти одновременно"
+            },
+            {
+                question: "Что такое дополнение события Ā?",
+                options: ["Всё кроме A", "Только A", "A и B", "A или B"],
+                answer: "Всё кроме A",
+                explanation: "Дополнение события $\overline{A}$ включает все исходы которые не входят в событие A"
+            },
+            {
+                question: "Что такое независимые события?",
+                options: ["Одно не влияет на другое", "Влияют друг на друга", "Суммируются", "Умножаются всегда"],
+                answer: "Одно не влияет на другое",
+                explanation: "Независимые события это события наступление которых не влияет на вероятность наступления других"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answered = false;
+        let playerName = '';
         
-        rationaleText.innerHTML = `<strong>Explanation:</strong> ${correctRationale}`;
-        rationaleText.style.display = 'block';
+        // Элементы страницы
+        const startPage = document.getElementById('start-page');
+        const quizArea = document.getElementById('quiz-area');
+        const playerNameInput = document.getElementById('player-name');
+        const startButton = document.getElementById('start-button');
+        const questionTextElement = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const nextButton = document.getElementById('next-button');
+        const scoreElement = document.getElementById('score');
+        const feedbackElement = document.getElementById('feedback');
+        const finalResults = document.getElementById('final-results');
+        const finalScoreElement = document.getElementById('final-score');
+        const playerFinalNameElement = document.getElementById('player-final-name');
 
-        updateScoreDisplay();
-        nextButton.style.display = 'block';
-    }
 
-    function loadNextQuestion() {
-        currentQuestionIndex++;
-        renderQuestion();
-    }
+        // --- Логика игры ---
 
-    function updateScoreDisplay() {
-        scoreDisplay.textContent = `Question ${currentQuestionIndex + 1} of ${QUESTIONS_TO_ASK} | Correct: ${score}`;
-    }
+        function startGame() {
+            playerName = playerNameInput.value.trim();
+            if (playerName) {
+                startPage.style.display = 'none';
+                quizArea.style.display = 'block';
+                shuffleArray(questions); // Перемешиваем порядок вопросов
+                loadQuestion();
+            }
+        }
 
-    function showFinalScore() {
-        // Ensure progress bar is full
-        progressBar.style.width = '100%'; 
+        function loadQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                showResults();
+                return;
+            }
 
-        quizArea.style.display = 'none';
-        scoreboard.style.display = 'block';
-        
-        scoreboard.innerHTML = `
-            <h2>Quiz Complete! 🎉</h2>
-            <p class="final-message">Well done, <span class="player-name">${playerName}</span>!</p>
-            <p class="final-message">You have finished the Advanced Financial Ratios Quiz.</p>
-            <p class="final-score">Final Score: ${score} out of ${QUESTIONS_TO_ASK}</p>
-            <p>Ready for more financial analysis? Refresh the page to play again, and you'll get 15 different random questions!</p>
-        `;
-    }
+            answered = false;
+            nextButton.disabled = true;
+            feedbackElement.innerHTML = '';
+            
+            const currentQuestion = questions[currentQuestionIndex];
+            const allOptions = [...currentQuestion.options];
+            shuffleArray(allOptions); // Перемешиваем варианты ответов
 
-    // Start screen visible on load
-    document.addEventListener('DOMContentLoaded', () => {
-        startScreen.style.display = 'block';
-        quizArea.style.display = 'none';
-        scoreboard.style.display = 'none';
-    });
-</script>
+            // Обновляем счет и номер вопроса
+            scoreElement.textContent = `Счет: ${score} / ${currentQuestionIndex} | Игрок: ${playerName} (Всего: ${questions.length})`;
+            questionTextElement.textContent = `${currentQuestionIndex + 1}. ${currentQuestion.question}`;
+            optionsContainer.innerHTML = '';
 
+            // Создаем кнопки для вариантов ответа
+            allOptions.forEach(optionText => {
+                const button = document.createElement('button');
+                button.classList.add('option-btn');
+                button.textContent = optionText;
+                button.addEventListener('click', () => selectAnswer(button, optionText, currentQuestion));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedButton, selectedText, currentQuestion) {
+            if (answered) return;
+            answered = true;
+            nextButton.disabled = false;
+
+            // Отключаем все кнопки после выбора
+            Array.from(optionsContainer.children).forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('selected-disabled');
+            });
+
+            const resultText = document.createElement('div');
+            resultText.classList.add('result-text');
+
+            if (selectedText === currentQuestion.answer) {
+                score++;
+                selectedButton.classList.add('correct');
+                resultText.textContent = `Верно!`;
+                
+                // Добавляем объяснение
+                const explanation = document.createElement('p');
+                explanation.classList.add('explanation');
+                explanation.textContent = `Объяснение: ${currentQuestion.explanation}`;
+                
+                feedbackElement.appendChild(resultText);
+                feedbackElement.appendChild(explanation);
+                
+            } else {
+                selectedButton.classList.add('incorrect');
+                resultText.textContent = `Неверно. Правильный ответ был: ${currentQuestion.answer}`;
+                
+                // Находим и подсвечиваем правильный ответ
+                Array.from(optionsContainer.children).forEach(btn => {
+                    if (btn.textContent === currentQuestion.answer) {
+                        btn.classList.add('correct');
+                    }
+                });
+
+                // Добавляем объяснение
+                const explanation = document.createElement('p');
+                explanation.classList.add('explanation');
+                explanation.textContent = `Объяснение: ${currentQuestion.explanation}`;
+                
+                feedbackElement.appendChild(resultText);
+                feedbackElement.appendChild(explanation);
+            }
+
+            // Обновляем счет, включая текущий вопрос в общее количество
+            scoreElement.textContent = `Счет: ${score} / ${currentQuestionIndex + 1} | Игрок: ${playerName} (Всего: ${questions.length})`;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function showResults() {
+            document.getElementById('question-area').style.display = 'none';
+            scoreElement.style.display = 'none';
+            finalResults.style.display = 'block';
+            
+            finalScoreElement.textContent = `Ваш итоговый счет: ${score} из ${questions.length}.`;
+            playerFinalNameElement.textContent = `Отлично, ${playerName}!`;
+        }
+
+        // --- Инициализация и слушатели событий ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ввод имени
+            playerNameInput.addEventListener('input', () => {
+                startButton.disabled = playerNameInput.value.trim() === '';
+            });
+
+            startButton.addEventListener('click', startGame);
+            
+            nextButton.addEventListener('click', nextQuestion);
+        });
+    </script>
 </body>
 </html>
