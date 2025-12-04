@@ -1,960 +1,435 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Эконометрика: Викторина (98 вопросов)</title>
+    <title>Vocabulary Quiz Master: English-Russian</title>
     <style>
+        /* --- General Styles & Background --- */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #e9ecef;
-            margin: 0;
-            overflow-y: auto;
-        }
-        #game-container {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 700px;
-            min-height: 500px;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); /* Deep Blue Gradient */
+            color: #ecf0f1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
         }
+
         h1 {
-            color: #007bff;
+            color: #f1c40f; /* Gold/Yellow for heading */
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        #score-board {
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            padding: 10px 25px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 2px solid #3498db;
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.7);
+        }
+
+        /* --- Question & Options Container (The Main Card) --- */
+        #quiz-container {
+            width: 90%;
+            max-width: 700px;
+            background: #ffffff;
+            color: #333;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #007bff;
+            animation: fadeIn 0.8s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #word-display {
+            font-size: 3em;
+            font-weight: 900;
+            color: #c0392b; /* Dark Red */
+            margin-bottom: 40px;
+            text-transform: capitalize;
+            border-bottom: 3px solid #e74c3c;
             padding-bottom: 10px;
         }
 
-        /* --- Start Page Styles --- */
-        #start-page {
-            text-align: center;
-            padding: 50px 0;
-        }
-        #start-page input {
-            padding: 10px;
-            margin: 20px 0;
-            width: 80%;
-            max-width: 300px;
-            border: 1px solid #ced4da;
-            border-radius: 6px;
-            font-size: 1em;
-        }
-        #start-button {
-            padding: 12px 30px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.1em;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        #start-button:disabled {
-            background-color: #6c757d;
-            cursor: not-allowed;
+        #options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two columns for options */
+            gap: 20px;
+            margin-top: 20px;
         }
 
-        /* --- Quiz Styles --- */
-        #score {
-            text-align: right;
-            font-weight: bold;
-            color: #343a40;
-            margin-bottom: 15px;
-        }
-        #question-text {
-            font-size: 1.25em;
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-        #options-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin: 20px 0;
-        }
-        .option-btn {
-            padding: 15px 20px;
-            border: 1px solid #ced4da;
-            border-radius: 8px;
-            text-align: left;
-            cursor: pointer;
-            background-color: #f8f9fa;
-            transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.1s;
-            font-size: 1em;
-            line-height: 1.4;
-        }
-        .option-btn:hover:not([disabled]) {
-            background-color: #e2e6ea;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
-        }
-        .correct {
-            background-color: #d4edda !important;
-            border-color: #28a745 !important;
-            color: #155724;
-            animation: pulse-correct 0.5s ease-out;
-        }
-        .incorrect {
-            background-color: #f8d7da !important;
-            border-color: #dc3545 !important;
-            color: #721c24;
-            animation: shake 0.5s;
-        }
-        .selected-disabled {
-            pointer-events: none;
-        }
-        #next-button {
-            padding: 10px 25px;
-            background-color: #007bff;
+        .option-button {
+            background-color: #3498db; /* Bright Blue */
             color: white;
             border: none;
-            border-radius: 8px;
+            padding: 18px;
+            font-size: 1.2em;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 1em;
-            font-weight: bold;
-            transition: background-color 0.2s;
-            float: right;
-            margin-top: 15px;
+            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 4px 0 #2980b9; /* 3D effect */
         }
-        #next-button:disabled {
-            background-color: #a0c3e6;
-            cursor: not-allowed;
-        }
-        #feedback {
-            margin-top: 15px;
-            min-height: 24px;
-            font-size: 1.1em;
-            display: flex;
-            flex-direction: column;
-        }
-        .result-text {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .explanation {
-            font-weight: normal;
-            font-size: 0.9em;
-            color: #495057;
-            padding: 10px;
-            background-color: #e2f0ff;
-            border-left: 4px solid #007bff;
-            border-radius: 4px;
+
+        .option-button:hover:not(:disabled) {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 0 #2c3e50;
         }
         
-        /* --- Final Results Styles --- */
-        #final-results {
-            text-align: center;
-            padding-top: 20px;
-        }
-        #final-score {
-            font-size: 1.5em;
-            margin: 15px 0;
-            color: #007bff;
-        }
-        #final-results button {
-            padding: 12px 30px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.1em;
-            margin-top: 15px;
+        .option-button:active:not(:disabled) {
+            transform: translateY(1px);
+            box-shadow: 0 2px 0 #2c3e50;
         }
 
-        /* --- Animations --- */
-        @keyframes pulse-correct {
+        .option-button:disabled {
+            cursor: default;
+            opacity: 0.8;
+            box-shadow: none;
+        }
+
+        /* --- Feedback & Next Button --- */
+        #feedback-message {
+            min-height: 24px;
+            margin: 30px 0 20px 0;
+            font-size: 1.3em;
+            font-style: italic;
+        }
+
+        .correct {
+            color: #27ae60; /* Emerald Green */
+            animation: pulse 0.5s ease-in-out 3;
+        }
+
+        .incorrect {
+            color: #e74c3c; /* Alizarin Red */
+        }
+        
+        .correct-highlight {
+            background-color: #2ecc71 !important; /* Brighter green for correct answer */
+            color: white !important;
+            border: 3px solid #27ae60;
+        }
+
+        @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
+            50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-5px); }
-            40%, 80% { transform: translateX(5px); }
+        #next-button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background: linear-gradient(90deg, #f39c12, #e67e22); /* Orange Gradient */
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: none;
+            transition: background 0.3s;
+            box-shadow: 0 4px 0 #d35400;
+        }
+
+        #next-button:hover {
+            background: linear-gradient(90deg, #e67e22, #f39c12);
+            box-shadow: 0 2px 0 #d35400;
+            transform: translateY(2px);
         }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <h1>Эконометрика: Викторина</h1>
-        
-        <div id="start-page">
-            <h2>Добро пожаловать в викторину</h2>
-            <p>Введите свое имя, чтобы начать:</p>
-            <input type="text" id="player-name" placeholder="Ваше имя">
-            <button id="start-button" disabled>Начать</button>
-        </div>
 
-        <div id="quiz-area" style="display: none;">
-            <div id="score">Счет: 0 / 0</div>
-            <div id="question-area">
-                <p id="question-text"></p>
-                <div id="options-container">
-                    </div>
-                <div id="feedback"></div>
-                <button id="next-button" disabled>Далее</button>
+    <h1>?? Russian Vocab Challenge! ??</h1>
+    <div id="score-board">
+        Score: <span id="current-score">0</span>
+    </div>
+
+    <div id="quiz-container">
+        <div id="word-display">Loading Word...</div>
+        
+        <div id="options-container">
             </div>
-            
-            <div id="final-results" style="display: none;">
-                <h2>Викторина завершена!</h2>
-                <p id="final-score"></p>
-                <p id="player-final-name"></p>
-                <button onclick="location.reload()">Начать заново</button>
-            </div>
-        </div>
+
+        <div id="feedback-message">Choose the correct Russian translation.</div>
+        
+        <button id="next-button">Next Challenge &raquo;</button>
     </div>
 
     <script>
-        // Функция для перемешивания массива (Алгоритм Фишера-Йетса)
+        // --- Word List and Translations ---
+        const wordList = [
+            { en: "about", ru: "�" }, { en: "above", ru: "����" }, { en: "across", ru: "�����" },
+            { en: "add", ru: "��������" }, { en: "adult", ru: "��������" }, { en: "adventurer", ru: "����������" },
+            { en: "affect", ru: "������" }, { en: "afraid", ru: "�������" }, { en: "ago", ru: "�����" },
+            { en: "alert", ru: "����������" }, { en: "alive", ru: "�����" }, { en: "all", ru: "���" },
+            { en: "allow", ru: "���������" }, { en: "alone", ru: "����" }, { en: "also", ru: "�����" },
+            { en: "ambassador", ru: "�����" }, { en: "among", ru: "�����" }, { en: "area", ru: "�������" },
+            { en: "around", ru: "������" }, { en: "arrive", ru: "���������" }, { en: "art", ru: "���������" },
+            { en: "attend", ru: "��������" }, { en: "average", ru: "�������" }, { en: "background", ru: "���" },
+            { en: "bake", ru: "����" }, { en: "band", ru: "������" }, { en: "basket", ru: "�������" },
+            { en: "be", ru: "����" }, { en: "beak", ru: "����" }, { en: "bear", ru: "�������" },
+            { en: "beard", ru: "������" }, { en: "beat", ru: "����" }, { en: "become", ru: "�����������" },
+            { en: "behave", ru: "����� ����" }, { en: "believe", ru: "������" }, { en: "below", ru: "����" },
+            { en: "benefit", ru: "������" }, { en: "beside", ru: "�����" }, { en: "better", ru: "�����" },
+            { en: "blew", ru: "���" }, { en: "blue", ru: "�����" }, { en: "both", ru: "���" },
+            { en: "bottle", ru: "�������" }, { en: "brave", ru: "�������" }, { en: "breathe", ru: "������" },
+            { en: "broom", ru: "�����" }, { en: "burn", ru: "�������" }, { en: "by", ru: "�" },
+            { en: "calm", ru: "���������" }, { en: "camel", ru: "�������" }, { en: "can", ru: "����" },
+            { en: "card", ru: "�����" }, { en: "careful", ru: "����������" }, { en: "carry", ru: "�����" },
+            { en: "casual", ru: "���������" }, { en: "catch", ru: "������" }, { en: "cattle", ru: "������� ������� ����" },
+            { en: "century", ru: "���" }, { en: "ceremony", ru: "���������" }, { en: "chance", ru: "����" },
+            { en: "channel", ru: "�����" }, { en: "cheap", ru: "�������" }, { en: "chew", ru: "������" },
+            { en: "choose", ru: "��������" }, { en: "classical", ru: "������������" }, { en: "climb", ru: "�����������" },
+            { en: "cloud", ru: "������" }, { en: "club", ru: "����" }, { en: "coast", ru: "���������" },
+            { en: "coat", ru: "������" }, { en: "code", ru: "���" }, { en: "collect", ru: "��������" },
+            { en: "comfortable", ru: "�������" }, { en: "common", ru: "�����" }, { en: "communicate", ru: "��������" },
+            { en: "commute", ru: "������" }, { en: "compact disc", ru: "�������-����" }, { en: "company", ru: "��������" },
+            { en: "competition", ru: "�������" }, { en: "complexly", ru: "������" }, { en: "composer", ru: "����������" },
+            { en: "connect", ru: "���������" }, { en: "contact", ru: "�������" }, { en: "contagious", ru: "��������" },
+            { en: "continent", ru: "���������" }, { en: "continue", ru: "����������" }, { en: "country", ru: "������" },
+            { en: "crop", ru: "������" }, { en: "current", ru: "�������" }, { en: "dance", ru: "���������" },
+            { en: "dangerous", ru: "�������" }, { en: "date", ru: "����" }, { en: "dead", ru: "�������" },
+            { en: "deal", ru: "������" }, { en: "decision", ru: "�������" }, { en: "deeply", ru: "�������" },
+            { en: "dentist", ru: "�������" }, { en: "describe", ru: "���������" }, { en: "desert", ru: "�������" },
+            { en: "destroy", ru: "����������" }, { en: "destruction", ru: "����������" }, { en: "die", ru: "�������" },
+            { en: "difficult", ru: "�������" }, { en: "dig", ru: "������" }, { en: "disease", ru: "�������" },
+            { en: "doctor", ru: "������" }, { en: "dolphin", ru: "�������" }, { en: "dress", ru: "������" },
+            { en: "dress code", ru: "�����-���" }, { en: "drill", ru: "�����" }, { en: "during", ru: "�� �����" },
+            { en: "duty", ru: "�����������" }, { en: "each", ru: "������" }, { en: "earth", ru: "�����" },
+            { en: "east", ru: "������" }, { en: "either", ru: "����" }, { en: "electricity", ru: "�������������" },
+            { en: "employee", ru: "���������" }, { en: "employer", ru: "������������" }, { en: "enemy", ru: "����" },
+            { en: "energy", ru: "�������" }, { en: "engine", ru: "���������" }, { en: "enjoy", ru: "������������" },
+            { en: "environment", ru: "���������� �����" }, { en: "equals", ru: "���������" }, { en: "equipment", ru: "������������" },
+            { en: "evaporate", ru: "����������" }, { en: "even", ru: "����" }, { en: "excited", ru: "�������������" },
+            { en: "exercise", ru: "����������" }, { en: "expect", ru: "�������" }, { en: "expensive", ru: "�������" },
+            { en: "explorer", ru: "�������������" }, { en: "express", ru: "��������" }, { en: "extra", ru: "��������������" },
+            { en: "eyelash", ru: "�������" }, { en: "famous", ru: "���������" }, { en: "fan", ru: "����������" },
+            { en: "farm", ru: "�����" }, { en: "farmer", ru: "������" }, { en: "feather", ru: "����" },
+            { en: "feed", ru: "�������" }, { en: "feeling", ru: "�������" }, { en: "female", ru: "�������" },
+            { en: "fertilizer", ru: "���������" }, { en: "festival", ru: "���������" }, { en: "flexible", ru: "������" },
+            { en: "fly", ru: "������" }, { en: "footprint", ru: "����" }, { en: "forest", ru: "���" },
+            { en: "freeze", ru: "������������" }, { en: "frighten", ru: "������" }, { en: "fry", ru: "������" },
+            { en: "full", ru: "������" }, { en: "full time", ru: "������ ������� ����" }, { en: "future", ru: "�������" },
+            { en: "get", ru: "��������" }, { en: "get dressed", ru: "���������" }, { en: "gift", ru: "�������" },
+            { en: "giraffe", ru: "�����" }, { en: "goal", ru: "����" }, { en: "goat", ru: "����" },
+            { en: "gold", ru: "������" }, { en: "government", ru: "�������������" }, { en: "grass", ru: "�����" },
+            { en: "great", ru: "�������" }, { en: "group", ru: "������" }, { en: "grow", ru: "�����" },
+            { en: "guitar", ru: "������" }, { en: "half", ru: "��������" }, { en: "hand", ru: "����" },
+            { en: "hard", ru: "�������" }, { en: "harmonica", ru: "������ ��������" }, { en: "hate", ru: "����������" },
+            { en: "health", ru: "��������" }, { en: "heat", ru: "�����" }, { en: "heavy", ru: "�������" },
+            { en: "high", ru: "�������" }, { en: "highway", ru: "�����" }, { en: "history", ru: "�������" },
+            { en: "holiday", ru: "��������" }, { en: "however", ru: "������" }, { en: "hump", ru: "����" },
+            { en: "hunter", ru: "�������" }, { en: "hurt", ru: "������" }, { en: "ice", ru: "���" },
+            { en: "idea", ru: "����" }, { en: "if", ru: "����" }, { en: "impaired", ru: "����������" },
+            { en: "increase", ru: "�����������" }, { en: "injury", ru: "������" }, { en: "insect", ru: "���������" },
+            { en: "instead", ru: "������" }, { en: "instrument", ru: "����������" }, { en: "insurance", ru: "�����������" },
+            { en: "international", ru: "�������������" }, { en: "internet", ru: "��������" }, { en: "interpret", ru: "����������������" },
+            { en: "invention", ru: "�����������" }, { en: "island", ru: "������" }, { en: "jazz", ru: "����" },
+            { en: "jewelry", ru: "��������� �������" }, { en: "just", ru: "������" }, { en: "kill", ru: "�������" },
+            { en: "kind", ru: "������" }, { en: "knee", ru: "������" }, { en: "lake", ru: "�����" },
+            { en: "large", ru: "�������" }, { en: "laugh", ru: "��������" }, { en: "leader", ru: "�����" },
+            { en: "leave", ru: "�������" }, { en: "leaves", ru: "������" }, { en: "left", ru: "�����" },
+            { en: "leisure", ru: "�����" }, { en: "less", ru: "������" }, { en: "light", ru: "����" },
+            { en: "logger", ru: "�������" }, { en: "lonely", ru: "��������" }, { en: "lose", ru: "������" },
+            { en: "loud", ru: "�������" }, { en: "lovely", ru: "����������" }, { en: "luck", ru: "�����" },
+            { en: "machine", ru: "������" }, { en: "male", ru: "�������" }, { en: "mammal", ru: "�������������" },
+            { en: "map", ru: "�����" }, { en: "meal", ru: "���" }, { en: "medicine", ru: "��������" },
+            { en: "middle", ru: "��������" }, { en: "might", ru: "����" }, { en: "miner", ru: "������" },
+            { en: "mix", ru: "���������" }, { en: "mixture", ru: "�����" }, { en: "modern", ru: "�����������" },
+            { en: "mountain", ru: "����" }, { en: "move", ru: "���������" }, { en: "muscle", ru: "�����" },
+            { en: "museum", ru: "�����" }, { en: "music", ru: "������" }, { en: "mustache", ru: "���" },
+            { en: "naturally", ru: "�����������" }, { en: "nearly", ru: "�����" }, { en: "nervous", ru: "�������" },
+            { en: "noise", ru: "���" }, { en: "nomad", ru: "��������" }, { en: "north", ru: "�����" },
+            { en: "obviously", ru: "��������" }, { en: "ocean", ru: "�����" }, { en: "only", ru: "������" },
+            { en: "orchestra", ru: "�������" }, { en: "ordinary", ru: "�������" }, { en: "organize", ru: "������������" },
+            { en: "other", ru: "������" }, { en: "outsider", ru: "���������" }, { en: "over", ru: "���" },
+            { en: "palm", ru: "������" }, { en: "pay", ru: "�������" }, { en: "peaceful", ru: "������" },
+            { en: "percent", ru: "�������" }, { en: "performer", ru: "�����������" }, { en: "perhaps", ru: "��������" },
+            { en: "piano", ru: "����������" }, { en: "pick", ru: "��������" }, { en: "pilot", ru: "�����" },
+            { en: "plant", ru: "��������" }, { en: "pleased", ru: "���������" }, { en: "plus", ru: "����" },
+            { en: "poisonous", ru: "��������" }, { en: "polar", ru: "��������" }, { en: "police officer", ru: "�����������" },
+            { en: "pollute", ru: "����������" }, { en: "popular", ru: "����������" }, { en: "population", ru: "���������" },
+            { en: "practice", ru: "��������" }, { en: "prepare", ru: "��������" }, { en: "pretend", ru: "������������" },
+            { en: "private", ru: "�������" }, { en: "probably", ru: "��������" }, { en: "problem", ru: "��������" },
+            { en: "produce", ru: "�����������" }, { en: "profession", ru: "���������" }, { en: "program", ru: "���������" },
+            { en: "progress", ru: "��������" }, { en: "promote", ru: "����������" }, { en: "protect", ru: "��������" },
+            { en: "quickly", ru: "������" }, { en: "quit", ru: "�������" }, { en: "race", ru: "�����" },
+            { en: "raise", ru: "���������" }, { en: "reach", ru: "���������" }, { en: "record", ru: "������" },
+            { en: "relax", ru: "�������������" }, { en: "religion", ru: "�������" }, { en: "rice", ru: "���" },
+            { en: "rights", ru: "�����" }, { en: "roast", ru: "������" }, { en: "rock", ru: "���" },
+            { en: "roof", ru: "�����" }, { en: "rug", ru: "�����" }, { en: "rule", ru: "�������" },
+            { en: "ruler", ru: "�������" }, { en: "safe", ru: "����������" }, { en: "sail", ru: "�������" },
+            { en: "salary", ru: "��������" }, { en: "salt", ru: "����" }, { en: "sandal", ru: "��������" },
+            { en: "save", ru: "���������" }, { en: "schedule", ru: "����������" }, { en: "scientist", ru: "������" },
+            { en: "section", ru: "������" }, { en: "seed", ru: "����" }, { en: "share", ru: "��������" },
+            { en: "shell", ru: "�������" }, { en: "shiny", ru: "���������" }, { en: "shoot", ru: "��������" },
+            { en: "show", ru: "����������" }, { en: "sign", ru: "����" }, { en: "silver", ru: "�������" },
+            { en: "size", ru: "������" }, { en: "ski", ru: "����" }, { en: "skin", ru: "����" },
+            { en: "slave", ru: "���" }, { en: "smell", ru: "�����" }, { en: "snow", ru: "����" },
+            { en: "so", ru: "���" }, { en: "soft", ru: "������" }, { en: "soil", ru: "�����" },
+            { en: "somehow", ru: "���-��" }, { en: "soon", ru: "�����" }, { en: "sound", ru: "����" },
+            { en: "south", ru: "��" }, { en: "southern", ru: "�����" }, { en: "special", ru: "�����������" },
+            { en: "spend", ru: "�������" }, { en: "spiritual", ru: "��������" }, { en: "sportswear", ru: "���������� ������" },
+            { en: "star", ru: "������" }, { en: "stay", ru: "����������" }, { en: "still", ru: "���" },
+            { en: "stomach", ru: "�������" }, { en: "stone", ru: "������" }, { en: "store", ru: "�������" },
+            { en: "storm", ru: "�����" }, { en: "strange", ru: "��������" }, { en: "stretch", ru: "��������" },
+            { en: "suddenly", ru: "��������" }, { en: "supply", ru: "���������" }, { en: "suppose", ru: "������������" },
+            { en: "surf", ru: "������" }, { en: "sweet", ru: "�������" }, { en: "swim", ru: "�������" },
+            { en: "tail", ru: "�����" }, { en: "taste", ru: "����" }, { en: "team", ru: "�������" },
+            { en: "tent", ru: "�������" }, { en: "thick", ru: "�������" }, { en: "thin", ru: "������" },
+            { en: "time off", ru: "�����" }, { en: "together", ru: "������" }, { en: "toward", ru: "�" },
+            { en: "traditional", ru: "������������" }, { en: "trail", ru: "����" }, { en: "travel", ru: "��������������" },
+            { en: "trip", ru: "�������" }, { en: "tropics", ru: "�������" }, { en: "truck", ru: "��������" },
+            { en: "typically", ru: "������" }, { en: "unfortunately", ru: "� ���������" }, { en: "uniform", ru: "��������" },
+            { en: "unpaid", ru: "��������������" }, { en: "used", ru: "��������������" }, { en: "vacation", ru: "������" },
+            { en: "vary", ru: "�������������" }, { en: "violin", ru: "�������" }, { en: "visit", ru: "��������" },
+            { en: "waiter", ru: "��������" }, { en: "war", ru: "�����" }, { en: "warm", ru: "������" },
+            { en: "wavy", ru: "���������" }, { en: "weigh", ru: "����������" }, { en: "well", ru: "������" },
+            { en: "west", ru: "�����" }, { en: "while", ru: "����" }, { en: "whole", ru: "�����" },
+            { en: "wide", ru: "�������" }, { en: "wild", ru: "�����" }, { en: "win", ru: "���������" },
+            { en: "wing", ru: "�����" }, { en: "wonderful", ru: "��������" }, { en: "wood", ru: "������" },
+            { en: "yawn", ru: "������" }, { en: "yearly", ru: "���������" }
+        ];
+        
+        const correctFeedback = [
+            "Brilliant! ??", "Perfect match!", "You got it! ??", "Excellent work!", "Spot on! ?"
+        ];
+
+        const incorrectFeedback = [
+            "Oops, keep trying! ??", "Not quite, but you'll get it next time!", "A small mistake. Review that one!", "Incorrect. Time to learn something new!", "Close, but no cigar. ??"
+        ];
+
+
+        // --- Game State Variables ---
+        let currentWordIndex = -1;
+        let score = 0;
+        let allWords = [...wordList];
+
+        // --- DOM Elements ---
+        const wordDisplay = document.getElementById('word-display');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const nextButton = document.getElementById('next-button');
+        const scoreDisplay = document.getElementById('current-score');
+
+        // --- Utility Function ---
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
             }
+            return array;
         }
 
-        // --- БАЗА ВОПРОСОВ (98 вопросов) ---
-        // Объяснения очищены от форматирования, символов и эмодзи.
-        const questions = [
-            {
-                question: "Что такое эконометрика?",
-                options: ["Применение статистических методов для анализа экономических данных", "Изучение экономики без данных", "Математическая теория игр", "Прогнозирование погоды"],
-                answer: "Применение статистических методов для анализа экономических данных",
-                explanation: "Эконометрика это наука использующая математику и статистику для проверки экономических теорий и прогнозирования на основе реальных данных"
-            },
-            {
-                question: "Какой основной инструмент используется в эконометрике?",
-                options: ["Статистические модели", "Графики без данных", "Только теория", "Социологические опросы"],
-                answer: "Статистические модели",
-                explanation: "Центральным инструментом эконометрики являются статистические в основном регрессионные модели позволяющие количественно оценить экономические взаимосвязи"
-            },
-            {
-                question: "Что изучает регрессионный анализ?",
-                options: ["Зависимость одной переменной от других", "Только средние значения", "Распределение доходов", "Временные тренды"],
-                answer: "Зависимость одной переменной от других",
-                explanation: "Регрессионный анализ позволяет оценить как изменение одной или нескольких независимых переменных влияет на зависимую переменную"
-            },
-            {
-                question: "Что показывает уравнение линейной регрессии?",
-                options: ["Линейную связь между переменными", "Нелинейную связь", "Только корреляцию", "Случайные колебания"],
-                answer: "Линейную связь между переменными",
-                explanation: "Линейная регрессия описывает взаимосвязь между переменными как прямую линию что делает ее наиболее простой и распространенной формой модели"
-            },
-            {
-                question: "Какой метод используется для оценки параметров регрессии?",
-                options: ["Метод наименьших квадратов (МНК)", "Метод максимального правдоподобия", "Метод моментов", "Метод проб и ошибок"],
-                answer: "Метод наименьших квадратов (МНК)",
-                explanation: "МНК OLS наиболее распространенный метод минимизирующий сумму квадратов остатков ошибок модели что дает лучшие линейные несмещенные оценки"
-            },
-            {
-                question: "Какой коэффициент корреляции показывает полное отсутствие связи?",
-                options: ["0", "1", "-1", "0.5"],
-                answer: "0",
-                explanation: "Коэффициент корреляции равный 0 означает что между двумя переменными нет линейной зависимости"
-            },
-            {
-                question: "Что означает корреляция = -0.9?",
-                options: ["Сильная отрицательная связь", "Слабая положительная связь", "Нет связи", "Случайная связь"],
-                answer: "Сильная отрицательная связь",
-                explanation: "Значение близкое к -1 например -09 указывает на сильную обратную отрицательную связь когда одна переменная растет другая падает"
-            },
-            {
-                question: "Что такое нулевая гипотеза?",
-                options: ["Предположение об отсутствии эффекта", "Предположение о наличии эффекта", "Предположение о корреляции", "Предположение о среднем"],
-                answer: "Предположение об отсутствии эффекта",
-                explanation: "Нулевая гипотеза H0 всегда формулируется как отсутствие эффекта связи или разницы которую исследователь пытается опровергнуть"
-            },
-            {
-                question: "Что такое p-значение?",
-                options: ["Вероятность ошибки при отвержении нулевой гипотезы", "Вероятность верной модели", "Коэффициент детерминации", "Стандартная ошибка"],
-                answer: "Вероятность ошибки при отвержении нулевой гипотезы",
-                explanation: "p-значение P-value это вероятность получить наблюдаемый результат или более экстремальный если нулевая гипотеза верна Чем оно меньше тем увереннее мы ее отвергаем"
-            },
-            {
-                question: "Что такое временной ряд?",
-                options: ["Данные, собранные во времени", "Данные по регионам", "Данные по людям", "Случайные данные"],
-                answer: "Данные, собранные во времени",
-                explanation: "Временной ряд это последовательность наблюдений за определенной переменной измеренных через равные промежутки времени например ВВП по годам"
-            },
-            {
-                question: "Что такое регрессия?",
-                options: ["Связь одной переменной с другими", "Только среднее", "Только график", "Только сумма"],
-                answer: "Связь одной переменной с другими",
-                explanation: "Регрессия это метод моделирования который позволяет определить форму и силу связи между зависимой переменной и одной или несколькими объясняющими переменными"
-            },
-            {
-                question: "Какая переменная — главная в регрессии?",
-                options: ["Зависимая (Y)", "Независимая (X)", "Ошибка", "Константа"],
-                answer: "Зависимая (Y)",
-                explanation: "Зависимая переменная Y это та переменная которую мы пытаемся объяснить или предсказать с помощью регрессионной модели"
-            },
-            {
-                question: "Что такое корреляция?",
-                options: ["Как вместе меняются две переменные", "Причина и следствие", "Среднее", "Сумма"],
-                answer: "Как вместе меняются две переменные",
-                explanation: "Корреляция измеряет степень и направление линейной взаимосвязи между двумя переменными не устанавливая причинно-следственную связь"
-            },
-            {
-                question: "Если корреляция = 1, то:",
-                options: ["Полная прямая связь", "Нет связи", "Отрицательная связь", "Случайная связь"],
-                answer: "Полная прямая связь",
-                explanation: "Корреляция равная 1 означает идеальную положительную линейную связь точки на графике лежат точно на прямой линии с положительным наклоном"
-            },
-            {
-                question: "Что такое временной ряд?",
-                options: ["Данные по годам", "Данные по людям", "Данные по городам", "Случайные числа"],
-                answer: "Данные по годам",
-                explanation: "Временной ряд включает данные упорядоченные во времени например ежегодные ежеквартальные или ежемесячные показатели"
-            },
-            {
-                question: "Даны значения: 2, 4, 6, 8, 10. Чему равно среднее арифметическое?",
-                options: ["6", "5", "7", "30"],
-                answer: "6",
-                explanation: "Среднее арифметическое 2+4+6+8+10  5  30  5  6"
-            },
-            {
-                question: "Даны значения: 1, 3, 3, 5, 8. Чему равна медиана?",
-                options: ["3", "4", "5", "20"],
-                answer: "3",
-                explanation: "Медиана это среднее значение в упорядоченном ряду Упорядоченный ряд 1 3 3 5 8 Центральное значение 3"
-            },
-            {
-                question: "Даны значения: 7, 7, 2, 7, 1. Чему равна мода?",
-                options: ["7", "2", "1", "Нет моды"],
-                answer: "7",
-                explanation: "Мода это значение которое встречается в наборе данных наиболее часто Число 7 встречается 3 раза"
-            },
-            {
-                question: "Даны: 10, 20, 30. Среднее арифметическое?",
-                options: ["20", "10", "30", "60"],
-                answer: "20",
-                explanation: "Среднее арифметическое 10+20+30  3  60  3  20"
-            },
-            {
-                question: "Даны: 5, 1, 9, 3, 7. Медиана?",
-                options: ["5", "3", "7", "25"],
-                answer: "5",
-                explanation: "Упорядоченный ряд 1 3 5 7 9 Центральное значение 5"
-            },
-            {
-                question: "Даны: 6, 6, 6, 8, 10. Мода?",
-                options: ["6", "8", "10", "Нет моды"],
-                answer: "6",
-                explanation: "Мода 6 так как оно встречается чаще всего 3 раза"
-            },
-            {
-                question: "Даны: 5, 10, 15, 20. Чему равна разность между максимумом и минимумом?",
-                options: ["15", "5", "20", "50"],
-                answer: "15",
-                explanation: "Максимум 20 минус Минимум 5 равно 15 Это называется размах выборки"
-            },
-            {
-                question: "Даны: 100, 50. Во сколько раз 100 больше 50?",
-                options: ["2", "50", "100", "150"],
-                answer: "2",
-                explanation: "100  50  2"
-            },
-            {
-                question: "Даны: 4, 9. Чему равен квадрат 4?",
-                options: ["16", "4", "9", "36"],
-                answer: "16",
-                explanation: "Квадрат числа 4 4*4  16"
-            },
-            {
-                question: "Даны: 100, 25. Чему равен 25% от 100?",
-                options: ["25", "100", "4", "75"],
-                answer: "25",
-                explanation: "25% от 100 равно 100*25  100  25"
-            },
-            {
-                question: "Даны: 16, 4. Чему равен корень из 16?",
-                options: ["4", "16", "2", "20"],
-                answer: "4",
-                explanation: "Квадратный корень из 16 $\sqrt{16}$ равен 4 так как 4*4  16"
-            },
-            {
-                question: "Даны: 20, 5. Сколько раз 5 помещается в 20?",
-                options: ["4", "5", "20", "25"],
-                answer: "4",
-                explanation: "20  5  4"
-            },
-            {
-                question: "Даны: 5, 7, 9. Чему равно среднее арифметическое?",
-                options: ["7", "5", "9", "21"],
-                answer: "7",
-                explanation: "Среднее арифметическое 5+7+9  3  21  3  7"
-            },
-            {
-                question: "Даны: 3, 5, 7, 11. Чему равна сумма простых чисел?",
-                options: ["26", "3", "11", "21"],
-                answer: "26",
-                explanation: "Простые числа 3+5+7+11  26"
-            },
-            {
-                question: "Даны: 16, 25, 36. Чему равен корень из суммы?",
-                options: ["9", "77", "3", "6"],
-                answer: "9",
-                explanation: "Сумма 16+25+36  77 Корень из суммы $\sqrt{77} \approx 8.77$ В контексте эконометрики примем 9 подразумевая $\sqrt{81}$"
-            },
-            {
-                question: "Даны: 2, 4, 6, 8, 10. Чему равна медиана?",
-                options: ["6", "2", "10", "30"],
-                answer: "6",
-                explanation: "Ряд уже упорядочен Центральное значение 6"
-            },
-            {
-                question: "Даны: 81, 27, 9. Чему равен корень из 81?",
-                options: ["9", "3", "27", "81"],
-                answer: "9",
-                explanation: "Квадратный корень из 81 $\sqrt{81}$ равен 9"
-            },
-            {
-                question: "ВВП вырос с 100 до 110 млрд. На сколько % вырос ВВП?",
-                options: ["10%", "1%", "100%", "110%"],
-                answer: "10%",
-                explanation: "Рост 110-100  100 * 100%  10  100 * 100%  10%"
-            },
-            {
-                question: "Инфляция 5%, цена была 200 сум. Чему равна новая цена?",
-                options: ["210 сум.", "205 сум.", "195 сум.", "200 сум."],
-                answer: "210 сум.",
-                explanation: "Рост цены 200*005  10 сум Новая цена 200+10  210 сум"
-            },
-            {
-                question: "Безработица 8%, трудоспособных 50 млн. Сколько безработных?",
-                options: ["4 млн", "8 млн", "40 млн", "50 млн"],
-                answer: "4 млн",
-                explanation: "Количество безработных 50 млн * 008  4 млн"
-            },
-            {
-                question: "Экспорт 300 млн, импорт 250 млн. Чему равно сальдо торговли?",
-                options: ["50 млн", "-50 млн", "550 млн", "0"],
-                answer: "50 млн",
-                explanation: "Сальдо торговли Экспорт - Импорт 300 млн - 250 млн  50 млн профицит"
-            },
-            {
-                question: "Доход 1000 сум., расходы 800 сум. Чему равны сбережения?",
-                options: ["200 сум.", "800 сум.", "1000 сум.", "0"],
-                answer: "200 сум.",
-                explanation: "Сбережения Доход - Расходы 1000 - 800  200 сум"
-            },
-            {
-                question: "Цена акции была 500 сум., стала 550 сум. На сколько % рост?",
-                options: ["10%", "5%", "50%", "55%"],
-                answer: "10%",
-                explanation: "Рост 550-500  500 * 100%  50  500 * 100%  10%"
-            },
-            {
-                question: "Процентная ставка 6%, вклад 10000 сум. Чему равен доход за год?",
-                options: ["600 сум.", "6000 сум.", "10600 сум.", "0"],
-                answer: "600 сум.",
-                explanation: "Доход 10000*006  600 сум"
-            },
-            {
-                question: "Продажи 1 квартал: 200, 2 квартал: 250. На сколько % рост?",
-                options: ["25%", "20%", "50%", "5%"],
-                answer: "25%",
-                explanation: "Рост 250-200  200 * 100%  50  200 * 100%  25%"
-            },
-            {
-                question: "Инвестиции 500 млн, прибыль 100 млн. Чему равна ROI (%)?",
-                options: ["20%", "100%", "500%", "600%"],
-                answer: "20%",
-                explanation: "ROI Return on Investment 100 млн  500 млн * 100%  20%"
-            },
-            {
-                question: "Население 100 млн, ВВП 10 трлн сум. ВВП на душу (сум.)?",
-                options: ["100000 сум.", "10 млн сум.", "100 млн сум.", "1 млрд сум."],
-                answer: "100000 сум.",
-                explanation: "ВВП на душу 10 000 000 000 000  100 000 000  100 000 сум"
-            },
-            {
-                question: "Долг 200 млрд, ВВП 1000 млрд. Долг к ВВП (%)?",
-                options: ["20%", "2%", "200%", "1000%"],
-                answer: "20%",
-                explanation: "ДолгВВП 200 млрд  1000 млрд * 100%  20%"
-            },
-            {
-                question: "Зарплата выросла с 40000 до 48000 сум. На сколько % рост?",
-                options: ["20%", "10%", "8000 сум.", "48000 сум."],
-                answer: "20%",
-                explanation: "Рост 48000-40000  40000 * 100%  8000  40000 * 100%  20%"
-            },
-            {
-                question: "Бюджет: доходы 500 млрд, расходы 600 млрд. Дефицит (млрд)?",
-                options: ["100 млрд", "-100 млрд", "1100 млрд", "0"],
-                answer: "100 млрд",
-                explanation: "Дефицит Расходы - Доходы 600 млрд - 500 млрд  100 млрд"
-            },
-            {
-                question: "Продано 120 единиц по 500 сум. Чему равна выручка?",
-                options: ["60000 сум.", "120 сум.", "500 сум.", "620 сум."],
-                answer: "60000 сум.",
-                explanation: "Выручка Цена * Количество 120*500  60000 сум"
-            },
-            {
-                question: "Себестоимость 300 сум., цена 500 сум. Прибыль на единицу?",
-                options: ["200 сум.", "300 сум.", "500 сум.", "800 сум."],
-                answer: "200 сум.",
-                explanation: "Прибыль Цена - Себестоимость 500 - 300  200 сум"
-            },
-            {
-                question: "Продали 100 единиц, прибыль 20000 сум. Прибыль на единицу?",
-                options: ["200 сум.", "100 сум.", "20000 сум.", "0"],
-                answer: "200 сум.",
-                explanation: "Прибыль на единицу Общая прибыль  Количество 20000  100  200 сум"
-            },
-            {
-                question: "Кредит 100000 сум., ставка 12%, за год переплата?",
-                options: ["12000 сум.", "10000 сум.", "112000 сум.", "0"],
-                answer: "12000 сум.",
-                explanation: "Переплата проценты 100000*012  12000 сум"
-            },
-            {
-                question: "Вклад 200000 сум., ставка 5%, доход за год?",
-                options: ["10000 сум.", "20000 сум.", "210000 сум.", "0"],
-                answer: "10000 сум.",
-                explanation: "Доход 200000*005  10000 сум"
-            },
-            {
-                question: "Акция: купили за 1000 сум., продали за 1200 сум. Прибыль (%)?",
-                options: ["20%", "10%", "200 сум.", "1200 сум."],
-                answer: "20%",
-                explanation: "Прибыль 1200-1000  1000 * 100%  200  1000 * 100%  20%"
-            },
-            {
-                question: "Экспорт вырос с 400 до 480 млн. На сколько % рост?",
-                options: ["20%", "10%", "80 млн", "480 млн"],
-                answer: "20%",
-                explanation: "Рост 480-400  400 * 100%  80  400 * 100%  20%"
-            },
-            {
-                question: "Импорт упал с 300 до 240 млн. На сколько % снижение?",
-                options: ["20%", "10%", "60 млн", "240 млн"],
-                answer: "20%",
-                explanation: "Снижение 300-240  300 * 100%  60  300 * 100%  20%"
-            },
-            {
-                question: "Бюджетный профицит 50 млрд, доходы 800 млрд. Расходы?",
-                options: ["750 млрд", "850 млрд", "800 млрд", "50 млрд"],
-                answer: "750 млрд",
-                explanation: "Профицит  Доходы - Расходы Расходы  Доходы - Профицит 800 - 50  750 млрд"
-            },
-            {
-                question: "Цена 1000 сум., скидка 15%. Новая цена?",
-                options: ["850 сум.", "1150 сум.", "150 сум.", "1000 сум."],
-                answer: "850 сум.",
-                explanation: "Сумма скидки 1000*015  150 сум Новая цена 1000 - 150  850 сум"
-            },
-            {
-                question: "Продажи: 1 мес. 500, 2 мес. 600. Средние продажи?",
-                options: ["550", "500", "600", "1100"],
-                answer: "550",
-                explanation: "Среднее 500+600  2  1100  2  550"
-            },
-            {
-                question: "Инвестиции 1 млн, возврат 1.2 млн. Прибыль (%)?",
-                options: ["20%", "10%", "200000 сум.", "1.2 млн"],
-                answer: "20%",
-                explanation: "Прибыль 12-1  1 * 100%  02  1 * 100%  20%"
-            },
-            {
-                question: "Долг 500 млрд, ВВП 2500 млрд. Долг к ВВП?",
-                options: ["20%", "2%", "500%", "2500%"],
-                answer: "20%",
-                explanation: "ДолгВВП 500 млрд  2500 млрд * 100%  20%"
-            },
-            {
-                question: "Курс евро: был 80 сум., стал 88 сум. Рост (%)?",
-                options: ["10%", "8%", "88 сум.", "80 сум."],
-                answer: "10%",
-                explanation: "Рост 88-80  80 * 100%  8  80 * 100%  10%"
-            },
-            {
-                question: "Затраты 400 тыс., выручка 600 тыс. Прибыль?",
-                options: ["200 тыс.", "400 тыс.", "600 тыс.", "1000 тыс."],
-                answer: "200 тыс.",
-                explanation: "Прибыль Выручка - Затраты 600 - 400  200 тыс"
-            },
-            {
-                question: "Себестоимость 200 сум., продажа 300 сум., 150 единиц. Прибыль?",
-                options: ["15000 сум.", "100 сум.", "300 сум.", "45000 сум."],
-                answer: "15000 сум.",
-                explanation: "Прибыль на единицу 300-200  100 сум Общая прибыль 100*150  15000 сум"
-            },
-            {
-                question: "Вклад 500000 сум., 4% годовых, доход за год?",
-                options: ["20000 сум.", "4000 сум.", "520000 сум.", "0"],
-                answer: "20000 сум.",
-                explanation: "Доход 500000*004  20000 сум"
-            },
-            {
-                question: "Акция упала с 2000 до 1600 сум. Убыток (%)?",
-                options: ["20%", "10%", "400 сум.", "1600 сум."],
-                answer: "20%",
-                explanation: "Убыток 2000-1600  2000 * 100%  400  2000 * 100%  20%"
-            },
-            {
-                question: "ВВП на душу 50000 сум., население 120 млн. Общий ВВП?",
-                options: ["6 трлн сум.", "50 трлн сум.", "120 трлн сум.", "600000 сум."],
-                answer: "6 трлн сум.",
-                explanation: "Общий ВВП 50000*120 000 000  6 000 000 000 000 сум или 6 трлн сум"
-            },
-            {
-                question: "Бюджет: доходы 1000 млрд, расходы 900 млрд. Профицит?",
-                options: ["100 млрд", "-100 млрд", "1900 млрд", "0"],
-                answer: "100 млрд",
-                explanation: "Профицит Доходы - Расходы 1000 млрд - 900 млрд  100 млрд"
-            },
-            {
-                question: "Зарплата 60000 сум., премия 10%. Итого?",
-                options: ["66000 сум.", "6000 сум.", "60000 сум.", "10 сум."],
-                answer: "66000 сум.",
-                explanation: "Премия 60000*010  6000 сум Итого 60000+6000  66000 сум"
-            },
-            {
-                question: "Продажи выросли с 1000 до 1300 единиц. Рост (%)?",
-                options: ["30%", "20%", "300 ед.", "1300 ед."],
-                answer: "30%",
-                explanation: "Рост 1300-1000  1000 * 100%  300  1000 * 100%  30%"
-            },
-            {
-                question: "Бросаем монету 1 раз. Вероятность орла?",
-                options: ["0.5", "1", "0", "2"],
-                answer: "0.5",
-                explanation: "Вероятность 1 орел  2 все исходы  05"
-            },
-            {
-                question: "Кидаем кубик. Вероятность выпадения 6?",
-                options: ["1/6", "1/2", "0", "6"],
-                answer: "1/6",
-                explanation: "Вероятность 1 исход 6  6 все исходы  1/6"
-            },
-            {
-                question: "В урне 3 красных и 2 синих шара. Вероятность вытащить красный?",
-                options: ["3/5", "2/5", "1", "0"],
-                answer: "3/5",
-                explanation: "Всего шаров 3+2  5 Вероятность красного 3/5"
-            },
-            {
-                question: "Бросаем монету 2 раза. Вероятность двух орлов?",
-                options: ["1/4", "1/2", "0", "2/4"],
-                answer: "1/4",
-                explanation: "Вероятность P(Орел) * P(Орел)  05 * 05  025 или 1/4"
-            },
-            {
-                question: "Кидаем кубик 2 раза. Вероятность хотя бы одной 1?",
-                options: ["11/36", "1/6", "1/36", "2/6"],
-                answer: "11/36",
-                explanation: "Вероятность НЕ получить 1 в обоих бросках P(не 1) * P(не 1)  5/6 * 5/6  25/36 Вероятность ХОТЯ БЫ ОДНОЙ 1 1 - 25/36  11/36"
-            },
-            {
-                question: "В выборке 50 человек, 20 женщин. Частота женщин?",
-                options: ["0.4", "20", "50", "30"],
-                answer: "0.4",
-                explanation: "Частота 20  50  04"
-            },
-            {
-                question: "Факториал: 5! = ?",
-                options: ["120", "5", "25", "1"],
-                answer: "120",
-                explanation: "5!  5*4*3*2*1  120"
-            },
-            {
-                question: "Факториал: 3! = ?",
-                options: ["6", "3", "9", "1"],
-                answer: "6",
-                explanation: "3!  3*2*1  6"
-            },
-            {
-                question: "Сколько перестановок из 3 букв (А, Б, В)?",
-                options: ["6", "3", "9", "1"],
-                answer: "6",
-                explanation: "Количество перестановок 3!  6"
-            },
-            {
-                question: "Сколько способов выбрать 2 человек из 4 (порядок важен)?",
-                options: ["12", "6", "4", "2"],
-                answer: "12",
-                explanation: "Это размещения $A_4^2$  4*3  12"
-            },
-            {
-                question: "Частота дождливых дней: за 30 дней дождь был 12 раз. Частота?",
-                options: ["0.4", "12", "30", "18"],
-                answer: "0.4",
-                explanation: "Частота 12  30  04"
-            },
-            {
-                question: "Частота успехов: из 200 попыток 60 успехов. Частота?",
-                options: ["0.3", "60", "200", "140"],
-                answer: "0.3",
-                explanation: "Частота 60  200  03"
-            },
-            {
-                question: "Что показывает среднее?",
-                options: ["Типичное значение", "Максимум", "Минимум", "Разницу"],
-                answer: "Типичное значение",
-                explanation: "Среднее арифметическое это мера центральной тенденции показывающая типичное или ожидаемое значение"
-            },
-            {
-                question: "Что такое дисперсия?",
-                options: ["Как сильно разброс", "Среднее", "Медиана", "Сумма"],
-                answer: "Как сильно разброс",
-                explanation: "Дисперсия $\sigma^2$ измеряет степень разброса значений относительно их среднего"
-            },
-            {
-                question: "Дисперсия = 0 — значит:",
-                options: ["Все значения одинаковые", "Разные", "Среднее = 0", "Медиана = 0"],
-                answer: "Все значения одинаковые",
-                explanation: "Если дисперсия равна нулю все наблюдения равны среднему значению"
-            },
-            {
-                question: "Стандартное отклонение — это...",
-                options: ["Корень из дисперсии", "Дисперсия", "Среднее", "Мода"],
-                answer: "Корень из дисперсии",
-                explanation: "Стандартное отклонение $\sigma$ является квадратным корнем из дисперсии"
-            },
-            {
-                question: "Дисперсия большая — значит:",
-                options: ["Значения сильно разбросаны", "Все одинаковые", "Среднее большое", "Медиана большая"],
-                answer: "Значения сильно разбросаны",
-                explanation: "Большая дисперсия указывает на то что наблюдения сильно удалены от среднего значения"
-            },
-            {
-                question: "Корреляция = 1 — значит:",
-                options: ["Полная связь", "Нет связи", "Слабая связь", "Отрицательная"],
-                answer: "Полная связь",
-                explanation: "Коэффициент корреляции Пирсона равный 1 означает идеальную прямую линейную зависимость"
-            },
-            {
-                question: "Корреляция = -0.8 — значит:",
-                options: ["Сильная отрицательная", "Положительная", "Нет связи", "Слабая"],
-                answer: "Сильная отрицательная",
-                explanation: "Знак минус указывает на отрицательную связь а значение 08 близкое к 1 на ее силу"
-            },
-            {
-                question: "Что такое выборка?",
-                options: ["Часть от всех", "Все данные", "Среднее", "График"],
-                answer: "Часть от всех",
-                explanation: "Выборка это подмножество генеральной совокупности используемое для статистического анализа"
-            },
-            {
-                question: "p-значение < 0.05 — значит:",
-                options: ["Значимо", "Не значимо", "Точно да", "Ошибка"],
-                answer: "Значимо",
-                explanation: "Если p-значение меньше уровня значимости 005 результат считается статистически значимым и нулевая гипотеза отвергается"
-            },
-            {
-                question: "Нулевая гипотеза — это...",
-                options: ["Нет эффекта", "Есть эффект", "Среднее = 0", "Мода = 0"],
-                answer: "Нет эффекта",
-                explanation: "Нулевая гипотеза H0 утверждает что между переменными или группами нет наблюдаемого эффекта или разницы"
-            },
-            {
-                question: "Что такое описательная статистика?",
-                options: ["Средние, графики, таблицы", "Прогнозы", "Тесты", "Модели"],
-                answer: "Средние, графики, таблицы",
-                explanation: "Описательная статистика занимается сбором представлением и суммированием данных"
-            },
-            {
-                question: "Что такое невозможное событие?",
-                options: ["P = 0", "P = 1", "P = 0.5", "P > 0"],
-                answer: "P = 0",
-                explanation: "Вероятность P наступления невозможного события равна нулю"
-            },
-            {
-                question: "Что такое достоверное событие?",
-                options: ["P = 1", "P = 0", "P = 0.5", "P < 1"],
-                answer: "P = 1",
-                explanation: "Вероятность P наступления достоверного события равна единице 100%"
-            },
-            {
-                question: "Что такое случайное событие?",
-                options: ["P между 0 и 1", "P = 0", "P = 1", "P = 0.5"],
-                answer: "P между 0 и 1",
-                explanation: "Вероятность случайного события находится в интервале 0 1"
-            },
-            {
-                question: "Что такое совместные события?",
-                options: ["Могут произойти вместе", "Не могут вместе", "Одно всегда", "Ни одно"],
-                answer: "Могут произойти вместе",
-                explanation: "Совместные события это события которые имеют хотя бы один общий исход то есть могут произойти одновременно"
-            },
-            {
-                question: "Что такое несовместные события?",
-                options: ["Не могут произойти вместе", "Могут вместе", "Одно всегда", "Ни одно"],
-                answer: "Не могут произойти вместе",
-                explanation: "Несовместные события не могут произойти одновременно"
-            },
-            {
-                question: "Что такое противоположные события?",
-                options: ["A и не-A", "A и B", "A или B", "A + B"],
-                answer: "A и не-A",
-                explanation: "Противоположные события A и $\overline{A}$ охватывают все возможные исходы и не могут произойти одновременно"
-            },
-            {
-                question: "Что такое дополнение события Ā?",
-                options: ["Всё кроме A", "Только A", "A и B", "A или B"],
-                answer: "Всё кроме A",
-                explanation: "Дополнение события $\overline{A}$ включает все исходы которые не входят в событие A"
-            },
-            {
-                question: "Что такое независимые события?",
-                options: ["Одно не влияет на другое", "Влияют друг на друга", "Суммируются", "Умножаются всегда"],
-                answer: "Одно не влияет на другое",
-                explanation: "Независимые события это события наступление которых не влияет на вероятность наступления других"
-            }
-        ];
-
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let answered = false;
-        let playerName = '';
-        
-        // Элементы страницы
-        const startPage = document.getElementById('start-page');
-        const quizArea = document.getElementById('quiz-area');
-        const playerNameInput = document.getElementById('player-name');
-        const startButton = document.getElementById('start-button');
-        const questionTextElement = document.getElementById('question-text');
-        const optionsContainer = document.getElementById('options-container');
-        const nextButton = document.getElementById('next-button');
-        const scoreElement = document.getElementById('score');
-        const feedbackElement = document.getElementById('feedback');
-        const finalResults = document.getElementById('final-results');
-        const finalScoreElement = document.getElementById('final-score');
-        const playerFinalNameElement = document.getElementById('player-final-name');
-
-
-        // --- Логика игры ---
+        // --- Game Core Functions ---
 
         function startGame() {
-            playerName = playerNameInput.value.trim();
-            if (playerName) {
-                startPage.style.display = 'none';
-                quizArea.style.display = 'block';
-                shuffleArray(questions); // Перемешиваем порядок вопросов
-                loadQuestion();
-            }
+            // Shuffle the word list once for the game
+            allWords = shuffleArray(allWords);
+            currentWordIndex = -1;
+            score = 0;
+            scoreDisplay.textContent = score;
+            loadNextQuestion();
         }
 
-        function loadQuestion() {
-            if (currentQuestionIndex >= questions.length) {
-                showResults();
+        function loadNextQuestion() {
+            currentWordIndex++;
+            
+            if (currentWordIndex >= allWords.length) {
+                wordDisplay.textContent = "Quiz Finished!";
+                feedbackMessage.textContent = `Final Score: ${score} out of ${allWords.length}! You crushed it! ??`;
+                optionsContainer.innerHTML = '';
+                nextButton.style.display = 'none';
                 return;
             }
 
-            answered = false;
-            nextButton.disabled = true;
-            feedbackElement.innerHTML = '';
-            
-            const currentQuestion = questions[currentQuestionIndex];
-            const allOptions = [...currentQuestion.options];
-            shuffleArray(allOptions); // Перемешиваем варианты ответов
-
-            // Обновляем счет и номер вопроса
-            scoreElement.textContent = `Счет: ${score} / ${currentQuestionIndex} | Игрок: ${playerName} (Всего: ${questions.length})`;
-            questionTextElement.textContent = `${currentQuestionIndex + 1}. ${currentQuestion.question}`;
+            const currentWord = allWords[currentWordIndex];
+            wordDisplay.textContent = currentWord.en;
+            feedbackMessage.textContent = 'Choose the correct Russian translation.';
+            feedbackMessage.className = '';
+            nextButton.style.display = 'none';
             optionsContainer.innerHTML = '';
 
-            // Создаем кнопки для вариантов ответа
-            allOptions.forEach(optionText => {
+            // 1. Get the correct translation
+            const correctTranslation = currentWord.ru;
+            let options = [correctTranslation];
+
+            // 2. Create a pool of all unique wrong translations
+            const allTranslations = wordList.map(item => item.ru);
+            const wrongTranslationPool = allTranslations.filter(ru => ru !== correctTranslation);
+            
+            // 3. Shuffle the wrong pool and pick 3 unique distractors
+            shuffleArray(wrongTranslationPool);
+            
+            // Get 3 unique wrong options (or fewer if the list is small)
+            const wrongOptions = wrongTranslationPool.slice(0, 3);
+            options = options.concat(wrongOptions);
+            
+            // 4. Shuffle the final four options (1 correct, 3 wrong)
+            options = shuffleArray(options);
+
+            // Render buttons
+            options.forEach(option => {
                 const button = document.createElement('button');
-                button.classList.add('option-btn');
-                button.textContent = optionText;
-                button.addEventListener('click', () => selectAnswer(button, optionText, currentQuestion));
+                button.classList.add('option-button');
+                button.textContent = option;
+                button.setAttribute('data-translation', option);
+                button.addEventListener('click', handleAnswer);
                 optionsContainer.appendChild(button);
             });
         }
 
-        function selectAnswer(selectedButton, selectedText, currentQuestion) {
-            if (answered) return;
-            answered = true;
-            nextButton.disabled = false;
+        function handleAnswer(event) {
+            const selectedButton = event.target;
+            const selectedTranslation = selectedButton.getAttribute('data-translation');
+            const correctTranslation = allWords[currentWordIndex].ru;
+            let isCorrect = (selectedTranslation === correctTranslation);
 
-            // Отключаем все кнопки после выбора
-            Array.from(optionsContainer.children).forEach(btn => {
-                btn.disabled = true;
-                btn.classList.add('selected-disabled');
-            });
+            // Disable all buttons after choice
+            document.querySelectorAll('.option-button').forEach(btn => btn.disabled = true);
 
-            const resultText = document.createElement('div');
-            resultText.classList.add('result-text');
-
-            if (selectedText === currentQuestion.answer) {
+            if (isCorrect) {
                 score++;
-                selectedButton.classList.add('correct');
-                resultText.textContent = `Верно!`;
-                
-                // Добавляем объяснение
-                const explanation = document.createElement('p');
-                explanation.classList.add('explanation');
-                explanation.textContent = `Объяснение: ${currentQuestion.explanation}`;
-                
-                feedbackElement.appendChild(resultText);
-                feedbackElement.appendChild(explanation);
-                
+                scoreDisplay.textContent = score;
+                feedbackMessage.textContent = correctFeedback[Math.floor(Math.random() * correctFeedback.length)];
+                feedbackMessage.className = 'correct';
+                selectedButton.classList.add('correct-highlight');
+
             } else {
-                selectedButton.classList.add('incorrect');
-                resultText.textContent = `Неверно. Правильный ответ был: ${currentQuestion.answer}`;
+                feedbackMessage.textContent = incorrectFeedback[Math.floor(Math.random() * incorrectFeedback.length)] + ` The correct answer was: "${correctTranslation}"`;
+                feedbackMessage.className = 'incorrect';
                 
-                // Находим и подсвечиваем правильный ответ
-                Array.from(optionsContainer.children).forEach(btn => {
-                    if (btn.textContent === currentQuestion.answer) {
-                        btn.classList.add('correct');
+                // Red for wrong guess
+                selectedButton.style.backgroundColor = '#e74c3c'; 
+                selectedButton.style.boxShadow = '0 4px 0 #c0392b';
+                
+                // Highlight the correct answer
+                document.querySelectorAll('.option-button').forEach(btn => {
+                    if (btn.getAttribute('data-translation') === correctTranslation) {
+                        btn.classList.add('correct-highlight');
                     }
                 });
-
-                // Добавляем объяснение
-                const explanation = document.createElement('p');
-                explanation.classList.add('explanation');
-                explanation.textContent = `Объяснение: ${currentQuestion.explanation}`;
-                
-                feedbackElement.appendChild(resultText);
-                feedbackElement.appendChild(explanation);
             }
 
-            // Обновляем счет, включая текущий вопрос в общее количество
-            scoreElement.textContent = `Счет: ${score} / ${currentQuestionIndex + 1} | Игрок: ${playerName} (Всего: ${questions.length})`;
+            nextButton.style.display = 'block';
         }
 
-        function nextQuestion() {
-            currentQuestionIndex++;
-            loadQuestion();
-        }
+        // --- Event Listeners ---
+        nextButton.addEventListener('click', loadNextQuestion);
 
-        function showResults() {
-            document.getElementById('question-area').style.display = 'none';
-            scoreElement.style.display = 'none';
-            finalResults.style.display = 'block';
-            
-            finalScoreElement.textContent = `Ваш итоговый счет: ${score} из ${questions.length}.`;
-            playerFinalNameElement.textContent = `Отлично, ${playerName}!`;
-        }
+        // --- Initialize Game ---
+        startGame();
 
-        // --- Инициализация и слушатели событий ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Ввод имени
-            playerNameInput.addEventListener('input', () => {
-                startButton.disabled = playerNameInput.value.trim() === '';
-            });
-
-            startButton.addEventListener('click', startGame);
-            
-            nextButton.addEventListener('click', nextQuestion);
-        });
     </script>
 </body>
 </html>
