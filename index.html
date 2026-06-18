@@ -1,435 +1,376 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vocabulary Quiz Master: English-Russian</title>
+    <title>Эконометрика: Итоговый Тест</title>
     <style>
-        /* --- General Styles & Background --- */
+        :root {
+            --primary: #4a90e2;
+            --success: #2ecc71;
+            --error: #e74c3c;
+            --dark: #2c3e50;
+            --light: #f9f9f9;
+        }
+
         body {
-            font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); /* Deep Blue Gradient */
-            color: #ecf0f1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: #eef2f7;
+            color: var(--dark);
+            margin: 0;
             padding: 20px;
-            min-height: 100vh;
+            display: flex;
+            justify-content: center;
         }
 
-        h1 {
-            color: #f1c40f; /* Gold/Yellow for heading */
-            margin-bottom: 10px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        #score-board {
-            font-size: 1.5em;
-            margin-bottom: 25px;
-            padding: 10px 25px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            border: 2px solid #3498db;
-            box-shadow: 0 0 15px rgba(52, 152, 219, 0.7);
-        }
-
-        /* --- Question & Options Container (The Main Card) --- */
-        #quiz-container {
-            width: 90%;
-            max-width: 700px;
-            background: #ffffff;
-            color: #333;
+        #quiz-card {
+            background: white;
+            width: 100%;
+            max-width: 800px;
             padding: 40px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            text-align: center;
-            animation: fadeIn 0.8s;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        /* Animations */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        #word-display {
-            font-size: 3em;
-            font-weight: 900;
-            color: #c0392b; /* Dark Red */
-            margin-bottom: 40px;
-            text-transform: capitalize;
-            border-bottom: 3px solid #e74c3c;
-            padding-bottom: 10px;
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            margin-bottom: 30px;
         }
 
-        #options-container {
+        #progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        .options-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* Two columns for options */
-            gap: 20px;
-            margin-top: 20px;
+            gap: 15px;
         }
 
-        .option-button {
-            background-color: #3498db; /* Bright Blue */
-            color: white;
-            border: none;
+        .option-btn {
             padding: 18px;
-            font-size: 1.2em;
+            border: 2px solid #e0e6ed;
             border-radius: 12px;
+            background: white;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
-            box-shadow: 0 4px 0 #2980b9; /* 3D effect */
+            text-align: left;
+            font-size: 1rem;
+            transition: all 0.2s ease;
         }
 
-        .option-button:hover:not(:disabled) {
-            background-color: #2980b9;
-            transform: translateY(-3px);
-            box-shadow: 0 7px 0 #2c3e50;
-        }
-        
-        .option-button:active:not(:disabled) {
-            transform: translateY(1px);
-            box-shadow: 0 2px 0 #2c3e50;
+        .option-btn:hover {
+            border-color: var(--primary);
+            background-color: #f0f7ff;
         }
 
-        .option-button:disabled {
-            cursor: default;
-            opacity: 0.8;
-            box-shadow: none;
-        }
-
-        /* --- Feedback & Next Button --- */
-        #feedback-message {
-            min-height: 24px;
-            margin: 30px 0 20px 0;
-            font-size: 1.3em;
-            font-style: italic;
-        }
-
-        .correct {
-            color: #27ae60; /* Emerald Green */
-            animation: pulse 0.5s ease-in-out 3;
-        }
-
-        .incorrect {
-            color: #e74c3c; /* Alizarin Red */
-        }
-        
-        .correct-highlight {
-            background-color: #2ecc71 !important; /* Brighter green for correct answer */
-            color: white !important;
-            border: 3px solid #27ae60;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        #next-button {
-            padding: 15px 30px;
-            font-size: 1.2em;
-            background: linear-gradient(90deg, #f39c12, #e67e22); /* Orange Gradient */
+        .option-btn.correct {
+            background-color: var(--success) !important;
+            border-color: var(--success) !important;
             color: white;
+        }
+
+        .option-btn.wrong {
+            background-color: var(--error) !important;
+            border-color: var(--error) !important;
+            color: white;
+        }
+
+        /* Results & Review */
+        #results, #review-mode { display: none; text-align: center; }
+
+        .review-item {
+            text-align: left;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
+        }
+
+        .status-tag {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        .tag-correct { background: #d4edda; color: #155724; }
+        .tag-wrong { background: #f8d7da; color: #721c24; }
+
+        .btn {
+            padding: 15px 30px;
             border: none;
             border-radius: 10px;
+            font-weight: bold;
             cursor: pointer;
-            display: none;
-            transition: background 0.3s;
-            box-shadow: 0 4px 0 #d35400;
+            margin: 10px;
+            transition: 0.3s;
         }
 
-        #next-button:hover {
-            background: linear-gradient(90deg, #e67e22, #f39c12);
-            box-shadow: 0 2px 0 #d35400;
-            transform: translateY(2px);
-        }
+        .btn-main { background: var(--primary); color: white; }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
     </style>
 </head>
 <body>
 
-    <h1>🧠 Russian Vocab Challenge! 🚀</h1>
-    <div id="score-board">
-        Score: <span id="current-score">0</span>
+<div id="quiz-card">
+    <div id="game-ui">
+        <div class="q-header">
+            <span id="q-count">Вопрос 1/100</span>
+            <span id="score-display">Баллы: 0</span>
+        </div>
+        <div class="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        <div id="question-content" class="fade-in">
+            <div class="question-text" id="q-text">Текст вопроса загружается...</div>
+            <div class="options-grid" id="options-box"></div>
+        </div>
     </div>
 
-    <div id="quiz-container">
-        <div id="word-display">Loading Word...</div>
-        
-        <div id="options-container">
-            </div>
-
-        <div id="feedback-message">Choose the correct Russian translation.</div>
-        
-        <button id="next-button">Next Challenge &raquo;</button>
+    <div id="results">
+        <h1>Тест завершен!</h1>
+        <p style="font-size: 2rem;" id="final-score">0 / 100</p>
+        <div id="performance-msg"></div>
+        <button class="btn btn-main" onclick="startReview()">Посмотреть ошибки</button>
+        <button class="btn btn-outline" onclick="location.reload()">Начать заново</button>
     </div>
 
-    <script>
-        // --- Word List and Translations ---
-        const wordList = [
-            { en: "about", ru: "о" }, { en: "above", ru: "выше" }, { en: "across", ru: "через" },
-            { en: "add", ru: "добавить" }, { en: "adult", ru: "взрослый" }, { en: "adventurer", ru: "авантюрист" },
-            { en: "affect", ru: "влиять" }, { en: "afraid", ru: "бояться" }, { en: "ago", ru: "назад" },
-            { en: "alert", ru: "бдительный" }, { en: "alive", ru: "живой" }, { en: "all", ru: "все" },
-            { en: "allow", ru: "позволять" }, { en: "alone", ru: "один" }, { en: "also", ru: "также" },
-            { en: "ambassador", ru: "посол" }, { en: "among", ru: "среди" }, { en: "area", ru: "область" },
-            { en: "around", ru: "вокруг" }, { en: "arrive", ru: "прибывать" }, { en: "art", ru: "искусство" },
-            { en: "attend", ru: "посещать" }, { en: "average", ru: "средний" }, { en: "background", ru: "фон" },
-            { en: "bake", ru: "печь" }, { en: "band", ru: "группа" }, { en: "basket", ru: "корзина" },
-            { en: "be", ru: "быть" }, { en: "beak", ru: "клюв" }, { en: "bear", ru: "медведь" },
-            { en: "beard", ru: "борода" }, { en: "beat", ru: "бить" }, { en: "become", ru: "становиться" },
-            { en: "behave", ru: "вести себя" }, { en: "believe", ru: "верить" }, { en: "below", ru: "ниже" },
-            { en: "benefit", ru: "выгода" }, { en: "beside", ru: "рядом" }, { en: "better", ru: "лучше" },
-            { en: "blew", ru: "дул" }, { en: "blue", ru: "синий" }, { en: "both", ru: "оба" },
-            { en: "bottle", ru: "бутылка" }, { en: "brave", ru: "храбрый" }, { en: "breathe", ru: "дышать" },
-            { en: "broom", ru: "метла" }, { en: "burn", ru: "сжигать" }, { en: "by", ru: "у" },
-            { en: "calm", ru: "спокойный" }, { en: "camel", ru: "верблюд" }, { en: "can", ru: "мочь" },
-            { en: "card", ru: "карта" }, { en: "careful", ru: "осторожный" }, { en: "carry", ru: "нести" },
-            { en: "casual", ru: "случайный" }, { en: "catch", ru: "ловить" }, { en: "cattle", ru: "крупный рогатый скот" },
-            { en: "century", ru: "век" }, { en: "ceremony", ru: "церемония" }, { en: "chance", ru: "шанс" },
-            { en: "channel", ru: "канал" }, { en: "cheap", ru: "дешевый" }, { en: "chew", ru: "жевать" },
-            { en: "choose", ru: "выбирать" }, { en: "classical", ru: "классический" }, { en: "climb", ru: "подниматься" },
-            { en: "cloud", ru: "облако" }, { en: "club", ru: "клуб" }, { en: "coast", ru: "побережье" },
-            { en: "coat", ru: "пальто" }, { en: "code", ru: "код" }, { en: "collect", ru: "собирать" },
-            { en: "comfortable", ru: "удобный" }, { en: "common", ru: "общий" }, { en: "communicate", ru: "общаться" },
-            { en: "commute", ru: "ездить" }, { en: "compact disc", ru: "компакт-диск" }, { en: "company", ru: "компания" },
-            { en: "competition", ru: "конкурс" }, { en: "complexly", ru: "сложно" }, { en: "composer", ru: "композитор" },
-            { en: "connect", ru: "соединять" }, { en: "contact", ru: "контакт" }, { en: "contagious", ru: "заразный" },
-            { en: "continent", ru: "континент" }, { en: "continue", ru: "продолжать" }, { en: "country", ru: "страна" },
-            { en: "crop", ru: "урожай" }, { en: "current", ru: "текущий" }, { en: "dance", ru: "танцевать" },
-            { en: "dangerous", ru: "опасный" }, { en: "date", ru: "дата" }, { en: "dead", ru: "мертвый" },
-            { en: "deal", ru: "сделка" }, { en: "decision", ru: "решение" }, { en: "deeply", ru: "глубоко" },
-            { en: "dentist", ru: "дантист" }, { en: "describe", ru: "описывать" }, { en: "desert", ru: "пустыня" },
-            { en: "destroy", ru: "уничтожать" }, { en: "destruction", ru: "разрушение" }, { en: "die", ru: "умирать" },
-            { en: "difficult", ru: "трудный" }, { en: "dig", ru: "копать" }, { en: "disease", ru: "болезнь" },
-            { en: "doctor", ru: "доктор" }, { en: "dolphin", ru: "дельфин" }, { en: "dress", ru: "платье" },
-            { en: "dress code", ru: "дресс-код" }, { en: "drill", ru: "дрель" }, { en: "during", ru: "во время" },
-            { en: "duty", ru: "обязанность" }, { en: "each", ru: "каждый" }, { en: "earth", ru: "земля" },
-            { en: "east", ru: "восток" }, { en: "either", ru: "либо" }, { en: "electricity", ru: "электричество" },
-            { en: "employee", ru: "сотрудник" }, { en: "employer", ru: "работодатель" }, { en: "enemy", ru: "враг" },
-            { en: "energy", ru: "энергия" }, { en: "engine", ru: "двигатель" }, { en: "enjoy", ru: "наслаждаться" },
-            { en: "environment", ru: "окружающая среда" }, { en: "equals", ru: "равняется" }, { en: "equipment", ru: "оборудование" },
-            { en: "evaporate", ru: "испаряться" }, { en: "even", ru: "даже" }, { en: "excited", ru: "взволнованный" },
-            { en: "exercise", ru: "упражнение" }, { en: "expect", ru: "ожидать" }, { en: "expensive", ru: "дорогой" },
-            { en: "explorer", ru: "исследователь" }, { en: "express", ru: "выражать" }, { en: "extra", ru: "дополнительный" },
-            { en: "eyelash", ru: "ресница" }, { en: "famous", ru: "известный" }, { en: "fan", ru: "вентилятор" },
-            { en: "farm", ru: "ферма" }, { en: "farmer", ru: "фермер" }, { en: "feather", ru: "перо" },
-            { en: "feed", ru: "кормить" }, { en: "feeling", ru: "чувство" }, { en: "female", ru: "женский" },
-            { en: "fertilizer", ru: "удобрение" }, { en: "festival", ru: "фестиваль" }, { en: "flexible", ru: "гибкий" },
-            { en: "fly", ru: "летать" }, { en: "footprint", ru: "след" }, { en: "forest", ru: "лес" },
-            { en: "freeze", ru: "замораживать" }, { en: "frighten", ru: "пугать" }, { en: "fry", ru: "жарить" },
-            { en: "full", ru: "полный" }, { en: "full time", ru: "полный рабочий день" }, { en: "future", ru: "будущее" },
-            { en: "get", ru: "получать" }, { en: "get dressed", ru: "одеваться" }, { en: "gift", ru: "подарок" },
-            { en: "giraffe", ru: "жираф" }, { en: "goal", ru: "цель" }, { en: "goat", ru: "коза" },
-            { en: "gold", ru: "золото" }, { en: "government", ru: "правительство" }, { en: "grass", ru: "трава" },
-            { en: "great", ru: "великий" }, { en: "group", ru: "группа" }, { en: "grow", ru: "расти" },
-            { en: "guitar", ru: "гитара" }, { en: "half", ru: "половина" }, { en: "hand", ru: "рука" },
-            { en: "hard", ru: "трудный" }, { en: "harmonica", ru: "губная гармошка" }, { en: "hate", ru: "ненавидеть" },
-            { en: "health", ru: "здоровье" }, { en: "heat", ru: "тепло" }, { en: "heavy", ru: "тяжелый" },
-            { en: "high", ru: "высокий" }, { en: "highway", ru: "шоссе" }, { en: "history", ru: "история" },
-            { en: "holiday", ru: "праздник" }, { en: "however", ru: "однако" }, { en: "hump", ru: "горб" },
-            { en: "hunter", ru: "охотник" }, { en: "hurt", ru: "болеть" }, { en: "ice", ru: "лед" },
-            { en: "idea", ru: "идея" }, { en: "if", ru: "если" }, { en: "impaired", ru: "нарушенный" },
-            { en: "increase", ru: "увеличивать" }, { en: "injury", ru: "травма" }, { en: "insect", ru: "насекомое" },
-            { en: "instead", ru: "вместо" }, { en: "instrument", ru: "инструмент" }, { en: "insurance", ru: "страхование" },
-            { en: "international", ru: "международный" }, { en: "internet", ru: "интернет" }, { en: "interpret", ru: "интерпретировать" },
-            { en: "invention", ru: "изобретение" }, { en: "island", ru: "остров" }, { en: "jazz", ru: "джаз" },
-            { en: "jewelry", ru: "ювелирные изделия" }, { en: "just", ru: "просто" }, { en: "kill", ru: "убивать" },
-            { en: "kind", ru: "добрый" }, { en: "knee", ru: "колено" }, { en: "lake", ru: "озеро" },
-            { en: "large", ru: "большой" }, { en: "laugh", ru: "смеяться" }, { en: "leader", ru: "лидер" },
-            { en: "leave", ru: "уходить" }, { en: "leaves", ru: "листья" }, { en: "left", ru: "левый" },
-            { en: "leisure", ru: "досуг" }, { en: "less", ru: "меньше" }, { en: "light", ru: "свет" },
-            { en: "logger", ru: "лесоруб" }, { en: "lonely", ru: "одинокий" }, { en: "lose", ru: "терять" },
-            { en: "loud", ru: "громкий" }, { en: "lovely", ru: "прекрасный" }, { en: "luck", ru: "удача" },
-            { en: "machine", ru: "машина" }, { en: "male", ru: "мужской" }, { en: "mammal", ru: "млекопитающее" },
-            { en: "map", ru: "карта" }, { en: "meal", ru: "еда" }, { en: "medicine", ru: "медицина" },
-            { en: "middle", ru: "середина" }, { en: "might", ru: "мощь" }, { en: "miner", ru: "шахтер" },
-            { en: "mix", ru: "смешивать" }, { en: "mixture", ru: "смесь" }, { en: "modern", ru: "современный" },
-            { en: "mountain", ru: "гора" }, { en: "move", ru: "двигаться" }, { en: "muscle", ru: "мышца" },
-            { en: "museum", ru: "музей" }, { en: "music", ru: "музыка" }, { en: "mustache", ru: "усы" },
-            { en: "naturally", ru: "естественно" }, { en: "nearly", ru: "почти" }, { en: "nervous", ru: "нервный" },
-            { en: "noise", ru: "шум" }, { en: "nomad", ru: "кочевник" }, { en: "north", ru: "север" },
-            { en: "obviously", ru: "очевидно" }, { en: "ocean", ru: "океан" }, { en: "only", ru: "только" },
-            { en: "orchestra", ru: "оркестр" }, { en: "ordinary", ru: "обычный" }, { en: "organize", ru: "организовать" },
-            { en: "other", ru: "другой" }, { en: "outsider", ru: "аутсайдер" }, { en: "over", ru: "над" },
-            { en: "palm", ru: "ладонь" }, { en: "pay", ru: "платить" }, { en: "peaceful", ru: "мирный" },
-            { en: "percent", ru: "процент" }, { en: "performer", ru: "исполнитель" }, { en: "perhaps", ru: "возможно" },
-            { en: "piano", ru: "фортепиано" }, { en: "pick", ru: "выбирать" }, { en: "pilot", ru: "пилот" },
-            { en: "plant", ru: "растение" }, { en: "pleased", ru: "довольный" }, { en: "plus", ru: "плюс" },
-            { en: "poisonous", ru: "ядовитый" }, { en: "polar", ru: "полярный" }, { en: "police officer", ru: "полицейский" },
-            { en: "pollute", ru: "загрязнять" }, { en: "popular", ru: "популярный" }, { en: "population", ru: "население" },
-            { en: "practice", ru: "практика" }, { en: "prepare", ru: "готовить" }, { en: "pretend", ru: "притворяться" },
-            { en: "private", ru: "частный" }, { en: "probably", ru: "вероятно" }, { en: "problem", ru: "проблема" },
-            { en: "produce", ru: "производить" }, { en: "profession", ru: "профессия" }, { en: "program", ru: "программа" },
-            { en: "progress", ru: "прогресс" }, { en: "promote", ru: "продвигать" }, { en: "protect", ru: "защищать" },
-            { en: "quickly", ru: "быстро" }, { en: "quit", ru: "уходить" }, { en: "race", ru: "гонка" },
-            { en: "raise", ru: "поднимать" }, { en: "reach", ru: "достигать" }, { en: "record", ru: "запись" },
-            { en: "relax", ru: "расслабляться" }, { en: "religion", ru: "религия" }, { en: "rice", ru: "рис" },
-            { en: "rights", ru: "права" }, { en: "roast", ru: "жарить" }, { en: "rock", ru: "рок" },
-            { en: "roof", ru: "крыша" }, { en: "rug", ru: "ковер" }, { en: "rule", ru: "правило" },
-            { en: "ruler", ru: "линейка" }, { en: "safe", ru: "безопасный" }, { en: "sail", ru: "плавать" },
-            { en: "salary", ru: "зарплата" }, { en: "salt", ru: "соль" }, { en: "sandal", ru: "сандалия" },
-            { en: "save", ru: "сохранять" }, { en: "schedule", ru: "расписание" }, { en: "scientist", ru: "ученый" },
-            { en: "section", ru: "секция" }, { en: "seed", ru: "семя" }, { en: "share", ru: "делиться" },
-            { en: "shell", ru: "ракушка" }, { en: "shiny", ru: "блестящий" }, { en: "shoot", ru: "стрелять" },
-            { en: "show", ru: "показывать" }, { en: "sign", ru: "знак" }, { en: "silver", ru: "серебро" },
-            { en: "size", ru: "размер" }, { en: "ski", ru: "лыжи" }, { en: "skin", ru: "кожа" },
-            { en: "slave", ru: "раб" }, { en: "smell", ru: "запах" }, { en: "snow", ru: "снег" },
-            { en: "so", ru: "так" }, { en: "soft", ru: "мягкий" }, { en: "soil", ru: "почва" },
-            { en: "somehow", ru: "как-то" }, { en: "soon", ru: "скоро" }, { en: "sound", ru: "звук" },
-            { en: "south", ru: "юг" }, { en: "southern", ru: "южный" }, { en: "special", ru: "специальный" },
-            { en: "spend", ru: "тратить" }, { en: "spiritual", ru: "духовный" }, { en: "sportswear", ru: "спортивная одежда" },
-            { en: "star", ru: "звезда" }, { en: "stay", ru: "оставаться" }, { en: "still", ru: "еще" },
-            { en: "stomach", ru: "желудок" }, { en: "stone", ru: "камень" }, { en: "store", ru: "магазин" },
-            { en: "storm", ru: "шторм" }, { en: "strange", ru: "странный" }, { en: "stretch", ru: "тянуться" },
-            { en: "suddenly", ru: "внезапно" }, { en: "supply", ru: "снабжение" }, { en: "suppose", ru: "предполагать" },
-            { en: "surf", ru: "сёрфинг" }, { en: "sweet", ru: "сладкий" }, { en: "swim", ru: "плавать" },
-            { en: "tail", ru: "хвост" }, { en: "taste", ru: "вкус" }, { en: "team", ru: "команда" },
-            { en: "tent", ru: "палатка" }, { en: "thick", ru: "толстый" }, { en: "thin", ru: "тонкий" },
-            { en: "time off", ru: "отгул" }, { en: "together", ru: "вместе" }, { en: "toward", ru: "к" },
-            { en: "traditional", ru: "традиционный" }, { en: "trail", ru: "след" }, { en: "travel", ru: "путешествовать" },
-            { en: "trip", ru: "поездка" }, { en: "tropics", ru: "тропики" }, { en: "truck", ru: "грузовик" },
-            { en: "typically", ru: "обычно" }, { en: "unfortunately", ru: "к сожалению" }, { en: "uniform", ru: "униформа" },
-            { en: "unpaid", ru: "неоплачиваемый" }, { en: "used", ru: "использованный" }, { en: "vacation", ru: "отпуск" },
-            { en: "vary", ru: "варьироваться" }, { en: "violin", ru: "скрипка" }, { en: "visit", ru: "посещать" },
-            { en: "waiter", ru: "официант" }, { en: "war", ru: "война" }, { en: "warm", ru: "теплый" },
-            { en: "wavy", ru: "волнистый" }, { en: "weigh", ru: "взвешивать" }, { en: "well", ru: "хорошо" },
-            { en: "west", ru: "запад" }, { en: "while", ru: "пока" }, { en: "whole", ru: "целый" },
-            { en: "wide", ru: "широкий" }, { en: "wild", ru: "дикий" }, { en: "win", ru: "побеждать" },
-            { en: "wing", ru: "крыло" }, { en: "wonderful", ru: "чудесный" }, { en: "wood", ru: "дерево" },
-            { en: "yawn", ru: "зевать" }, { en: "yearly", ru: "ежегодный" }
-        ];
+    <div id="review-mode">
+        <h2>Разбор ответов</h2>
+        <div id="review-list"></div>
+        <button class="btn btn-main" onclick="location.reload()">Вернуться в начало</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { q: "Что такое эконометрика?", a: ["Применение статистических методов для анализа экономических данных", "Изучение экономики без данных", "Математическая теория игр", "Прогнозирование погоды"] },
+        { q: "Какой основной инструмент используется в эконометрике?", a: ["Статистические модели", "Графики без данных", "Только теория", "Социологические опросы"] },
+        { q: "Что изучает регрессионный анализ?", a: ["Зависимость одной переменной от других", "Только средние значения", "Распределение доходов", "Временные тренды"] },
+        { q: "Что показывает уравнение линейной регрессии?", a: ["Линейную связь между переменными", "Нелинейную связь", "Только корреляцию", "Случайные колебания"] },
+        { q: "Какой метод используется для оценки параметров регрессии?", a: ["Метод наименьших квадратов (МНК)", "Метод максимального правдоподобия", "Метод моментов", "Метод проб и ошибок"] },
+        { q: "Какой коэффициент корреляции показывает полное отсутствие связи?", a: ["0", "1", "-1", "0.5"] },
+        { q: "Что означает корреляция = -0.9?", a: ["Сильная отрицательная связь", "Слабая положительная связь", "Нет связи", "Случайная связь"] },
+        { q: "Что такое нулевая гипотеза?", a: ["Предположение об отсутствии эффекта", "Предположение о наличии эффекта", "Предположение о корреляции", "Предположение о среднем"] },
+        { q: "Что такое p-значение?", a: ["Вероятность ошибки при отвержении нулевой гипотезы", "Вероятность верной модели", "Коэффициент детерминации", "Стандартная ошибка"] },
+        { q: "Что такое временной ряд?", a: ["Данные, собранные во времени", "Данные по регионам", "Данные по людям", "Случайные данные"] },
+        { q: "Что такое регрессия?", a: ["Связь одной переменной с другими", "Только среднее", "Только график", "Только сумма"] },
+        { q: "Какая переменная — главная в регрессии?", a: ["Зависимая (Y)", "Независимая (X)", "Ошибка", "Константа"] },
+        { q: "Что такое корреляция?", a: ["Как вместе меняются две переменные", "Причина и следствие", "Среднее", "Сумма"] },
+        { q: "Если корреляция = 1, то:", a: ["Полная прямая связь", "Нет связи", "Отрицательная связь", "Случайная связь"] },
+        { q: "Что такое временной ряд?", a: ["Данные по годам", "Данные по людям", "Данные по городам", "Случайные числа"] },
+        { q: "Даны значения: 2, 4, 6, 8, 10. Чему равно среднее арифметическое?", a: ["6", "5", "7", "30"] },
+        { q: "Даны значения: 1, 3, 3, 5, 8. Чему равна медиана?", a: ["3", "4", "5", "20"] },
+        { q: "Даны значения: 7, 7, 2, 7, 1. Чему равна мода?", a: ["7", "2", "1", "Нет моды"] },
+        { q: "Даны: 10, 20, 30. Среднее арифметическое?", a: ["20", "10", "30", "60"] },
+        { q: "Даны: 5, 1, 9, 3, 7. Медиана?", a: ["5", "3", "7", "25"] },
+        { q: "Даны: 6, 6, 6, 8, 10. Мода?", a: ["6", "8", "10", "Нет моды"] },
+        { q: "Даны: 5, 10, 15, 20. Чему равна разность между максимумом и минимумом?", a: ["15", "5", "20", "50"] },
+        { q: "Даны: 100, 50. Во сколько раз 100 больше 50?", a: ["2", "50", "100", "150"] },
+        { q: "Даны: 4, 9. Чему равен квадрат 4?", a: ["16", "4", "9", "36"] },
+        { q: "Даны: 100, 25. Чему равен 25% от 100?", a: ["25", "100", "4", "75"] },
+        { q: "Даны: 16, 4. Чему равен корень из 16?", a: ["4", "16", "2", "20"] },
+        { q: "Даны: 20, 5. Сколько раз 5 помещается в 20?", a: ["4", "5", "20", "25"] },
+        { q: "Даны: 5, 7, 9. Чему равно среднее арифметическое?", a: ["7", "5", "9", "21"] },
+        { q: "Даны: 3, 5, 7, 11. Чему равна сумма простых чисел?", a: ["26", "3", "11", "21"] },
+        { q: "Даны: 16, 25, 36. Чему равен корень из суммы?", a: ["9", "77", "3", "6"] },
+        { q: "Даны: 2, 4, 6, 8, 10. Чему равна медиана?", a: ["6", "2", "10", "30"] },
+        { q: "Даны: 81, 27, 9. Чему равен корень из 81?", a: ["9", "3", "27", "81"] },
+        { q: "ВВП вырос с 100 до 110 млрд. На сколько % вырос ВВП?", a: ["10%", "1%", "100%", "110%"] },
+        { q: "Инфляция 5%, цена была 200 сум. Чему равна новая цена?", a: ["210 сум.", "205 сум.", "195 сум.", "200 сум."] },
+        { q: "Безработица 8%, трудоспособных 50 млн. Сколько безработных?", a: ["4 млн", "8 млн", "40 млн", "50 млн"] },
+        { q: "Экспорт 300 млн, импорт 250 млн. Чему равно сальдо торговли?", a: ["50 млн", "-50 млн", "550 млн", "0"] },
+        { q: "Доход 1000 сум., расходы 800 сум. Чему равны сбережения?", a: ["200 сум.", "800 сум.", "1000 сум.", "0"] },
+        { q: "Цена акции была 500 сум., стала 550 сум. На сколько % рост?", a: ["10%", "5%", "50%", "55%"] },
+        { q: "Процентная ставка 6%, вклад 10000 сум. Чему равен доход за год?", a: ["600 сум.", "6000 сум.", "10600 сум.", "0"] },
+        { q: "Продажи 1 квартал: 200, 2 квартал: 250. На сколько % рост?", a: ["25%", "20%", "50%", "5%"] },
+        { q: "Инвестиции 500 млн, прибыль 100 млн. Чему равна ROI (%)?", a: ["20%", "100%", "500%", "600%"] },
+        { q: "Население 100 млн, ВВП 10 трлн сум. ВВП на душу (сум.)?", a: ["100000 сум.", "10 млн сум.", "100 млн сум.", "1 млрд сум."] },
+        { q: "Долг 200 млрд, ВВП 1000 млрд. Долг к ВВП (%)?", a: ["20%", "2%", "200%", "1000%"] },
+        { q: "Зарплата выросла с 40000 до 48000 сум. На сколько % рост?", a: ["20%", "10%", "8000 сум.", "48000 сум."] },
+        { q: "Бюджет: доходы 500 млрд, расходы 600 млрд. Дефицит (млрд)?", a: ["100 млрд", "-100 млрд", "1100 млрд", "0"] },
+        { q: "Продано 120 единиц по 500 сум. Чему равна выручка?", a: ["60000 сум.", "120 сум.", "500 сум.", "620 сум."] },
+        { q: "Себестоимость 300 сум., цена 500 сум. Прибыль на единицу?", a: ["200 сум.", "300 сум.", "500 сум.", "800 сум."] },
+        { q: "Продали 100 единиц, прибыль 20000 сум. Прибыль на единицу?", a: ["200 сум.", "100 сум.", "20000 сум.", "0"] },
+        { q: "Кредит 100000 сум., ставка 12%, за год переплата?", a: ["12000 сум.", "10000 сум.", "112000 сум.", "0"] },
+        { q: "Вклад 200000 сум., ставка 5%, доход за год?", a: ["10000 сум.", "20000 сум.", "210000 сум.", "0"] },
+        { q: "Акция: купили за 1000 сум., продали за 1200 сум. Прибыль (%)?", a: ["20%", "10%", "200 сум.", "1200 сум."] },
+        { q: "Экспорт вырос с 400 до 480 млн. На сколько % рост?", a: ["20%", "10%", "80 млн", "480 млн"] },
+        { q: "Импорт упал с 300 до 240 млн. На сколько % снижение?", a: ["20%", "10%", "60 млн", "240 млн"] },
+        { q: "Бюджетный профицит 50 млрд, доходы 800 млрд. Расходы?", a: ["750 млрд", "850 млрд", "800 млрд", "50 млрд"] },
+        { q: "Цена 1000 сум., скидка 15%. Новая цена?", a: ["850 сум.", "1150 сум.", "150 сум.", "1000 сум."] },
+        { q: "Продажи: 1 мес. 500, 2 мес. 600. Средние продажи?", a: ["550", "500", "600", "1100"] },
+        { q: "Инвестиции 1 млн, возврат 1.2 млн. Прибыль (%)?", a: ["20%", "10%", "200000 сум.", "1.2 млн"] },
+        { q: "Долг 500 млрд, ВВП 2500 млрд. Долг к ВВП?", a: ["20%", "2%", "500%", "2500%"] },
+        { q: "Курс евро: был 80 сум., стал 88 сум. Рост (%)?", a: ["10%", "8%", "88 сум.", "80 сум."] },
+        { q: "Затраты 400 тыс., выручка 600 тыс. Прибыль?", a: ["200 тыс.", "400 тыс.", "600 тыс.", "1000 тыс."] },
+        { q: "Себестоимость 200 сум., продажа 300 сум., 150 единиц. Прибыль?", a: ["15000 сум.", "100 сум.", "300 сум.", "45000 сум."] },
+        { q: "Вклад 500000 сум., 4% годовых, доход за год?", a: ["20000 сум.", "4000 сум.", "520000 сум.", "0"] },
+        { q: "Акция упала с 2000 до 1600 сум. Убыток (%)?", a: ["20%", "10%", "400 сум.", "1600 сум."] },
+        { q: "ВВП на душу 50000 сум., население 120 млн. Общий ВВП?", a: ["6 трлн сум.", "50 трлн сум.", "120 трлн сум.", "600000 сум."] },
+        { q: "Бюджет: доходы 1000 млрд, расходы 900 млрд. Профицит?", a: ["100 млрд", "-100 млрд", "1900 млрд", "0"] },
+        { q: "Зарплата 60000 сум., премия 10%. Итого?", a: ["66000 сум.", "6000 сум.", "60000 сум.", "10 сум."] },
+        { q: "Продажи выросли с 1000 до 1300 единиц. Рост (%)?", a: ["30%", "20%", "300 ед.", "1300 ед."] },
+        { q: "Бросаем монету 1 раз. Вероятность орла?", a: ["0.5", "1", "0", "2"] },
+        { q: "Кидаем кубик. Вероятность выпадения 6?", a: ["1/6", "1/2", "0", "6"] },
+        { q: "В урне 3 красных и 2 синих шара. Вероятность вытащить красный?", a: ["3/5", "2/5", "1", "0"] },
+        { q: "Бросаем монету 2 раза. Вероятность двух орлов?", a: ["1/4", "1/2", "0", "2/4"] },
+        { q: "Кидаем кубик 2 раза. Вероятность хотя бы одной 1?", a: ["11/36", "1/6", "1/36", "2/6"] },
+        { q: "В выборке 50 человек, 20 женщин. Частота женщин?", a: ["0.4", "20", "50", "30"] },
+        { q: "Факториал: 5! = ?", a: ["120", "5", "25", "1"] },
+        { q: "Факториал: 3! = ?", a: ["6", "3", "9", "1"] },
+        { q: "Сколько перестановок из 3 букв (А, Б, В)?", a: ["6", "3", "9", "1"] },
+        { q: "Сколько способов выбрать 2 человек из 4 (порядок важен)?", a: ["12", "6", "4", "2"] },
+        { q: "Частота дождливых дней: за 30 дней дождь был 12 раз. Частота?", a: ["0.4", "12", "30", "18"] },
+        { q: "Частота успехов: из 200 попыток 60 успехов. Частота?", a: ["0.3", "60", "200", "140"] },
+        { q: "Что показывает среднее?", a: ["Типичное значение", "Максимум", "Минимум", "Разницу"] },
+        { q: "Что такое дисперсия?", a: ["Как сильно разброс", "Среднее", "Медиана", "Сумма"] },
+        { q: "Дисперсия = 0 — значит:", a: ["Все значения одинаковые", "Разные", "Среднее = 0", "Медиана = 0"] },
+        { q: "Стандартное отклонение — это...", a: ["Корень из дисперсии", "Дисперсия", "Среднее", "Мода"] },
+        { q: "Дисперсия большая — значит:", a: ["Значения сильно разбросаны", "Все одинаковые", "Среднее большое", "Медиана большая"] },
+        { q: "Корреляция = 1 — значит:", a: ["Полная связь", "Нет связи", "Слабая связь", "Отрицательная"] },
+        { q: "Корреляция = -0.8 — значит:", a: ["Сильная отрицательная", "Положительная", "Нет связи", "Слабая"] },
+        { q: "Что такое выборка?", a: ["Часть от всех", "Все данные", "Среднее", "График"] },
+        { q: "p-значение < 0.05 — значит:", a: ["Значимо", "Не значимо", "Точно да", "Ошибка"] },
+        { q: "Нулевая гипотеза — это...", a: ["Нет эффекта", "Есть эффект", "Среднее = 0", "Мода = 0"] },
+        { q: "Что такое описательная статистика?", a: ["Средние, графики, таблицы", "Прогнозы", "Тесты", "Модели"] },
+        { q: "Что такое невозможное событие?", a: ["P = 0", "P = 1", "P = 0.5", "P > 0"] },
+        { q: "Что такое достоверное событие?", a: ["P = 1", "P = 0", "P = 0.5", "P < 1"] },
+        { q: "Что такое случайное событие?", a: ["P между 0 и 1", "P = 0", "P = 1", "P = 0.5"] },
+        { q: "Что такое совместные события?", a: ["Могут произойти вместе", "Не могут вместе", "Одно всегда", "Ни одно"] },
+        { q: "Что такое несовместные события?", a: ["Не могут произойти вместе", "Могут вместе", "Одно всегда", "Ни одно"] },
+        { q: "Что такое противоположные события?", a: ["A и не-A", "A и B", "A или B", "A + B"] },
+        { q: "Что такое дополнение события Ā?", a: ["Всё кроме A", "Только A", "A и B", "A или B"] },
+        { q: "Что такое независимые события?", a: ["Одно не влияет на другое", "Влияют друг на друга", "Суммируются", "Умножаются всегда"] }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+    let userHistory = [];
+
+    // Helper: Shuffle array
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function loadQuestion() {
+        const qData = questions[currentQ];
+        const correctAns = qData.a[0]; // First one is always correct in your source
         
-        const correctFeedback = [
-            "Brilliant! 🤩", "Perfect match!", "You got it! 🎯", "Excellent work!", "Spot on! ✅"
-        ];
+        // Shuffle options
+        let options = shuffleArray([...qData.a]);
 
-        const incorrectFeedback = [
-            "Oops, keep trying! 🤔", "Not quite, but you'll get it next time!", "A small mistake. Review that one!", "Incorrect. Time to learn something new!", "Close, but no cigar. 🚬"
-        ];
+        document.getElementById('q-count').innerText = `Вопрос ${currentQ + 1}/${questions.length}`;
+        document.getElementById('q-text').innerText = qData.q;
+        
+        const box = document.getElementById('options-box');
+        box.innerHTML = '';
 
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => selectAnswer(opt, correctAns, btn);
+            box.appendChild(btn);
+        });
 
-        // --- Game State Variables ---
-        let currentWordIndex = -1;
-        let score = 0;
-        let allWords = [...wordList];
+        document.getElementById('progress-bar').style.width = `${((currentQ) / questions.length) * 100}%`;
+    }
 
-        // --- DOM Elements ---
-        const wordDisplay = document.getElementById('word-display');
-        const optionsContainer = document.getElementById('options-container');
-        const feedbackMessage = document.getElementById('feedback-message');
-        const nextButton = document.getElementById('next-button');
-        const scoreDisplay = document.getElementById('current-score');
+    function selectAnswer(selected, correct, btn) {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(b => b.disabled = true);
 
-        // --- Utility Function ---
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
+        const isCorrect = selected === correct;
+        if (isCorrect) {
+            score++;
+            btn.classList.add('correct');
+        } else {
+            btn.classList.add('wrong');
+            btns.forEach(b => { if(b.innerText === correct) b.classList.add('correct'); });
         }
 
-        // --- Game Core Functions ---
+        userHistory.push({ q: questions[currentQ].q, sel: selected, cor: correct, ok: isCorrect });
+        document.getElementById('score-display').innerText = `Баллы: ${score}`;
 
-        function startGame() {
-            // Shuffle the word list once for the game
-            allWords = shuffleArray(allWords);
-            currentWordIndex = -1;
-            score = 0;
-            scoreDisplay.textContent = score;
-            loadNextQuestion();
-        }
-
-        function loadNextQuestion() {
-            currentWordIndex++;
-            
-            if (currentWordIndex >= allWords.length) {
-                wordDisplay.textContent = "Quiz Finished!";
-                feedbackMessage.textContent = `Final Score: ${score} out of ${allWords.length}! You crushed it! 🎉`;
-                optionsContainer.innerHTML = '';
-                nextButton.style.display = 'none';
-                return;
-            }
-
-            const currentWord = allWords[currentWordIndex];
-            wordDisplay.textContent = currentWord.en;
-            feedbackMessage.textContent = 'Choose the correct Russian translation.';
-            feedbackMessage.className = '';
-            nextButton.style.display = 'none';
-            optionsContainer.innerHTML = '';
-
-            // 1. Get the correct translation
-            const correctTranslation = currentWord.ru;
-            let options = [correctTranslation];
-
-            // 2. Create a pool of all unique wrong translations
-            const allTranslations = wordList.map(item => item.ru);
-            const wrongTranslationPool = allTranslations.filter(ru => ru !== correctTranslation);
-            
-            // 3. Shuffle the wrong pool and pick 3 unique distractors
-            shuffleArray(wrongTranslationPool);
-            
-            // Get 3 unique wrong options (or fewer if the list is small)
-            const wrongOptions = wrongTranslationPool.slice(0, 3);
-            options = options.concat(wrongOptions);
-            
-            // 4. Shuffle the final four options (1 correct, 3 wrong)
-            options = shuffleArray(options);
-
-            // Render buttons
-            options.forEach(option => {
-                const button = document.createElement('button');
-                button.classList.add('option-button');
-                button.textContent = option;
-                button.setAttribute('data-translation', option);
-                button.addEventListener('click', handleAnswer);
-                optionsContainer.appendChild(button);
-            });
-        }
-
-        function handleAnswer(event) {
-            const selectedButton = event.target;
-            const selectedTranslation = selectedButton.getAttribute('data-translation');
-            const correctTranslation = allWords[currentWordIndex].ru;
-            let isCorrect = (selectedTranslation === correctTranslation);
-
-            // Disable all buttons after choice
-            document.querySelectorAll('.option-button').forEach(btn => btn.disabled = true);
-
-            if (isCorrect) {
-                score++;
-                scoreDisplay.textContent = score;
-                feedbackMessage.textContent = correctFeedback[Math.floor(Math.random() * correctFeedback.length)];
-                feedbackMessage.className = 'correct';
-                selectedButton.classList.add('correct-highlight');
-
+        setTimeout(() => {
+            currentQ++;
+            if (currentQ < questions.length) {
+                loadQuestion();
             } else {
-                feedbackMessage.textContent = incorrectFeedback[Math.floor(Math.random() * incorrectFeedback.length)] + ` The correct answer was: "${correctTranslation}"`;
-                feedbackMessage.className = 'incorrect';
-                
-                // Red for wrong guess
-                selectedButton.style.backgroundColor = '#e74c3c'; 
-                selectedButton.style.boxShadow = '0 4px 0 #c0392b';
-                
-                // Highlight the correct answer
-                document.querySelectorAll('.option-button').forEach(btn => {
-                    if (btn.getAttribute('data-translation') === correctTranslation) {
-                        btn.classList.add('correct-highlight');
-                    }
-                });
+                showResults();
             }
+        }, 800);
+    }
 
-            nextButton.style.display = 'block';
-        }
+    function showResults() {
+        document.getElementById('game-ui').style.display = 'none';
+        document.getElementById('results').style.display = 'block';
+        document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+        
+        const msg = document.getElementById('performance-msg');
+        const percent = (score / questions.length) * 100;
+        if (percent > 85) msg.innerText = "Отличный результат! Вы мастер эконометрики.";
+        else if (percent > 60) msg.innerText = "Хороший результат. Но есть что повторить.";
+        else msg.innerText = "Нужно подтянуть теорию.";
+    }
 
-        // --- Event Listeners ---
-        nextButton.addEventListener('click', loadNextQuestion);
+    function startReview() {
+        document.getElementById('results').style.display = 'none';
+        document.getElementById('review-mode').style.display = 'block';
+        const list = document.getElementById('review-list');
+        list.innerHTML = '';
 
-        // --- Initialize Game ---
-        startGame();
+        userHistory.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'review-item';
+            div.innerHTML = `
+                <span class="status-tag ${item.ok ? 'tag-correct' : 'tag-wrong'}">${item.ok ? 'Верно' : 'Ошибка'}</span>
+                <div class="question-text" style="font-size: 1.1rem; margin-bottom: 10px;">${index + 1}. ${item.q}</div>
+                <div style="color: ${item.ok ? 'green' : 'red'}">Ваш ответ: ${item.sel}</div>
+                ${!item.ok ? `<div style="color: green">Правильный: ${item.cor}</div>` : ''}
+            `;
+            list.appendChild(div);
+        });
+    }
 
-    </script>
+    // Start
+    loadQuestion();
+</script>
+
 </body>
 </html>
